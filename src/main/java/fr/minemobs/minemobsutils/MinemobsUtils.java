@@ -1,11 +1,17 @@
 package fr.minemobs.minemobsutils;
 
-import fr.minemobs.minemobsutils.commands.CommandColor;
+import fr.minemobs.minemobsutils.commands.ColorCommand;
+import fr.minemobs.minemobsutils.commands.CraftCommand;
+import fr.minemobs.minemobsutils.commands.EnderChestCommand;
 import kr.entree.spigradle.annotations.SpigotPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.Arrays;
 
 @SpigotPlugin
 public class MinemobsUtils extends JavaPlugin {
@@ -30,7 +36,9 @@ public class MinemobsUtils extends JavaPlugin {
     }
 
     private void registerCommands() {
-        getCommand("cc").setExecutor(new CommandColor());
+        getCommand("cc").setExecutor(new ColorCommand());
+        getCommand("craft").setExecutor(new CraftCommand());
+        registerCommand("ec", new EnderChestCommand(), "enderchest");
         /*getCommand("afly").setExecutor(new CommandAllowFly());
         getCommand("heal").setExecutor(new CommandHeal());
         getCommand("tpsp").setExecutor(new CommandSpawnPoint());
@@ -39,8 +47,14 @@ public class MinemobsUtils extends JavaPlugin {
         getCommand("frl").setExecutor(new CommandFakeReload());
         getCommand("tpsg").setExecutor(new StickTeleport());
         getCommand("enchants").setExecutor(new EnchantGive());
-        getCommand("craft").setExecutor(new CommandCraft());
-        getCommand("enderchest").setExecutor(new EnderChestCommand());*/
+        getCommand("enderchest").setExecutor(new EnderChestCommand());
+        */
+    }
+
+    private void registerCommand(String commandName, CommandExecutor commandExecutor, String... commandAliases) {
+        PluginCommand command = getCommand(commandName);
+        command.setAliases(Arrays.asList(commandAliases));
+        command.setExecutor(commandExecutor);
     }
 
     @Override

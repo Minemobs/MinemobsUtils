@@ -35,6 +35,16 @@ spigot {
             aliases 'colorcode'
             usage '/<command>'
         }
+        craft {
+            permission 'minemobsutils.craftcommand'
+            permissionMessage '§8[§4Minemobs Utils§8] §4You do not have the permission!'
+            usage '/<command>'
+        }
+        ec {
+            permission 'minemobsutils.enderchest'
+            permissionMessage '§8[§4Minemobs Utils§8] §4You do not have the permission!'
+            usage '/<command> [target] [source]'
+        }
     }
 
     debug {

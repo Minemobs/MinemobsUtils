@@ -14,7 +14,7 @@ import org.bukkit.inventory.Inventory;
 
 import java.util.Arrays;
 
-public class CommandColor implements CommandExecutor {
+public class ColorCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
