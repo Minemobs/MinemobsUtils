@@ -17,6 +17,7 @@ repositories {
 
 dependencies {
     compileOnly spigot('1.16.5')
+    compileOnly 'org.jetbrains:annotations:21.0.1'
 }
 
 /*
@@ -32,18 +33,26 @@ spigot {
     apiVersion '1.16'
     commands {
         cc {
-            aliases 'colorcode'
+            aliases 'colorcode', 'chatcolor'
             usage '/<command>'
         }
         craft {
+            aliases 'crafting'
             permission 'minemobsutils.craftcommand'
             permissionMessage '§8[§4Minemobs Utils§8] §4You do not have the permission!'
             usage '/<command>'
         }
         ec {
+            aliases 'enderchest'
             permission 'minemobsutils.enderchest'
             permissionMessage '§8[§4Minemobs Utils§8] §4You do not have the permission!'
             usage '/<command> [target] [source]'
+        }
+        egive {
+            aliases 'enchantgive'
+            permission 'minemobsutils.enchantgive'
+            permissionMessage '§8[§4Minemobs Utils§8] §4You do not have the permission!'
+            usage '/<command>'
         }
     }
 
