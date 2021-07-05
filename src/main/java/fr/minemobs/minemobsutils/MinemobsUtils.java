@@ -5,7 +5,6 @@ import fr.minemobs.minemobsutils.listener.EnchantmentListener;
 import fr.minemobs.minemobsutils.listener.GrapplingHookListener;
 import fr.minemobs.minemobsutils.listener.PlayerListener;
 import fr.minemobs.minemobsutils.objects.CustomEnchants;
-import fr.minuskube.inv.InventoryManager;
 import kr.entree.spigradle.annotations.SpigotPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -23,7 +22,6 @@ public class MinemobsUtils extends JavaPlugin {
 
     private static MinemobsUtils instance;
     public static final String ebheader = String.format("%s[%sMinemobs Utils%s] ", ChatColor.DARK_GRAY, ChatColor.DARK_RED, ChatColor.DARK_GRAY);
-    private static InventoryManager manager;
 
     @Override
     public void onLoad() {
@@ -36,8 +34,6 @@ public class MinemobsUtils extends JavaPlugin {
         registerListeners();
         registerCommands();
         CustomEnchants.register();
-        manager = new InventoryManager(this);
-        manager.init();
     }
 
     private void registerListeners() {
@@ -54,6 +50,8 @@ public class MinemobsUtils extends JavaPlugin {
         registerCommand("gh", new EnchantGiveCommand(), "grapplinghook");
         registerCommand("ping", new PingCommand());
         registerCommand("customenchant", new GrapplingHookCommand(), "ce");
+        registerCommand("heal", new HealCommand());
+        registerCommand("feed", new FeedCommand());
         /*getCommand("afly").setExecutor(new CommandAllowFly());
         getCommand("heal").setExecutor(new CommandHeal());
         getCommand("tpsp").setExecutor(new CommandSpawnPoint());
@@ -68,7 +66,7 @@ public class MinemobsUtils extends JavaPlugin {
 
     private void registerCommand(@NotNull String commandName, @NotNull CommandExecutor commandExecutor, @Nullable String... commandAliases) {
         PluginCommand command = getCommand(commandName);
-        if(commandAliases != null && commandAliases.length != 0) command.setAliases(Arrays.asList(commandAliases));
+        if (commandAliases != null && commandAliases.length != 0) command.setAliases(Arrays.asList(commandAliases));
         command.setExecutor(commandExecutor);
     }
 
@@ -79,9 +77,5 @@ public class MinemobsUtils extends JavaPlugin {
 
     public static MinemobsUtils getInstance() {
         return instance;
-    }
-
-    public static InventoryManager getManager() {
-        return manager;
     }
 }

@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public class CommandUtils {
 
     public static void senderError(@NotNull CommandSender sender) {
-        sender.sendMessage(MinemobsUtils.ebheader + "Seuls les joueurs peuvent effectuer cette commande.");
+        sender.sendMessage(MinemobsUtils.ebheader + "Only players can use this command.");
     }
 
     public static void permissionError(@NotNull Player player) {

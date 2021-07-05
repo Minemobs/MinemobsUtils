@@ -48,7 +48,7 @@ public enum Inventories {
 
         @Override
         public void update(Player player, InventoryContents contents) {}
-    }).manager(MinemobsUtils.getManager()).build()),
+    }).build()),
     ;
 
     public final SmartInventory inv;

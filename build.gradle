@@ -57,6 +57,12 @@ spigot {
             aliases 'ce'
             usage '/<command>'
         }
+        heal {
+            usage '/<command>'
+        }
+        feed {
+            usage '/<command>'
+        }
     }
 
     debug {

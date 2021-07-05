@@ -114,7 +114,7 @@ public class EnchantmentListener implements Listener {
                     if (block.getType().isBlock() && block.getType().isSolid() && !getInvalidBlocks().contains(block.getType())) {
                         if(inv.getItemInMainHand().getItemMeta().hasEnchant(CustomEnchants.TELEPATHY.enchantment)) {
                             if(inv.firstEmpty() == -1) return;
-                            inv.addItem(block.getDrops(inv.getItemInMainHand()).stream().findFirst().get());
+                            inv.addItem(block.getDrops(inv.getItemInMainHand()).stream().findFirst().orElse(new ItemStack(Material.AIR)));
                             block.setType(Material.AIR);
                         } else {
                             block.breakNaturally(inv.getItemInMainHand());
