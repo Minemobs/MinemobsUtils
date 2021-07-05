@@ -24,6 +24,7 @@ public class ItemStackUtils {
     }
 
     public static boolean isSimilar(ItemStack first, ItemStack second){
+        if(isAirOrNull(first) || isAirOrNull(second)) return false;
         ItemMeta im1 = first.getItemMeta();
         ItemMeta im2 = second.getItemMeta();
         if(!(im1 instanceof Damageable && im2 instanceof Damageable)) return false;

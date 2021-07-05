@@ -54,7 +54,6 @@ public class EnderChestCommand implements CommandExecutor {
                     return false;
                 }
 
-
                 target.openInventory(source.getEnderChest());
                 break;
             default:

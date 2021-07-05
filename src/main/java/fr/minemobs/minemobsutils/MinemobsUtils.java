@@ -22,6 +22,7 @@ public class MinemobsUtils extends JavaPlugin {
 
     private static MinemobsUtils instance;
     public static final String ebheader = String.format("%s[%sMinemobs Utils%s] ", ChatColor.DARK_GRAY, ChatColor.DARK_RED, ChatColor.DARK_GRAY);
+    public static final String pluginID = "minemobsutils";
 
     @Override
     public void onLoad() {
@@ -47,9 +48,9 @@ public class MinemobsUtils extends JavaPlugin {
         registerCommand("cc", new ColorCommand(), "chatcolor", "colorcode");
         registerCommand("craft", new CraftCommand(), "crafting");
         registerCommand("ec", new EnderChestCommand(), "enderchest");
-        registerCommand("gh", new EnchantGiveCommand(), "grapplinghook");
+        registerCommand("ci", new CustomItemsCommand(), "customitems");
         registerCommand("ping", new PingCommand());
-        registerCommand("customenchant", new GrapplingHookCommand(), "ce");
+        registerCommand("customenchant", new CustomEnchantCommand(), "ce");
         registerCommand("heal", new HealCommand());
         registerCommand("feed", new FeedCommand());
         registerCommand("fly", new FlyCommand());

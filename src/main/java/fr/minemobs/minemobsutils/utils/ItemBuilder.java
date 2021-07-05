@@ -125,6 +125,11 @@ public class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder addProtection(int level) {
+        return addEnchant(Enchantment.PROTECTION_EXPLOSIONS, level).addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, level).addEnchant(Enchantment.PROTECTION_FIRE, level)
+                .addEnchant(Enchantment.PROTECTION_PROJECTILE, level);
+    }
+
     public ItemBuilder addItemFlag(ItemFlag flag) {
         ItemMeta meta = getItemMeta();
         meta.addItemFlags(flag);

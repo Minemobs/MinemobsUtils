@@ -49,6 +49,18 @@ public enum Inventories {
         @Override
         public void update(Player player, InventoryContents contents) {}
     }).build()),
+    CUSTOM_ITEMS_GIVER(SmartInventory.builder().size(3, 9).title(ChatColor.RED + "Custom Items Giver").provider(new InventoryProvider() {
+
+        @Override
+        public void init(Player player, InventoryContents contents) {
+            for (Items item : Items.values()) {
+                contents.add(ClickableItem.of(item.stack, e -> player.getInventory().addItem(item.stack)));
+            }
+        }
+
+        @Override
+        public void update(Player player, InventoryContents contents) {}
+    }).build());
     ;
 
     public final SmartInventory inv;

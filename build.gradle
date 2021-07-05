@@ -46,9 +46,9 @@ spigot {
             permissionMessage missingPermissionMessage
             usage '/<command> [target] [source]'
         }
-        gh {
-            aliases 'grapplinghook'
-            permission 'minemobsutils.grapplinghook.give'
+        ci {
+            aliases 'customitems'
+            permission 'minemobsutils.customitems.give'
             permissionMessage missingPermissionMessage
             usage '/<command>'
         }
