@@ -9,6 +9,8 @@ version = '1.1'
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
+String missingPermissionMessage = '§8[§4Minemobs Utils§8] §4You do not have the permission!'
+
 repositories {
     mavenCentral()
     maven {
@@ -35,32 +37,39 @@ spigot {
         craft {
             aliases 'crafting'
             permission 'minemobsutils.craftcommand'
-            permissionMessage '§8[§4Minemobs Utils§8] §4You do not have the permission!'
+            permissionMessage missingPermissionMessage
             usage '/<command>'
         }
         ec {
             aliases 'enderchest'
             permission 'minemobsutils.enderchest'
-            permissionMessage '§8[§4Minemobs Utils§8] §4You do not have the permission!'
+            permissionMessage missingPermissionMessage
             usage '/<command> [target] [source]'
         }
         gh {
             aliases 'grapplinghook'
             permission 'minemobsutils.grapplinghook.give'
-            permissionMessage '§8[§4Minemobs Utils§8] §4You do not have the permission!'
+            permissionMessage missingPermissionMessage
             usage '/<command>'
         }
         ping {
-            usage '/<command>'
+            usage '/<command> [player]'
         }
         customenchant {
             aliases 'ce'
+            permission 'minemobsutils.customenchant'
+            permissionMessage missingPermissionMessage
             usage '/<command>'
         }
         heal {
-            usage '/<command>'
+            usage '/<command> [player]'
         }
         feed {
+            usage '/<command> [player]'
+        }
+        fly {
+            permission 'minemobsutils.fly'
+            permissionMessage missingPermissionMessage
             usage '/<command>'
         }
     }

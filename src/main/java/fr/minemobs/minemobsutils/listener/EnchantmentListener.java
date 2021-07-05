@@ -111,7 +111,8 @@ public class EnchantmentListener implements Listener {
                             loc.getBlockX() + x,
                             loc.getBlockY() + y,
                             loc.getBlockZ() + z);
-                    if (block.getType().isBlock() && block.getType().isSolid() && !getInvalidBlocks().contains(block.getType())) {
+                    if (block.getType().isBlock() && block.getType().isSolid() && !getInvalidBlocks().contains(block.getType()) &&
+                            !block.getDrops(inv.getItemInMainHand()).isEmpty()) {
                         if(inv.getItemInMainHand().getItemMeta().hasEnchant(CustomEnchants.TELEPATHY.enchantment)) {
                             if(inv.firstEmpty() == -1) return;
                             inv.addItem(block.getDrops(inv.getItemInMainHand()).stream().findFirst().orElse(new ItemStack(Material.AIR)));
@@ -127,7 +128,7 @@ public class EnchantmentListener implements Listener {
 
     private List<Material> getInvalidBlocks() {
         return Arrays.asList(Material.LAVA, Material.WATER, Material.BEDROCK, Material.NETHER_PORTAL, Material.END_PORTAL, Material.END_PORTAL_FRAME, Material.TALL_GRASS,
-                Material.SEAGRASS, Material.GRASS, Material.DIRT, Material.GRASS_BLOCK);
+                Material.SEAGRASS, Material.GRASS);
     }
 
 }
