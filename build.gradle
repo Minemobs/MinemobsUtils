@@ -1,5 +1,3 @@
-//import org.apache.tools.ant.filters.ReplaceTokens
-
 plugins {
     id 'java'
     id 'kr.entree.spigradle' version '2.2.4'
@@ -13,24 +11,22 @@ targetCompatibility = '1.8'
 
 repositories {
     mavenCentral()
+    maven {
+        url = "https://minevolt.net/repo/"
+    }
 }
 
 dependencies {
     compileOnly spigot('1.16.5')
     compileOnly 'org.jetbrains:annotations:21.0.1'
+    compileOnly('fr.minuskube.inv:smart-invs:1.2.7')
+    compileOnly 'org.bukkit:craftbukkit:1.16.5-R0.1-SNAPSHOT'
 }
-
-/*
-processResources {
-    from(sourceSets.main.resources.srcDirs) {
-        filter ReplaceTokens, tokens: [version: version]
-    }
-}
-*/
 
 spigot {
     authors 'Minemobs'
     apiVersion '1.16'
+    depends 'SmartInvs'
     commands {
         cc {
             aliases 'colorcode', 'chatcolor'
@@ -48,10 +44,17 @@ spigot {
             permissionMessage '§8[§4Minemobs Utils§8] §4You do not have the permission!'
             usage '/<command> [target] [source]'
         }
-        egive {
-            aliases 'enchantgive'
-            permission 'minemobsutils.enchantgive'
+        gh {
+            aliases 'grapplinghook'
+            permission 'minemobsutils.grapplinghook.give'
             permissionMessage '§8[§4Minemobs Utils§8] §4You do not have the permission!'
+            usage '/<command>'
+        }
+        ping {
+            usage '/<command>'
+        }
+        customenchant {
+            aliases 'ce'
             usage '/<command>'
         }
     }

@@ -32,4 +32,8 @@ public class ItemStackUtils {
         second.setItemMeta(im2);
         return second.isSimilar(first);
     }
+
+    public static boolean isAirOrNull(ItemStack item){
+        return item == null || item.getType().isAir();
+    }
 }

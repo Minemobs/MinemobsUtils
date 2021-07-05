@@ -1,5 +1,6 @@
-package fr.minemobs.minemobsutils.utils;
+package fr.minemobs.minemobsutils.objects;
 
+import fr.minemobs.minemobsutils.utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 

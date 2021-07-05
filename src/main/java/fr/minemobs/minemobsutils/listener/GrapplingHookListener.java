@@ -2,7 +2,7 @@ package fr.minemobs.minemobsutils.listener;
 
 import fr.minemobs.minemobsutils.MinemobsUtils;
 import fr.minemobs.minemobsutils.utils.ItemStackUtils;
-import fr.minemobs.minemobsutils.utils.Items;
+import fr.minemobs.minemobsutils.objects.Items;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 import org.bukkit.Material;
