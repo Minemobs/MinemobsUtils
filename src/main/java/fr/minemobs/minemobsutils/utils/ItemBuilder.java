@@ -137,6 +137,13 @@ public class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder addItemFlag(ItemFlag... flags) {
+        for (ItemFlag flag : flags) {
+            addItemFlag(flag);
+        }
+        return this;
+    }
+
     public ItemStack build() {
         return stack;
     }

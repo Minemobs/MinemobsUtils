@@ -5,6 +5,7 @@ import fr.minemobs.minemobsutils.listener.EnchantmentListener;
 import fr.minemobs.minemobsutils.listener.GrapplingHookListener;
 import fr.minemobs.minemobsutils.listener.PlayerListener;
 import fr.minemobs.minemobsutils.objects.CustomEnchants;
+import fr.minemobs.minemobsutils.objects.Recipes;
 import kr.entree.spigradle.annotations.SpigotPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,12 +17,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @SpigotPlugin
 public class MinemobsUtils extends JavaPlugin {
 
     private static MinemobsUtils instance;
-    public static final String ebheader = String.format("%s[%sMinemobs Utils%s] ", ChatColor.DARK_GRAY, ChatColor.DARK_RED, ChatColor.DARK_GRAY);
+    public static final String ebheader = String.format("%s[%sMinemobs Utils%s]%s ", ChatColor.DARK_GRAY, ChatColor.DARK_RED, ChatColor.DARK_GRAY, ChatColor.RESET);
     public static final String pluginID = "minemobsutils";
 
     @Override
@@ -34,7 +36,17 @@ public class MinemobsUtils extends JavaPlugin {
         Bukkit.getConsoleSender().sendMessage(ebheader + ChatColor.GREEN + "Enabled.");
         registerListeners();
         registerCommands();
+        registerCrafts();
         CustomEnchants.register();
+    }
+
+    private void registerCrafts() {
+        for (Recipes recipe : Arrays.stream(Recipes.values()).filter(recipes -> recipes.getRecipe() != null).collect(Collectors.toList())) {
+            getServer().addRecipe(recipe.getRecipe());
+        }
+        for (Recipes recipe : Arrays.stream(Recipes.values()).filter(recipes -> recipes.getShapelessRecipe() != null).collect(Collectors.toList())) {
+            getServer().addRecipe(recipe.getShapelessRecipe());
+        }
     }
 
     private void registerListeners() {

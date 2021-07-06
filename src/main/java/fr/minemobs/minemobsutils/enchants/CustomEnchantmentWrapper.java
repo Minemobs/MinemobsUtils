@@ -18,6 +18,7 @@ public class CustomEnchantmentWrapper extends Enchantment {
     }
 
     @NotNull
+    @SuppressWarnings("deprecation")
     @Override
     public String getName() {
         return name;
@@ -44,6 +45,7 @@ public class CustomEnchantmentWrapper extends Enchantment {
         return false;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean isCursed() {
         return false;

@@ -1,6 +1,5 @@
 package fr.minemobs.minemobsutils.objects;
 
-import fr.minemobs.minemobsutils.MinemobsUtils;
 import fr.minemobs.minemobsutils.utils.ItemBuilder;
 import fr.minemobs.minemobsutils.utils.ItemStackUtils;
 import fr.minuskube.inv.ClickableItem;
@@ -60,7 +59,7 @@ public enum Inventories {
 
         @Override
         public void update(Player player, InventoryContents contents) {}
-    }).build());
+    }).build()),
     ;
 
     public final SmartInventory inv;

@@ -12,6 +12,7 @@ import java.util.Arrays;
  */
 public class ItemStackUtils {
 
+    public static final ItemStack EMPTY = new ItemStack(Material.AIR);
     private static final Material[] armors = new Material[]{Material.DIAMOND_HELMET, Material.DIAMOND_CHESTPLATE, Material.DIAMOND_LEGGINGS, Material.DIAMOND_BOOTS,
     Material.IRON_HELMET, Material.IRON_CHESTPLATE, Material.IRON_LEGGINGS, Material.IRON_BOOTS,
     Material.GOLDEN_HELMET, Material.GOLDEN_CHESTPLATE, Material.GOLDEN_LEGGINGS, Material.GOLDEN_BOOTS,
