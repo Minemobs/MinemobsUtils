@@ -53,7 +53,8 @@ public class InventoryBuilder implements Listener {
     }
 
     public InventoryBuilder setSize(int size) {
-        if(size > 6 || size < 1) size = 3;
+        if(size > 6) size = 6;
+        if(size < 1) size = 3;
         this.size = size;
         return this;
     }
