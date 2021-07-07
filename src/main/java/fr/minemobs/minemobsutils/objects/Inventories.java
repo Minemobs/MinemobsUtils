@@ -3,6 +3,7 @@ package fr.minemobs.minemobsutils.objects;
 import fr.minemobs.minemobsutils.utils.InventoryBuilder;
 import fr.minemobs.minemobsutils.utils.ItemStackUtils;
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -31,8 +32,10 @@ public enum Inventories {
         meta.setLore(lore);
         is.setItemMeta(meta);
     }).build()),
-    CUSTOM_ITEMS_GIVER(new InventoryBuilder(ChatColor.RED + "Custom Items Giver", 3).addItems(Items.getAllItems()).setCancelled().onClick(event ->
-            event.getWhoClicked().getInventory().addItem(event.getCurrentItem())).build()),
+    CUSTOM_ITEMS_GIVER(new InventoryBuilder(ChatColor.RED + "Custom Items Giver", 3).addItems(Items.getAllItems()).setCancelled().onClick(event -> {
+        if(ItemStackUtils.isAirOrNull(event.getCurrentItem())) return;
+        event.getWhoClicked().getInventory().addItem(event.getCurrentItem());
+    }).build()),
     ;
 
     public final Inventory inv;
