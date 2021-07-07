@@ -72,6 +72,12 @@ spigot {
             permissionMessage missingPermissionMessage
             usage '/<command>'
         }
+        staffchat {
+            aliases 'sc'
+            permission 'minemobsutils.mod.chat'
+            permissionMessage missingPermissionMessage
+            usage '/<command> [message]'
+        }
     }
 
     debug {

@@ -1,6 +1,7 @@
 package fr.minemobs.minemobsutils.listener;
 
 import fr.minemobs.minemobsutils.MinemobsUtils;
+import fr.minemobs.minemobsutils.commands.StaffChatCommand;
 import fr.minemobs.minemobsutils.event.ArmorEvent;
 import fr.minemobs.minemobsutils.objects.Items;
 import fr.minemobs.minemobsutils.objects.Recipes;
@@ -16,6 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -31,6 +33,22 @@ import java.util.stream.Collectors;
 
 public class PlayerListener implements Listener {
 
+    /**
+     * Staff Chat event
+     */
+    @EventHandler
+    public void onChat(AsyncPlayerChatEvent event) {
+        String perm = MinemobsUtils.pluginID + ".mod.chat";
+        Player player = event.getPlayer();
+        if(!event.getMessage().startsWith("*")) return;
+        if(!player.hasPermission(perm)) return;
+        StaffChatCommand.sendMessageToModerators(player.getUniqueId(), event.getMessage());
+        event.setCancelled(true);
+    }
+
+    /**
+     * Give all recipes registered in {@link fr.minemobs.minemobsutils.objects.Recipes}
+     */
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         for (Recipes recipe : Arrays.stream(Recipes.values()).filter(recipes -> recipes.getRecipe() != null).collect(Collectors.toList())) {
@@ -45,7 +63,7 @@ public class PlayerListener implements Listener {
     public void onInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         if(event.getAction().equals(Action.PHYSICAL)) {
-    		if(event.getClickedBlock().getType() == Material.LIGHT_WEIGHTED_PRESSURE_PLATE) {
+            if(event.getClickedBlock().getType() == Material.LIGHT_WEIGHTED_PRESSURE_PLATE) {
                 player.setVelocity(player.getLocation().getDirection().multiply(4));
                 player.setVelocity(new Vector(player.getVelocity().getX(), 1.0D, player.getVelocity().getZ()));
             }
