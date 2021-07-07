@@ -133,6 +133,7 @@ public class PlayerListener implements Listener {
 
     public static boolean isDraconicArmor(ItemStack[] armor) {
         return Arrays.stream(armor).allMatch(stack -> !ItemStackUtils.isAirOrNull(stack) &&
+                stack.getType().name().startsWith("LEATHER_") &&
                 stack.getType() == Material.valueOf("LEATHER_" + stack.getType().name().split("_")[1]) &&
                 stack.hasItemMeta() && stack.getItemMeta().hasDisplayName() &&
                 stack.getItemMeta().getDisplayName().equals(Items.valueOf("DRACONIC_" + stack.getType().name().split("_")[1]).stack.getItemMeta().getDisplayName()));

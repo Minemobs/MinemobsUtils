@@ -20,7 +20,7 @@ import java.util.List;
 
 public enum Inventories {
 
-    CUSTOM_ENCHANT_GIVER(new InventoryBuilder(ChatColor.RED + "Custom Enchant Giver").setSize(3 * 9).setCancelled().addItems(CustomEnchants.toEnchantedBook()).onClick(event -> {
+    CUSTOM_ENCHANT_GIVER(new InventoryBuilder(ChatColor.RED + "Custom Enchant Giver").setSize(3).setCancelled().addItems(CustomEnchants.toEnchantedBook()).onClick(event -> {
         if(ItemStackUtils.isAirOrNull(event.getCurrentItem())) return;
         ItemStack is = event.getWhoClicked().getInventory().getItemInMainHand();
         ItemMeta meta = is.getItemMeta();
@@ -38,9 +38,8 @@ public enum Inventories {
         meta.setLore(lore);
         is.setItemMeta(meta);
     }).build()),
-    CUSTOM_ITEMS_GIVER(new InventoryBuilder(ChatColor.RED + "Custom Items Giver", 9 * 3).addItems(Items.getAllItems()).setCancelled().onClick(event -> {
-        event.getWhoClicked().getInventory().addItem(event.getCurrentItem());
-    }).build())
+    CUSTOM_ITEMS_GIVER(new InventoryBuilder(ChatColor.RED + "Custom Items Giver", 3).addItems(Items.getAllItems()).setCancelled().onClick(event ->
+            event.getWhoClicked().getInventory().addItem(event.getCurrentItem())).build()),
     ;
 
     public final Inventory inv;
