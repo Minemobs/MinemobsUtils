@@ -90,7 +90,11 @@ spigot {
     }
 }
 
-task copyFile(type: Copy){
+task copyFile(type: Copy) {
+    /**
+     * Check if it's minemobs's computer
+     */
+    if(InetAddress.localHost.hostName != "DESKTOP-USNU2V8") return
     from file("$buildDir/libs/minemobsutils-1.1.jar")
     into file("E:\\Users\\minemobs\\IdeaProjects\\SpigotProject\\MinemobsUtils\\debug\\spigot\\plugins")
 }
