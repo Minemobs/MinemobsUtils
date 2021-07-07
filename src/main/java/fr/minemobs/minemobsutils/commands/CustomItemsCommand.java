@@ -17,7 +17,7 @@ public class CustomItemsCommand implements CommandExecutor {
             CommandUtils.senderError(sender);
             return false;
         }
-        Inventories.CUSTOM_ITEMS_GIVER.inv.open((Player) sender);
+        ((Player) sender).openInventory(Inventories.CUSTOM_ITEMS_GIVER.inv);
         return true;
     }
 }

@@ -17,7 +17,8 @@ public class CustomEnchantCommand implements CommandExecutor {
             return false;
         }
         Player player = (Player) sender;
-        Inventories.CustomEnchantGiver.inv.open(player);
+        //Inventories.CustomEnchantGiver.inv.open(player);
+        player.openInventory(Inventories.CUSTOM_ENCHANT_GIVER.inv);
         return true;
     }
 }

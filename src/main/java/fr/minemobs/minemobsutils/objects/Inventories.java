@@ -1,5 +1,6 @@
 package fr.minemobs.minemobsutils.objects;
 
+import fr.minemobs.minemobsutils.utils.InventoryBuilder;
 import fr.minemobs.minemobsutils.utils.ItemBuilder;
 import fr.minemobs.minemobsutils.utils.ItemStackUtils;
 import fr.minuskube.inv.ClickableItem;
@@ -10,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -18,53 +20,32 @@ import java.util.List;
 
 public enum Inventories {
 
-    CustomEnchantGiver(SmartInventory.builder().size(3, 9).title(ChatColor.RED + "Custom Enchant Giver").provider(new InventoryProvider(){
-
-        @Override
-        public void init(Player player, InventoryContents contents) {
-            for (CustomEnchants value : CustomEnchants.values()) {
-                contents.add(ClickableItem.of(new ItemBuilder(Material.ENCHANTED_BOOK).setGlow().setDisplayName(StringUtils.capitalize(value.enchantment.getKey().getKey())).build(),
-                        e -> {
-                            if (ItemStackUtils.isAirOrNull(player.getInventory().getItemInMainHand())) return;
-                            e.setCancelled(true);
-                            ItemStack is = player.getInventory().getItemInMainHand();
-                            ItemMeta meta = is.getItemMeta();
-                            List<String> lore = new ArrayList<>();
-                            if(meta.hasLore()) lore = meta.getLore();
-                            String enchantmentLore = ChatColor.GRAY + StringUtils.capitalize(value.enchantment.getKey().getKey()) + " I";
-                            if(meta.hasEnchants() && meta.hasEnchant(value.enchantment)) {
-                                meta.removeEnchant(value.enchantment);
-                                lore.remove(enchantmentLore);
-                            } else {
-                                meta.addEnchant(value.enchantment, 1, true);
-                                lore.add(enchantmentLore);
-                            }
-                            meta.setLore(lore);
-                            is.setItemMeta(meta);
-                        }));
-            }
+    CUSTOM_ENCHANT_GIVER(new InventoryBuilder(ChatColor.RED + "Custom Enchant Giver").setSize(3 * 9).setCancelled().addItems(CustomEnchants.toEnchantedBook()).onClick(event -> {
+        if(ItemStackUtils.isAirOrNull(event.getCurrentItem())) return;
+        ItemStack is = event.getWhoClicked().getInventory().getItemInMainHand();
+        ItemMeta meta = is.getItemMeta();
+        CustomEnchants value = CustomEnchants.valueOf(event.getCurrentItem().getItemMeta().getDisplayName().toUpperCase());
+        List<String> lore = new ArrayList<>();
+        if(meta.hasLore()) lore = meta.getLore();
+        String enchantmentLore = ChatColor.GRAY + StringUtils.capitalize(value.enchantment.getKey().getKey()) + " I";
+        if(meta.hasEnchants() && meta.hasEnchant(value.enchantment)) {
+            meta.removeEnchant(value.enchantment);
+            lore.remove(enchantmentLore);
+        } else {
+            meta.addEnchant(value.enchantment, 1, true);
+            lore.add(enchantmentLore);
         }
-
-        @Override
-        public void update(Player player, InventoryContents contents) {}
+        meta.setLore(lore);
+        is.setItemMeta(meta);
     }).build()),
-    CUSTOM_ITEMS_GIVER(SmartInventory.builder().size(3, 9).title(ChatColor.RED + "Custom Items Giver").provider(new InventoryProvider() {
-
-        @Override
-        public void init(Player player, InventoryContents contents) {
-            for (Items item : Items.values()) {
-                contents.add(ClickableItem.of(item.stack, e -> player.getInventory().addItem(item.stack)));
-            }
-        }
-
-        @Override
-        public void update(Player player, InventoryContents contents) {}
-    }).build()),
+    CUSTOM_ITEMS_GIVER(new InventoryBuilder(ChatColor.RED + "Custom Items Giver", 9 * 3).addItems(Items.getAllItems()).setCancelled().onClick(event -> {
+        event.getWhoClicked().getInventory().addItem(event.getCurrentItem());
+    }).build())
     ;
 
-    public final SmartInventory inv;
+    public final Inventory inv;
 
-    Inventories(SmartInventory inv) {
+    Inventories(Inventory inv) {
         this.inv = inv;
     }
 }

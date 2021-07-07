@@ -1,6 +1,7 @@
 package fr.minemobs.minemobsutils.objects;
 
 import fr.minemobs.minemobsutils.utils.ItemBuilder;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -9,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public enum Items {
 
@@ -38,5 +40,13 @@ public enum Items {
 
     Items(ItemStack stack) {
         this.stack = stack;
+    }
+
+    public static ItemStack[] getAllItems() {
+        List<ItemStack> stacks = new ArrayList<>();
+        for (Items value : Items.values()) {
+            stacks.add(value.stack);
+        }
+        return stacks.toArray(new ItemStack[0]);
     }
 }

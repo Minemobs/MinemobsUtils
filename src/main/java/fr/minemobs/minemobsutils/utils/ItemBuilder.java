@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ItemBuilder {
 
@@ -18,6 +19,10 @@ public class ItemBuilder {
 
     public ItemBuilder(Material mat, int amount) {
         stack = new ItemStack(mat, amount);
+    }
+
+    public ItemBuilder(ItemStack stack) {
+        this.stack = stack;
     }
 
     public ItemMeta getItemMeta() {
