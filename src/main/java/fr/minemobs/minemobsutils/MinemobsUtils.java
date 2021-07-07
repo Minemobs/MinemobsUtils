@@ -68,6 +68,7 @@ public class MinemobsUtils extends JavaPlugin {
         registerCommand("fly", new FlyCommand());
         registerCommand("staffchat", new StaffChatCommand(), "sc");
         registerCommand("nick", new NickCommand());
+        registerCommand("broadcast", new BroadcastCommand(), "bc");
         /*getCommand("afly").setExecutor(new CommandAllowFly());
         getCommand("heal").setExecutor(new CommandHeal());
         getCommand("tpsp").setExecutor(new CommandSpawnPoint());

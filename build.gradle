@@ -16,17 +16,26 @@ repositories {
     maven {
         url = "https://minevolt.net/repo/"
     }
+    maven {
+        name = "codemc-snapshots"
+        url = "https://repo.codemc.org/repository/maven-snapshots/"
+    }
 }
 
 dependencies {
     compileOnly spigot('1.16.5')
     compileOnly 'org.jetbrains:annotations:21.0.1'
     compileOnly 'org.bukkit:craftbukkit:1.16.5-R0.1-SNAPSHOT'
+    compileOnly('net.skinsrestorer:skinsrestorer:14.1.1-SNAPSHOT') {
+        transitive(false)
+    }
 }
 
 spigot {
     authors 'Minemobs'
     apiVersion '1.16'
+    website = "https://github.com/Minemobs/MinemobsUtils"
+    softDepends("SkinsRestorer")
     commands {
         cc {
             aliases 'colorcode', 'chatcolor'
@@ -80,6 +89,12 @@ spigot {
             permission 'minemobsutils.nick'
             permissionMessage missingPermissionMessage
             usage '/<command> [player] <nick>'
+        }
+        broadcast {
+            aliases 'bc'
+            permission 'minemobsutils.broadcast'
+            permissionMessage missingPermissionMessage
+            usage '/<command> <message>'
         }
     }
 
