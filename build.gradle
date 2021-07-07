@@ -76,7 +76,12 @@ spigot {
             aliases 'sc'
             permission 'minemobsutils.mod.chat'
             permissionMessage missingPermissionMessage
-            usage '/<command> [message]'
+            usage '/<command> <message>'
+        }
+        nick {
+            permission 'minemobsutils.nick'
+            permissionMessage missingPermissionMessage
+            usage '/<command> [player] <nick>'
         }
     }
 
