@@ -21,14 +21,12 @@ repositories {
 dependencies {
     compileOnly spigot('1.16.5')
     compileOnly 'org.jetbrains:annotations:21.0.1'
-    compileOnly('fr.minuskube.inv:smart-invs:1.2.7')
     compileOnly 'org.bukkit:craftbukkit:1.16.5-R0.1-SNAPSHOT'
 }
 
 spigot {
     authors 'Minemobs'
     apiVersion '1.16'
-    depends 'SmartInvs'
     commands {
         cc {
             aliases 'colorcode', 'chatcolor'

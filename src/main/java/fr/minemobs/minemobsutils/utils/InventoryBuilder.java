@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 public class InventoryBuilder implements Listener {
 
     private int rows = 3;
-    private final String name;
+    private String name;
     private final List<ItemStack> itemStacks;
     private Consumer<InventoryClickEvent> clickEventConsumer = InventoryEvent::getInventory;
     private boolean cancelEvent = false;
@@ -28,7 +28,7 @@ public class InventoryBuilder implements Listener {
         this.itemStacks = new ArrayList<>();
     }
 
-    public InventoryBuilder(@NotNull String name, @NotNull int rows) {
+    public InventoryBuilder(@NotNull String name, int rows) {
         this.name = name;
         this.itemStacks = new ArrayList<>();
         this.setRows(rows);
@@ -58,13 +58,13 @@ public class InventoryBuilder implements Listener {
         return this;
     }
 
-    public InventoryBuilder addItem(ItemStack itemStack) {
-        this.itemStacks.add(itemStack);
+    public InventoryBuilder addItems(ItemStack... itemStacks) {
+        this.itemStacks.addAll(Arrays.asList(itemStacks));
         return this;
     }
 
-    public InventoryBuilder addItems(ItemStack... itemStacks) {
-        this.itemStacks.addAll(Arrays.asList(itemStacks));
+    public InventoryBuilder setName(String name) {
+        this.name = name;
         return this;
     }
 

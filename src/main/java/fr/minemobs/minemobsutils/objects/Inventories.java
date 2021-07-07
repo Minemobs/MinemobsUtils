@@ -1,16 +1,9 @@
 package fr.minemobs.minemobsutils.objects;
 
 import fr.minemobs.minemobsutils.utils.InventoryBuilder;
-import fr.minemobs.minemobsutils.utils.ItemBuilder;
 import fr.minemobs.minemobsutils.utils.ItemStackUtils;
-import fr.minuskube.inv.ClickableItem;
-import fr.minuskube.inv.SmartInventory;
-import fr.minuskube.inv.content.InventoryContents;
-import fr.minuskube.inv.content.InventoryProvider;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -20,7 +13,7 @@ import java.util.List;
 
 public enum Inventories {
 
-    CUSTOM_ENCHANT_GIVER(new InventoryBuilder(ChatColor.RED + "Custom Enchant Giver").setSize(3).setCancelled().addItems(CustomEnchants.toEnchantedBook()).onClick(event -> {
+    CUSTOM_ENCHANT_GIVER(new InventoryBuilder(ChatColor.RED + "Custom Enchant Giver").setRows(3).setCancelled().addItems(CustomEnchants.toEnchantedBook()).onClick(event -> {
         if(ItemStackUtils.isAirOrNull(event.getCurrentItem())) return;
         ItemStack is = event.getWhoClicked().getInventory().getItemInMainHand();
         ItemMeta meta = is.getItemMeta();
