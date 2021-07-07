@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 
 public class InventoryBuilder implements Listener {
 
-    private int size = 3;
+    private int rows = 3;
     private final String name;
     private final List<ItemStack> itemStacks;
     private Consumer<InventoryClickEvent> clickEventConsumer = InventoryEvent::getInventory;
@@ -28,10 +28,10 @@ public class InventoryBuilder implements Listener {
         this.itemStacks = new ArrayList<>();
     }
 
-    public InventoryBuilder(@NotNull String name, @NotNull int size) {
+    public InventoryBuilder(@NotNull String name, @NotNull int rows) {
         this.name = name;
         this.itemStacks = new ArrayList<>();
-        this.setSize(size);
+        this.setRows(rows);
     }
 
     public InventoryBuilder onClick(Consumer<InventoryClickEvent> eventConsumer) {
@@ -46,15 +46,15 @@ public class InventoryBuilder implements Listener {
 
     @EventHandler
     private void onClick(InventoryClickEvent event) {
-        if(event.getInventory().getSize() != size) return;
+        if(event.getInventory().getSize() != rows) return;
         if(!event.getView().getTitle().equalsIgnoreCase(name)) return;
         event.setCancelled(cancelEvent);
         this.clickEventConsumer.accept(event);
     }
 
-    public InventoryBuilder setSize(int size) {
-        if(size > 6 || size < 1) size = 3;
-        this.size = size;
+    public InventoryBuilder setRows(int rows) {
+        if(rows > 6 || rows < 1) rows = 3;
+        this.rows = rows;
         return this;
     }
 
@@ -70,7 +70,7 @@ public class InventoryBuilder implements Listener {
 
     public Inventory build() {
         Bukkit.getServer().getPluginManager().registerEvents(this, MinemobsUtils.getInstance());
-        Inventory inv = Bukkit.createInventory(null, size * 9, name);
+        Inventory inv = Bukkit.createInventory(null, rows * 9, name);
         itemStacks.forEach(inv::addItem);
         return inv;
     }
