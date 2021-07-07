@@ -44,7 +44,7 @@ public class NickCommand implements CommandExecutor {
             if(args[0].equalsIgnoreCase("reset")) {
                 player.setDisplayName(player.getName());
                 player.setPlayerListName(player.getName());
-                player.sendMessage(MinemobsUtils.ebheader + player.getName() + "'s nickname has been reset.");
+                player.sendMessage(MinemobsUtils.ebheader + "Your nickname has been reset.");
                 setSkin(player);
                 return true;
             }
