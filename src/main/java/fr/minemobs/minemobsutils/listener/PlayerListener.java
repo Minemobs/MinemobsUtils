@@ -69,6 +69,7 @@ public class PlayerListener implements Listener {
             }
         } else {
             if(ItemStackUtils.isSimilar(event.getItem(), Items.BATTERY.stack)) {
+                event.setCancelled(true);
                 Optional<ItemStack> opIs = findFirstDraconicArmorPiece(player.getInventory().getArmorContents());
                 if(!opIs.isPresent()) {
                     player.sendMessage(MinemobsUtils.ebheader + "All your armors are already charged or you don't have a Draconic armor on you!");
