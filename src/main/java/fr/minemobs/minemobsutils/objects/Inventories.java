@@ -3,7 +3,6 @@ package fr.minemobs.minemobsutils.objects;
 import fr.minemobs.minemobsutils.utils.InventoryBuilder;
 import fr.minemobs.minemobsutils.utils.ItemStackUtils;
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
