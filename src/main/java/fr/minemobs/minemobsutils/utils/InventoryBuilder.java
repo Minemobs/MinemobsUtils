@@ -54,17 +54,14 @@ public class InventoryBuilder implements Listener {
 
     @EventHandler
     private void onClick(InventoryClickEvent event) {
-        if(event.getInventory().getSize() != getSize()) return;
-        if(!event.getView().getTitle().equalsIgnoreCase(name)) return;
+        if(event.getInventory().getSize() != getSize() || !event.getView().getTitle().equalsIgnoreCase(name)) return;
         event.setCancelled(cancelEvent);
         this.clickEventConsumer.accept(event);
     }
 
     @EventHandler
     private void onOpen(InventoryOpenEvent event) {
-        if(event.getInventory().getType() != InventoryType.CHEST) return;
-        if(event.getInventory().getSize() != getSize()) return;
-        if(!event.getView().getTitle().equalsIgnoreCase(name)) return;
+        if(event.getInventory().getType() != InventoryType.CHEST || event.getInventory().getSize() != getSize() || !event.getView().getTitle().equalsIgnoreCase(name)) return;
         this.openEventConsumer.accept(event);
     }
 
