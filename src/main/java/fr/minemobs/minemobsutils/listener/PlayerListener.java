@@ -18,8 +18,10 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -40,10 +42,10 @@ public class PlayerListener implements Listener {
     public void onChat(AsyncPlayerChatEvent event) {
         String perm = MinemobsUtils.pluginID + ".mod.chat";
         Player player = event.getPlayer();
-        if(!event.getMessage().startsWith("*")) return;
-        if(!player.hasPermission(perm)) return;
-        StaffChatCommand.sendMessageToModerators(player.getUniqueId(), event.getMessage());
-        event.setCancelled(true);
+        if (event.getMessage().startsWith("*") && player.hasPermission(perm)) {
+            StaffChatCommand.sendMessageToModerators(player.getUniqueId(), event.getMessage());
+            event.setCancelled(true);
+        }
     }
 
     /**

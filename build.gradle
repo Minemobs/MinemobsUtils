@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'kr.entree.spigradle' version '2.2.4'
+    id "com.github.johnrengelman.shadow" version "5.1.0"
 }
 
 group = 'fr.minemobs'
@@ -19,6 +20,10 @@ repositories {
     maven {
         name = "codemc-snapshots"
         url = "https://repo.codemc.org/repository/maven-snapshots/"
+    }
+    maven {
+        name 'm2-dv8tion'
+        url 'https://m2.dv8tion.net/releases'
     }
 }
 
@@ -110,8 +115,8 @@ task copyFile(type: Copy) {
      * Check if it's minemobs's computer
      */
     if(InetAddress.localHost.hostName != "DESKTOP-USNU2V8") return
-    from file("$buildDir/libs/minemobsutils-1.1.jar")
+    from file("$buildDir/libs/minemobsutils-1.1-all.jar")
     into file("E:\\Users\\minemobs\\IdeaProjects\\SpigotProject\\MinemobsUtils\\debug\\spigot\\plugins")
 }
 
-build.finalizedBy(copyFile)
+shadowJar.finalizedBy(copyFile)

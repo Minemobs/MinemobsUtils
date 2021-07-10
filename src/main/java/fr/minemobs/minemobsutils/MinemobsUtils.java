@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 public class MinemobsUtils extends JavaPlugin {
 
     private static MinemobsUtils instance;
+    private final FileConfiguration config = getConfig();
     public static final String ebheader = String.format("%s[%sMinemobs Utils%s]%s ", ChatColor.DARK_GRAY, ChatColor.DARK_RED, ChatColor.DARK_GRAY, ChatColor.RESET);
     public static final String pluginID = "minemobsutils";
 
@@ -38,6 +40,10 @@ public class MinemobsUtils extends JavaPlugin {
         registerCommands();
         registerCrafts();
         CustomEnchants.register();
+    }
+
+    private boolean isNullOrDefault(String configName) {
+        return config.get(configName) == null || config.getDefaults().get(configName) == config.get(configName);
     }
 
     private void registerCrafts() {
