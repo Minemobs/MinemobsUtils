@@ -1,6 +1,7 @@
 package fr.minemobs.minemobsutils;
 
 import fr.minemobs.minemobsutils.commands.*;
+import fr.minemobs.minemobsutils.listener.CraftListener;
 import fr.minemobs.minemobsutils.listener.EnchantmentListener;
 import fr.minemobs.minemobsutils.listener.GrapplingHookListener;
 import fr.minemobs.minemobsutils.listener.PlayerListener;
@@ -60,6 +61,7 @@ public class MinemobsUtils extends JavaPlugin {
         pm.registerEvents(new PlayerListener(), this);
         pm.registerEvents(new GrapplingHookListener(), this);
         pm.registerEvents(new EnchantmentListener(), this);
+        pm.registerEvents(new CraftListener(), this);
     }
 
     private void registerCommands() {

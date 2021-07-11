@@ -44,6 +44,9 @@ public enum Recipes {
     IRON_PLATE(new ShapelessRecipe(new NamespacedKey(MinemobsUtils.getInstance(), "iron_plate"), Items.IRON_PLATE.stack)
             .addIngredient(Material.IRON_BLOCK)
             .addIngredient(new RecipeChoice.ExactChoice(Items.HAMMER.stack))),
+    PORTABLE_CRAFTING_TABLE(new ShapelessRecipe(new NamespacedKey(MinemobsUtils.getInstance(), "portable_crafting_table"), Items.CRAFTING_TABLE_PORTABLE.stack)
+            .addIngredient(Material.STICK)
+            .addIngredient(Material.CRAFTING_TABLE)),
     ;
 
     private final ShapedRecipe recipe;

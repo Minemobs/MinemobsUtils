@@ -7,31 +7,23 @@ plugins {
 group = 'fr.minemobs'
 version = '1.1'
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+compileJava.options.encoding = compileTestJava.options.encoding = javadoc.options.encoding = "UTF-8"
 
 String missingPermissionMessage = '§8[§4Minemobs Utils§8] §4You do not have the permission!'
 
 repositories {
     mavenCentral()
-    maven {
-        url = "https://minevolt.net/repo/"
-    }
-    maven {
-        name = "codemc-snapshots"
-        url = "https://repo.codemc.org/repository/maven-snapshots/"
-    }
-    maven {
-        name 'm2-dv8tion'
-        url 'https://m2.dv8tion.net/releases'
+        maven {
+        name = 'CodeMC'
+        url = 'https://repo.codemc.org/repository/maven-public/'
     }
 }
 
 dependencies {
     compileOnly spigot('1.16.5')
     compileOnly 'org.jetbrains:annotations:21.0.1'
-    compileOnly 'org.bukkit:craftbukkit:1.16.5-R0.1-SNAPSHOT'
-    compileOnly('net.skinsrestorer:skinsrestorer:14.1.1-SNAPSHOT') {
+    compileOnly('net.skinsrestorer:skinsrestorer:14.1.1') {
         transitive(false)
     }
 }
@@ -110,13 +102,19 @@ spigot {
     }
 }
 
+shadowJar {
+    archiveClassifier.set('')
+    //relocate 'de.tr7zw.changeme', 'fr.minemobs.relocate'
+}
+
 task copyFile(type: Copy) {
     /**
      * Check if it's minemobs's computer
      */
     if(InetAddress.localHost.hostName != "DESKTOP-USNU2V8") return
-    from file("$buildDir/libs/minemobsutils-1.1-all.jar")
+    from file("$buildDir/libs/minemobsutils-1.1.jar")
     into file("E:\\Users\\minemobs\\IdeaProjects\\SpigotProject\\MinemobsUtils\\debug\\spigot\\plugins")
 }
 
+build.finalizedBy(copyFile)
 shadowJar.finalizedBy(copyFile)

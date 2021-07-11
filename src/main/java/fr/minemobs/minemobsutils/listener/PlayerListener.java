@@ -5,11 +5,9 @@ import fr.minemobs.minemobsutils.commands.StaffChatCommand;
 import fr.minemobs.minemobsutils.event.ArmorEvent;
 import fr.minemobs.minemobsutils.objects.Items;
 import fr.minemobs.minemobsutils.objects.Recipes;
+import fr.minemobs.minemobsutils.utils.Cooldown;
 import fr.minemobs.minemobsutils.utils.ItemStackUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,10 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -78,8 +73,27 @@ public class PlayerListener implements Listener {
                     return;
                 }
                 chargeArmor(player, opIs.get());
+            } else if(ItemStackUtils.isSimilar(event.getItem(), Items.CRAFTING_TABLE_PORTABLE.stack)) {
+                player.openWorkbench(null, true);
             }
         }
+    }
+
+    @EventHandler
+    public void onFish(PlayerFishEvent event) {
+        if(event.getState() != PlayerFishEvent.State.REEL_IN ||
+                !ItemStackUtils.isSimilar(event.getPlayer().getInventory().getItemInMainHand(), Items.NEW_GRAPPLING_HOOK.stack)) return;
+        Player player = event.getPlayer();
+        if(Cooldown.isInCooldown(player.getUniqueId(), Cooldown.CooldownType.GRAPPLING_HOOK.name)) {
+            player.sendMessage(Cooldown.cooldownMessage(player.getUniqueId(), Cooldown.CooldownType.GRAPPLING_HOOK));
+            return;
+        }
+        Location playerLoc = player.getLocation();
+        Location hookLoc = event.getHook().getLocation();
+        Location change = hookLoc.subtract(playerLoc);
+        player.setVelocity(change.toVector().multiply(.3));
+        Cooldown c = new Cooldown(player.getUniqueId(), Cooldown.CooldownType.GRAPPLING_HOOK.name, Cooldown.CooldownType.GRAPPLING_HOOK.defaultTime);
+        c.start();
     }
 
     @EventHandler
