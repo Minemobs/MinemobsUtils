@@ -2,8 +2,8 @@ package fr.minemobs.minemobsutils;
 
 import fr.minemobs.minemobsutils.commands.*;
 import fr.minemobs.minemobsutils.listener.CraftListener;
+import fr.minemobs.minemobsutils.listener.DynamiteListener;
 import fr.minemobs.minemobsutils.listener.EnchantmentListener;
-import fr.minemobs.minemobsutils.listener.GrapplingHookListener;
 import fr.minemobs.minemobsutils.listener.PlayerListener;
 import fr.minemobs.minemobsutils.objects.CustomEnchants;
 import fr.minemobs.minemobsutils.objects.Recipes;
@@ -59,9 +59,9 @@ public class MinemobsUtils extends JavaPlugin {
     private void registerListeners() {
         PluginManager pm = Bukkit.getPluginManager();
         pm.registerEvents(new PlayerListener(), this);
-        pm.registerEvents(new GrapplingHookListener(), this);
         pm.registerEvents(new EnchantmentListener(), this);
         pm.registerEvents(new CraftListener(), this);
+        pm.registerEvents(new DynamiteListener(), this);;
     }
 
     private void registerCommands() {

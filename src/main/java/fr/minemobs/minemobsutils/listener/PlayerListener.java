@@ -16,7 +16,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
-import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -82,9 +81,9 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onFish(PlayerFishEvent event) {
         if(event.getState() != PlayerFishEvent.State.REEL_IN ||
-                !ItemStackUtils.isSimilar(event.getPlayer().getInventory().getItemInMainHand(), Items.NEW_GRAPPLING_HOOK.stack)) return;
+                !ItemStackUtils.isSimilar(event.getPlayer().getInventory().getItemInMainHand(), Items.GRAPPLING_HOOK.stack)) return;
         Player player = event.getPlayer();
-        if(Cooldown.isInCooldown(player.getUniqueId(), Cooldown.CooldownType.GRAPPLING_HOOK.name)) {
+        if(Cooldown.isInCooldown(player.getUniqueId(), Cooldown.CooldownType.GRAPPLING_HOOK.name) && !player.hasPermission(MinemobsUtils.pluginID + ".ignorecooldown")) {
             player.sendMessage(Cooldown.cooldownMessage(player.getUniqueId(), Cooldown.CooldownType.GRAPPLING_HOOK));
             return;
         }
@@ -92,6 +91,7 @@ public class PlayerListener implements Listener {
         Location hookLoc = event.getHook().getLocation();
         Location change = hookLoc.subtract(playerLoc);
         player.setVelocity(change.toVector().multiply(.3));
+        if(player.hasPermission(MinemobsUtils.pluginID + ".ignorecooldown")) return;
         Cooldown c = new Cooldown(player.getUniqueId(), Cooldown.CooldownType.GRAPPLING_HOOK.name, Cooldown.CooldownType.GRAPPLING_HOOK.defaultTime);
         c.start();
     }

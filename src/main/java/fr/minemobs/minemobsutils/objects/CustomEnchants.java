@@ -21,6 +21,7 @@ public enum CustomEnchants {
     TEAM_TREE(new CustomEnchantmentWrapper("team_tree", "Team Tree", 1)),
     EXPLOSION(new CustomEnchantmentWrapper("explosion", "Explosion", 1)),
     HAMMER(new CustomEnchantmentWrapper("hammer", "Hammer", 1)),
+    FURNACE(new CustomEnchantmentWrapper("furnace", "Furnace", 1)),
     ;
 
     public final Enchantment enchantment;

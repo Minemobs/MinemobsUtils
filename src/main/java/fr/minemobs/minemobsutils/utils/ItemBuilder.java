@@ -1,17 +1,22 @@
 package fr.minemobs.minemobsutils.utils;
 
+import fr.minemobs.minemobsutils.MinemobsUtils;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
+import org.bukkit.util.Consumer;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class ItemBuilder {
+public class ItemBuilder implements Listener {
 
     private ItemStack stack;
+    private Consumer<PlayerInteractEvent> interactConsumer;
 
     public ItemBuilder(Material mat) {
         stack = new ItemStack(mat);
@@ -52,6 +57,17 @@ public class ItemBuilder {
             }
         }
         return this;
+    }
+
+    public ItemBuilder onInteract(Consumer<PlayerInteractEvent> eventConsumer) {
+        this.interactConsumer = eventConsumer;
+        return this;
+    }
+
+    @EventHandler
+    private void onInteract(PlayerInteractEvent event) {
+        if(!ItemStackUtils.isSimilar(event.getItem(), this.stack) || interactConsumer == null) return;
+        interactConsumer.accept(event);
     }
 
     public ItemBuilder setGlow() {
@@ -157,6 +173,7 @@ public class ItemBuilder {
     }
 
     public ItemStack build() {
+        if(interactConsumer != null) Bukkit.getServer().getPluginManager().registerEvents(this, MinemobsUtils.getInstance());
         return stack;
     }
 }
