@@ -39,4 +39,27 @@ public class ItemStackUtils {
     public static boolean isAirOrNull(ItemStack item){
         return item == null || item.getType().isAir();
     }
+    
+    public static Material randomBanner(){
+        final List<Material> banners = new ArrayList<>();
+        for(Material banner : Material.values()){
+            if(banner.name().endsWith("_BANNER") && !banner.name().endsWith("_WALL_BANNER")){
+                banners.add(banner);
+            }
+        }
+        return banners.get(new Random().nextInt(banners.size()));
+    }
+
+    public static Material randomSkull(){
+        final List<Material> skulls = new ArrayList<>();
+        for(Material skull : Material.values()){
+            if(skull.name().endsWith("_HEAD") && !skull.name().endsWith("_WALL_HEAD")){
+                skulls.add(skull);
+            }
+            if(skull.name().endsWith("_SKULL") && !skull.name().endsWith("_WALL_SKULL")){
+                skulls.add(skull);
+            }
+        }
+        return skulls.get(new Random().nextInt(skulls.size()));
+    }
 }
