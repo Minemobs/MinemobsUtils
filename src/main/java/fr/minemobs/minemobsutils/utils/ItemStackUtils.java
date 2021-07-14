@@ -21,7 +21,8 @@ public class ItemStackUtils {
 
 
     public static boolean isAnArmor(ItemStack is) {
-        return Arrays.stream(armors).anyMatch(material -> material == is.getType());
+        return is.getType().name().endsWith("_HELMET") || is.getType().name().endsWith("_CHESTPLATE") || is.getType().name().endsWith("_LEGGINGS") ||
+                is.getType().name().endsWith("_BOOTS");
     }
 
     public static boolean isSimilar(ItemStack first, ItemStack second){

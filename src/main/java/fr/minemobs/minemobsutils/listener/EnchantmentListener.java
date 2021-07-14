@@ -23,7 +23,6 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -141,21 +140,7 @@ public class EnchantmentListener implements Listener {
         if(ItemStackUtils.isAirOrNull(inv.getItemInMainHand())) return;
         if(!inv.getItemInMainHand().hasItemMeta()) return;
         if(!inv.getItemInMainHand().getItemMeta().hasEnchant(CustomEnchants.FURNACE.enchantment)) return;
-        //Iterator<Recipe> recipes = Bukkit.getServer().recipeIterator();
         List<Recipe> recipes = ImmutableList.copyOf(Bukkit.recipeIterator());
-        /*while (recipes.hasNext()) {
-            Recipe rec = recipes.next();
-            if(!(rec instanceof FurnaceRecipe)) return;
-            FurnaceRecipe recipe = (FurnaceRecipe) rec;
-            for (Item item : event.getItems()) {
-                if(recipe.getInputChoice().test(item.getItemStack())) {
-                    ItemStack drop = recipe.getResult();
-                    drop.setAmount(item.getItemStack().getAmount());
-                    event.getItems().remove(item);
-                    event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation().add(.5, .5, .5), drop);
-                }
-            }
-        }*/
         for (Recipe _recipe : recipes.stream().filter(recipe -> recipe instanceof FurnaceRecipe).collect(Collectors.toList())) {
             FurnaceRecipe recipe = (FurnaceRecipe) _recipe;
             for (Item item : event.getItems().stream().filter(item -> recipe.getInputChoice().test(item.getItemStack())).collect(Collectors.toList())) {
@@ -170,6 +155,7 @@ public class EnchantmentListener implements Listener {
                     inv.addItem(drop);
                     return;
                 }
+                event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation().add(.5, .5, .5), drop);
             }
         }
     }

@@ -92,7 +92,7 @@ public class PlayerListener implements Listener {
         Location change = hookLoc.subtract(playerLoc);
         player.setVelocity(change.toVector().multiply(.3));
         if(player.hasPermission(MinemobsUtils.pluginID + ".ignorecooldown")) return;
-        Cooldown c = new Cooldown(player.getUniqueId(), Cooldown.CooldownType.GRAPPLING_HOOK.name, Cooldown.CooldownType.GRAPPLING_HOOK.defaultTime);
+        Cooldown c = new Cooldown(player.getUniqueId(), Cooldown.CooldownType.GRAPPLING_HOOK);
         c.start();
     }
 

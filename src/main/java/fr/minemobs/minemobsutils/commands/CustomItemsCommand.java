@@ -2,7 +2,6 @@ package fr.minemobs.minemobsutils.commands;
 
 import fr.minemobs.minemobsutils.objects.Inventories;
 import fr.minemobs.minemobsutils.utils.CommandUtils;
-import fr.minemobs.minemobsutils.objects.Items;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

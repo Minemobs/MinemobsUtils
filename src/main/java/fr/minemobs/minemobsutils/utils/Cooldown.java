@@ -43,6 +43,14 @@ public class Cooldown {
         this.timeInSeconds = timeInSeconds;
     }
 
+    public Cooldown(UUID id, CooldownType cooldownType, int timeInSeconds) {
+        this(id, cooldownType.name, timeInSeconds);
+    }
+
+    public Cooldown(UUID id, CooldownType cooldownType) {
+        this(id, cooldownType.name, cooldownType.defaultTime);
+    }
+
     public static boolean isInCooldown(UUID id, String cooldownName) {
         if(getTimeLeft(id, cooldownName) >= 1) {
             return true;

@@ -1,6 +1,5 @@
 package fr.minemobs.minemobsutils.listener;
 
-import fr.minemobs.minemobsutils.MinemobsUtils;
 import fr.minemobs.minemobsutils.objects.Items;
 import fr.minemobs.minemobsutils.utils.ItemStackUtils;
 import org.bukkit.Bukkit;

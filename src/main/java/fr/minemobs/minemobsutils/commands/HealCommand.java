@@ -53,7 +53,7 @@ public class HealCommand implements CommandExecutor {
             target.sendMessage(MinemobsUtils.ebheader + ChatColor.GREEN + "You have been healed");
         }
         if(!player.hasPermission(MinemobsUtils.pluginID + ".ignorecooldown")) {
-            Cooldown cooldown = new Cooldown(player.getUniqueId(), Cooldown.CooldownType.HEAL_FEED_COMMAND.name, Cooldown.CooldownType.HEAL_FEED_COMMAND.defaultTime);
+            Cooldown cooldown = new Cooldown(player.getUniqueId(), Cooldown.CooldownType.HEAL_FEED_COMMAND);
             cooldown.start();
         }
         return true;
