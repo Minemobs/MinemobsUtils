@@ -6,9 +6,9 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * @author minemobs
@@ -38,25 +38,14 @@ public class ItemStackUtils {
     }
     
     public static Material randomBanner(){
-        final List<Material> banners = new ArrayList<>();
-        for(Material banner : Material.values()){
-            if(banner.name().endsWith("_BANNER") && !banner.name().endsWith("_WALL_BANNER")){
-                banners.add(banner);
-            }
-        }
+        List<Material> banners = Arrays.stream(Material.values()).filter(banner -> banner.name().endsWith("_BANNER") && !banner.name().endsWith("_WALL_BANNER"))
+                .collect(Collectors.toList());
         return banners.get(new Random().nextInt(banners.size()));
     }
 
     public static Material randomSkull(){
-        final List<Material> skulls = new ArrayList<>();
-        for(Material skull : Material.values()){
-            if(skull.name().endsWith("_HEAD") && !skull.name().endsWith("_WALL_HEAD")){
-                skulls.add(skull);
-            }
-            if(skull.name().endsWith("_SKULL") && !skull.name().endsWith("_WALL_SKULL")){
-                skulls.add(skull);
-            }
-        }
+        List<Material> skulls = Arrays.stream(Material.values()).filter(material -> (material.name().endsWith("_HEAD") && !material.name().endsWith("_WALL_HEAD")) ||
+                (material.name().endsWith("_SKULL") && !material.name().endsWith("_WALL_SKULL"))).collect(Collectors.toList());
         return skulls.get(new Random().nextInt(skulls.size()));
     }
 }
