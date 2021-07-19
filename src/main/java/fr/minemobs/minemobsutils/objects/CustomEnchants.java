@@ -23,6 +23,7 @@ public enum CustomEnchants {
     EXPLOSION(new CustomEnchantmentWrapper("explosion", "Explosion", 1, EnchantmentTarget.WEAPON)),
     HAMMER(new CustomEnchantmentWrapper("hammer", "Hammer", 1, EnchantmentTarget.TOOL)),
     FURNACE(new CustomEnchantmentWrapper("furnace", "Furnace", 1, EnchantmentTarget.TOOL)),
+    TRASHER(new CustomEnchantmentWrapper("trasher", "Trasher", 1, EnchantmentTarget.TOOL)),
     ;
 
     public final Enchantment enchantment;

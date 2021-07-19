@@ -10,6 +10,7 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDropItemEvent;
@@ -27,6 +28,23 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class EnchantmentListener implements Listener {
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    private void trasherBlockBreakListener(BlockDropItemEvent event) {
+        PlayerInventory inv = event.getPlayer().getInventory();
+        if(ItemStackUtils.isAirOrNull(inv.getItemInMainHand())) return;
+        if(!inv.getItemInMainHand().hasItemMeta()) return;
+        if(!inv.getItemInMainHand().getItemMeta().hasEnchant(CustomEnchants.TRASHER.enchantment)) return;
+        if(event.getBlock().getState() instanceof Container) return;
+        List<Item> drops = event.getItems();
+        drops.removeIf(drop -> drop.getItemStack().getType() == Material.STONE ||
+                drop.getItemStack().getType().name().endsWith("DIRT") || drop.getItemStack().getType() == Material.PODZOL ||
+                drop.getItemStack().getType() == Material.NETHERRACK || drop.getItemStack().getType() == Material.DIORITE ||
+                drop.getItemStack().getType() == Material.GRANITE ||
+                drop.getItemStack().getType() == Material.GRASS_PATH ||
+                drop.getItemStack().getType().name().endsWith("_SEEDS") ||
+                drop.getItemStack().getType().name().startsWith("SAND"));
+    }
 
     @EventHandler
     private void telepathyBlockBreakListener(BlockBreakEvent event) {

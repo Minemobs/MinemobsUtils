@@ -61,7 +61,7 @@ public class MinemobsUtils extends JavaPlugin {
         pm.registerEvents(new PlayerListener(), this);
         pm.registerEvents(new EnchantmentListener(), this);
         pm.registerEvents(new CraftListener(), this);
-        pm.registerEvents(new DynamiteListener(), this);;
+        pm.registerEvents(new DynamiteListener(), this);
     }
 
     private void registerCommands() {

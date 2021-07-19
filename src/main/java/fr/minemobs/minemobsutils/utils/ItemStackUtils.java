@@ -26,11 +26,17 @@ public class ItemStackUtils {
         if(isAirOrNull(first) || isAirOrNull(second)) return false;
         ItemMeta im1 = first.getItemMeta();
         ItemMeta im2 = second.getItemMeta();
-        if(!(im1 instanceof Damageable && im2 instanceof Damageable)) return false;
+        /*if(!(im1 instanceof Damageable && im2 instanceof Damageable)) return false;
         ((Damageable) im1).setDamage(((Damageable) im2).getDamage());
         first.setItemMeta(im1);
         second.setItemMeta(im2);
-        return second.isSimilar(first);
+        return second.isSimilar(first);*/
+        if(im1 instanceof Damageable && im2 instanceof Damageable) {
+            ((Damageable) im1).setDamage(((Damageable) im2).getDamage());
+        }
+        first.setItemMeta(im1);
+        second.setItemMeta(im2);
+        return first.isSimilar(second);
     }
 
     public static boolean isAirOrNull(ItemStack item){

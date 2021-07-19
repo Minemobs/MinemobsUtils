@@ -15,7 +15,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -63,8 +66,9 @@ public class PlayerListener implements Listener {
                 player.setVelocity(player.getLocation().getDirection().multiply(4));
                 player.setVelocity(new Vector(player.getVelocity().getX(), 1.0D, player.getVelocity().getZ()));
             }
-        } else {
-            if(ItemStackUtils.isSimilar(event.getItem(), Items.BATTERY.stack)) {
+        } else if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            if(ItemStackUtils.isAirOrNull(event.getItem())) return;
+            if(event.getItem().isSimilar(Items.BATTERY.stack)) {
                 event.setCancelled(true);
                 Optional<ItemStack> opIs = findFirstDraconicArmorPiece(player.getInventory().getArmorContents());
                 if(!opIs.isPresent()) {
@@ -72,7 +76,7 @@ public class PlayerListener implements Listener {
                     return;
                 }
                 chargeArmor(player, opIs.get());
-            } else if(ItemStackUtils.isSimilar(event.getItem(), Items.CRAFTING_TABLE_PORTABLE.stack)) {
+            } else if(event.getItem().isSimilar(Items.CRAFTING_TABLE_PORTABLE.stack)) {
                 player.openWorkbench(null, true);
             }
         }

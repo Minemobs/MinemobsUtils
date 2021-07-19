@@ -22,7 +22,8 @@ public class DynamiteListener implements Listener {
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) {
-            if(!ItemStackUtils.isSimilar(event.getItem(), Items.DYNAMITE.stack)) return;
+            if(ItemStackUtils.isAirOrNull(event.getItem())) return;
+            if(!event.getItem().isSimilar(Items.DYNAMITE.stack)) return;
             FallingBlock tnt = event.getPlayer().getWorld().spawnFallingBlock(event.getPlayer().getEyeLocation(), Bukkit.createBlockData(Material.TNT));
             tnt.setDropItem(false);
             thrownedTnt.add(tnt);
