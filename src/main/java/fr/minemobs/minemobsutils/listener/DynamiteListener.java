@@ -28,6 +28,7 @@ public class DynamiteListener implements Listener {
             thrownedTnt.add(tnt);
             tnt.setVelocity(event.getPlayer().getLocation().getDirection().multiply(1.5));
             event.setCancelled(true);
+            event.getItem().setAmount(event.getItem().getAmount() - 1);
         }
     }
 
@@ -35,7 +36,7 @@ public class DynamiteListener implements Listener {
     public void onFall(EntityChangeBlockEvent event) {
         if(event.getEntityType() != EntityType.FALLING_BLOCK) return;
         if(!thrownedTnt.contains(event.getEntity())) return;
-        event.getEntity().getWorld().createExplosion(event.getEntity().getLocation(), 50, false, false, event.getEntity());
+        event.getEntity().getWorld().createExplosion(event.getEntity().getLocation(), 15, false, true, event.getEntity());
         event.setCancelled(true);
         event.getEntity().remove();
         thrownedTnt.remove(event.getEntity());

@@ -1,5 +1,6 @@
 package fr.minemobs.minemobsutils.objects;
 
+import fr.minemobs.minemobsutils.MinemobsUtils;
 import fr.minemobs.minemobsutils.utils.InventoryBuilder;
 import fr.minemobs.minemobsutils.utils.ItemStackUtils;
 import org.apache.commons.lang.StringUtils;
@@ -25,6 +26,10 @@ public enum Inventories {
             meta.removeEnchant(value.enchantment);
             lore.remove(enchantmentLore);
         } else {
+            if(!value.enchantment.canEnchantItem(is)) {
+                event.getWhoClicked().sendMessage(MinemobsUtils.ebheader + "You cannot enchant this item with " + value.enchantment.getKey().getKey());
+                return;
+            }
             meta.addEnchant(value.enchantment, 1, true);
             lore.add(enchantmentLore);
         }

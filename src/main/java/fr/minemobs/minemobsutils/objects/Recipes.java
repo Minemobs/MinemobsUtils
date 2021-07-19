@@ -47,6 +47,9 @@ public enum Recipes {
     PORTABLE_CRAFTING_TABLE(new ShapelessRecipe(new NamespacedKey(MinemobsUtils.getInstance(), "portable_crafting_table"), Items.CRAFTING_TABLE_PORTABLE.stack)
             .addIngredient(Material.STICK)
             .addIngredient(Material.CRAFTING_TABLE)),
+    DYNAMITE(new ShapelessRecipe(new NamespacedKey(MinemobsUtils.getInstance(), "dynamite"), Items.DYNAMITE.stack)
+            .addIngredient(2, Material.STRING)
+            .addIngredient(4, Material.TNT)),
     ;
 
     private final ShapedRecipe recipe;

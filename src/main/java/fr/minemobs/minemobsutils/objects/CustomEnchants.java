@@ -6,6 +6,7 @@ import fr.minemobs.minemobsutils.utils.ItemBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Field;
@@ -16,12 +17,12 @@ import java.util.stream.Collectors;
 
 public enum CustomEnchants {
 
-    TELEPATHY(new CustomEnchantmentWrapper("telepathy", "Telepathy", 1)),
-    ZEUS(new CustomEnchantmentWrapper("zeus", "Zeus", 1)),
-    TEAM_TREE(new CustomEnchantmentWrapper("team_tree", "Team Tree", 1)),
-    EXPLOSION(new CustomEnchantmentWrapper("explosion", "Explosion", 1)),
-    HAMMER(new CustomEnchantmentWrapper("hammer", "Hammer", 1)),
-    FURNACE(new CustomEnchantmentWrapper("furnace", "Furnace", 1)),
+    TELEPATHY(new CustomEnchantmentWrapper("telepathy", "Telepathy", 1, EnchantmentTarget.BREAKABLE)),
+    ZEUS(new CustomEnchantmentWrapper("zeus", "Zeus", 1, EnchantmentTarget.WEAPON)),
+    TEAM_TREE(new CustomEnchantmentWrapper("team_tree", "Team Tree", 1, EnchantmentTarget.WEAPON)),
+    EXPLOSION(new CustomEnchantmentWrapper("explosion", "Explosion", 1, EnchantmentTarget.WEAPON)),
+    HAMMER(new CustomEnchantmentWrapper("hammer", "Hammer", 1, EnchantmentTarget.TOOL)),
+    FURNACE(new CustomEnchantmentWrapper("furnace", "Furnace", 1, EnchantmentTarget.TOOL)),
     ;
 
     public final Enchantment enchantment;

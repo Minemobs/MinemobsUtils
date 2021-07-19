@@ -10,11 +10,13 @@ public class CustomEnchantmentWrapper extends Enchantment {
 
     private final String name;
     private final int maxLvl;
+    private final EnchantmentTarget target;
 
-    public CustomEnchantmentWrapper(String namespace, String name, int maxLvl) {
+    public CustomEnchantmentWrapper(String namespace, String name, int maxLvl, EnchantmentTarget target) {
         super(NamespacedKey.minecraft(namespace));
         this.name = name;
         this.maxLvl = maxLvl;
+        this.target = target;
     }
 
     @NotNull
@@ -37,7 +39,7 @@ public class CustomEnchantmentWrapper extends Enchantment {
     @NotNull
     @Override
     public EnchantmentTarget getItemTarget() {
-        return null;
+        return target;
     }
 
     @Override
@@ -58,6 +60,6 @@ public class CustomEnchantmentWrapper extends Enchantment {
 
     @Override
     public boolean canEnchantItem(@NotNull ItemStack item) {
-        return false;
+        return target.includes(item);
     }
 }
