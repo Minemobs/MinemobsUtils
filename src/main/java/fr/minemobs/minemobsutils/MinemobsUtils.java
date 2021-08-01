@@ -77,16 +77,6 @@ public class MinemobsUtils extends JavaPlugin {
         registerCommand("staffchat", new StaffChatCommand(), "sc");
         registerCommand("nick", new NickCommand());
         registerCommand("broadcast", new BroadcastCommand(), "bc");
-        /*getCommand("afly").setExecutor(new CommandAllowFly());
-        getCommand("heal").setExecutor(new CommandHeal());
-        getCommand("tpsp").setExecutor(new CommandSpawnPoint());
-        getCommand("nick").setExecutor(new CommandNick());
-        getCommand("ping").setExecutor(new PingCommand());
-        getCommand("frl").setExecutor(new CommandFakeReload());
-        getCommand("tpsg").setExecutor(new StickTeleport());
-        getCommand("enchants").setExecutor(new EnchantGive());
-        getCommand("enderchest").setExecutor(new EnderChestCommand());
-        */
     }
 
     private void registerCommand(@NotNull String commandName, @NotNull CommandExecutor commandExecutor, @Nullable String... commandAliases) {

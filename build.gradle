@@ -103,7 +103,7 @@ spigot {
     }
 
     debug {
-        args '--nojline', '--max-players', '100', 'nogui'
+        args '--nojline', '--max-players', '100'
 
         jvmArgs '-Xmx2G'
         serverPort 25565
