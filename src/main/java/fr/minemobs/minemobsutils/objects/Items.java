@@ -19,6 +19,7 @@ public enum Items {
     HAMMER(new ItemBuilder(Material.IRON_AXE).setDisplayName(ChatColor.GRAY + "Hammer").setGlow().build()),
     CRAFTING_TABLE_PORTABLE(new ItemBuilder(Material.STICK).setDisplayName(ChatColor.GRAY + "Portable Crafting Table").setCustomModelData(501).setGlow().build()),
     DYNAMITE(new ItemBuilder(Material.STICK).setDisplayName(ChatColor.RED + "Dynamite").setGlow().build()),
+    FIREBALL_STAFF(new ItemBuilder(Material.STICK).setDisplayName(ChatColor.LIGHT_PURPLE + "Fireball Staff").setCustomModelData(1024).setGlow().build()),
     //Ingots
     DRACONIUM_INGOT(new ItemBuilder(Material.BRICK).setDisplayName(ChatColor.LIGHT_PURPLE + "Draconium Ingot").setGlow().build()),
     //Armors

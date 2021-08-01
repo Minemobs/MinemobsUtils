@@ -1,6 +1,7 @@
 package fr.minemobs.minemobsutils.listener;
 
 import fr.minemobs.minemobsutils.MinemobsUtils;
+import fr.minemobs.minemobsutils.commands.NickCommand;
 import fr.minemobs.minemobsutils.commands.StaffChatCommand;
 import fr.minemobs.minemobsutils.event.ArmorEvent;
 import fr.minemobs.minemobsutils.objects.Items;
@@ -8,21 +9,19 @@ import fr.minemobs.minemobsutils.objects.Recipes;
 import fr.minemobs.minemobsutils.utils.Cooldown;
 import fr.minemobs.minemobsutils.utils.ItemStackUtils;
 import org.bukkit.*;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerFishEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.Arrays;
@@ -56,6 +55,14 @@ public class PlayerListener implements Listener {
         for (Recipes recipe : Arrays.stream(Recipes.values()).filter(recipes -> recipes.getShapelessRecipe() != null).collect(Collectors.toList())) {
             event.getPlayer().discoverRecipe(recipe.getShapelessRecipe().getKey());
         }
+        NickCommand.realNames.put(event.getPlayer(), event.getPlayer().getName());
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        if(!NickCommand.realNames.containsKey(event.getPlayer())) return;
+        NickCommand.changeName(NickCommand.realNames.get(event.getPlayer()), event.getPlayer());
+        NickCommand.realNames.remove(event.getPlayer(), event.getPlayer().getName());
     }
 
     @EventHandler
@@ -78,6 +85,45 @@ public class PlayerListener implements Listener {
                 chargeArmor(player, opIs.get());
             } else if(event.getItem().isSimilar(Items.CRAFTING_TABLE_PORTABLE.stack)) {
                 player.openWorkbench(null, true);
+            } else if(event.getItem().isSimilar(Items.FIREBALL_STAFF.stack)) {
+                if(!player.getInventory().contains(Material.FIRE_CHARGE)) {
+                    player.sendMessage(MinemobsUtils.ebheader + ChatColor.RED + "You need at least 1 fireball to use this item !");
+                    return;
+                }
+                Fireball fireball = player.getWorld().spawn(player.getEyeLocation(), Fireball.class);
+                fireball.setYield(0);
+                fireball.setCustomName("Fireball");
+                fireball.setShooter(player);
+                fireball.setVelocity(player.getLocation().getDirection());
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        if (fireball.isDead()) {
+                            cancel();
+                            return;
+                        }
+                        fireball.getWorld().spawnParticle(Particle.FLAME, fireball.getLocation(), 1);
+                    }
+                }.runTaskTimer(MinemobsUtils.getInstance(), 0, 2);
+                int slot = player.getInventory().first(Material.FIRE_CHARGE);
+                player.getInventory().getItem(slot).setAmount(player.getInventory().getItem(slot).getAmount() - 1);
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onFireballLand(ProjectileHitEvent event) {
+        if(event.getEntityType() != EntityType.FIREBALL || event.getEntity().getCustomName() == null || !event.getEntity().getCustomName().equals("Fireball")) return;
+        event.getEntity().getWorld().createExplosion(event.getEntity().getLocation(), 5, true, true, event.getEntity());
+        for (Entity e : event.getEntity().getNearbyEntities(5, 5, 5)) {
+            if(!(e instanceof LivingEntity)) return;
+            LivingEntity entity = (LivingEntity) e;
+            double distance = event.getEntity().getLocation().distanceSquared(entity.getLocation());
+            if(distance <= .5) {
+                entity.setVelocity(new Location(entity.getWorld(), 0, 1, 0).toVector());
+            } else {
+                entity.setVelocity(entity.getLocation().subtract(event.getEntity().getLocation()).toVector().multiply(1 / distance));
             }
         }
     }

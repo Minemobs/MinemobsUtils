@@ -14,9 +14,13 @@ String missingPermissionMessage = '§8[§4Minemobs Utils§8] §4You do not have 
 
 repositories {
     mavenCentral()
-        maven {
+    maven {
         name = 'CodeMC'
         url = 'https://repo.codemc.org/repository/maven-public/'
+    }
+    maven { url "https://repo.dmulloy2.net/repository/public/" }
+    maven {
+        url = "https://minevolt.net/repo/"
     }
 }
 
@@ -26,6 +30,8 @@ dependencies {
     compileOnly('net.skinsrestorer:skinsrestorer:14.1.1') {
         transitive(false)
     }
+    compileOnly group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.7.0"
+    compileOnly 'org.bukkit:craftbukkit:1.16.5-R0.1-SNAPSHOT'
 }
 
 spigot {
@@ -33,6 +39,7 @@ spigot {
     apiVersion '1.16'
     website = "https://github.com/Minemobs/MinemobsUtils"
     softDepends("SkinsRestorer")
+    depends("ProtocolLib")
     commands {
         cc {
             aliases 'colorcode', 'chatcolor'
@@ -96,8 +103,9 @@ spigot {
     }
 
     debug {
-        args '--nojline', '--max-players', '100'
-        jvmArgs '-Xmx4G'
+        args '--nojline', '--max-players', '100', 'nogui'
+
+        jvmArgs '-Xmx2G'
         serverPort 25565
     }
 }

@@ -40,6 +40,11 @@ public enum Recipes {
     .setIngredient('R', new RecipeChoice.MaterialChoice(Material.REDSTONE_BLOCK))
     .setIngredient('G', new RecipeChoice.MaterialChoice(Material.GOLD_INGOT))
     .setIngredient('E', new RecipeChoice.MaterialChoice(Material.EMERALD))),
+    FIREBALL_STAFF(new ShapedRecipe(new NamespacedKey(MinemobsUtils.getInstance(), "fireball_staff"), Items.FIREBALL_STAFF.stack)
+            .shape("FDF", " S ", " S ")
+            .setIngredient('S', Material.STICK)
+            .setIngredient('D', Material.DISPENSER)
+            .setIngredient('F', Material.FIRE_CHARGE)),
 
     IRON_PLATE(new ShapelessRecipe(new NamespacedKey(MinemobsUtils.getInstance(), "iron_plate"), Items.IRON_PLATE.stack)
             .addIngredient(Material.IRON_BLOCK)
