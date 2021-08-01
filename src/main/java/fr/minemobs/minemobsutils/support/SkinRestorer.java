@@ -7,6 +7,8 @@ import org.bukkit.entity.Player;
 
 public class SkinRestorer {
 
+    private SkinRestorer() {}
+
     public static void setSkin(Player player) {
         SkinsRestorerAPI api = SkinsRestorerAPI.getApi();
         try {

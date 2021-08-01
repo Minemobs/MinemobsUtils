@@ -1,7 +1,6 @@
 package fr.minemobs.minemobsutils.listener;
 
 import fr.minemobs.minemobsutils.MinemobsUtils;
-import fr.minemobs.minemobsutils.commands.NickCommand;
 import fr.minemobs.minemobsutils.commands.StaffChatCommand;
 import fr.minemobs.minemobsutils.event.ArmorEvent;
 import fr.minemobs.minemobsutils.objects.Items;
@@ -55,14 +54,10 @@ public class PlayerListener implements Listener {
         for (Recipes recipe : Arrays.stream(Recipes.values()).filter(recipes -> recipes.getShapelessRecipe() != null).collect(Collectors.toList())) {
             event.getPlayer().discoverRecipe(recipe.getShapelessRecipe().getKey());
         }
-        NickCommand.realNames.put(event.getPlayer(), event.getPlayer().getName());
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        if(!NickCommand.realNames.containsKey(event.getPlayer())) return;
-        NickCommand.changeName(NickCommand.realNames.get(event.getPlayer()), event.getPlayer());
-        NickCommand.realNames.remove(event.getPlayer(), event.getPlayer().getName());
     }
 
     @EventHandler
