@@ -1,17 +1,25 @@
 package fr.minemobs.minemobsutils.listener;
 
+import de.tr7zw.changeme.nbtapi.NBTCompound;
+import de.tr7zw.changeme.nbtapi.NBTCompoundList;
+import de.tr7zw.changeme.nbtapi.NBTTileEntity;
 import fr.minemobs.minemobsutils.MinemobsUtils;
 import fr.minemobs.minemobsutils.commands.StaffChatCommand;
 import fr.minemobs.minemobsutils.event.ArmorEvent;
+import fr.minemobs.minemobsutils.objects.Blocks;
+import fr.minemobs.minemobsutils.objects.CustomBlock;
 import fr.minemobs.minemobsutils.objects.Items;
 import fr.minemobs.minemobsutils.objects.Recipes;
 import fr.minemobs.minemobsutils.utils.Cooldown;
 import fr.minemobs.minemobsutils.utils.ItemStackUtils;
 import org.bukkit.*;
+import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -191,6 +199,22 @@ public class PlayerListener implements Listener {
         if(player.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE) && player.getPotionEffect(PotionEffectType.FIRE_RESISTANCE).getAmplifier() == 1) player.removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
         if(player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) return;
         player.setAllowFlight(false);
+    }
+
+    @EventHandler(priority = EventPriority.LOW)
+    public void onBlockBreak(BlockBreakEvent event) {
+        if(event.getBlock().getType() != Material.SPAWNER || event.getPlayer().getGameMode() != GameMode.SURVIVAL) return;
+        CreatureSpawner spawner = (CreatureSpawner) event.getBlock().getState();
+        NBTTileEntity te = new NBTTileEntity(spawner);
+        NBTCompound spawnData = te.getCompound("SpawnData");
+        NBTCompoundList armorItems = spawnData.getCompoundList("ArmorItems");
+        int cmd = armorItems.get(3).getCompound("tag").getInteger("CustomModelData");
+        Optional<CustomBlock> cb = Arrays.stream(Blocks.values()).map(blocks -> blocks.block).filter(customBlock -> customBlock.getCustomModelData() == cmd).findFirst();
+        if (!cb.isPresent()) return;
+        for(ItemStack stack : cb.get().getDrop()){
+            event.getPlayer().getWorld().dropItemNaturally(event.getBlock().getLocation(), stack);
+        }
+        event.setExpToDrop(cb.get().getXp());
     }
 
     public static boolean isDraconicArmor(ItemStack[] armor) {

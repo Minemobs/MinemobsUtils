@@ -1,5 +1,8 @@
 package fr.minemobs.minemobsutils.listener;
 
+import fr.minemobs.minemobsutils.objects.AnvilRecipe;
+import fr.minemobs.minemobsutils.objects.Recipes;
+import fr.minemobs.minemobsutils.utils.ItemStackUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
@@ -8,12 +11,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.PrepareAnvilEvent;
+import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class CraftListener implements Listener {
 
@@ -56,6 +61,27 @@ public class CraftListener implements Listener {
         if(!meta.getLore().stream().anyMatch(s -> s.endsWith(ChatColor.YELLOW + " Stars"))) return;
         //Hacky way to do that cause i'm dumb
         ((LivingEntity) event.getEntity()).damage(getStars(meta.getLore().stream().filter(s -> s.endsWith(ChatColor.YELLOW + " Stars")).findFirst().get()));
+    }
+
+    @EventHandler
+    public void onAnvil(PrepareAnvilEvent event) {
+        AnvilInventory inv = event.getInventory();
+        if(ItemStackUtils.isAirOrNull(inv.getItem(0)) || ItemStackUtils.isAirOrNull(inv.getItem(1))) return;
+        Optional<AnvilRecipe> recipe = Arrays.stream(Recipes.values()).filter(recipes -> recipes.getAnvilRecipe() != null && recipes.getAnvilRecipe().isEquals(inv))
+                .map(Recipes::getAnvilRecipe).findFirst();
+        if(!recipe.isPresent()) return;
+        event.setResult(recipe.get().getResult());
+    }
+
+    @EventHandler
+    public void onAnvilClickedResult(InventoryClickEvent event) {
+        if(event.getInventory().getType() != InventoryType.ANVIL || event.getRawSlot() != 2) return;
+        if(event.getWhoClicked().getInventory().firstEmpty() == -1) return;
+        AnvilInventory inv = (AnvilInventory) event.getInventory();
+        if (Arrays.stream(Recipes.values()).noneMatch(recipes -> recipes.getAnvilRecipe() != null && recipes.getAnvilRecipe().isEquals(inv))) return;
+        event.getWhoClicked().getInventory().addItem(event.getCurrentItem());
+        inv.getItem(0).setAmount(inv.getItem(0).getAmount() - 1);
+        inv.getItem(1).setAmount(inv.getItem(1).getAmount() - 1);
     }
 
     private boolean isToolOrWeapon(Material mat) {

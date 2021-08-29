@@ -20,8 +20,11 @@ public enum Items {
     CRAFTING_TABLE_PORTABLE(new ItemBuilder(Material.STICK).setDisplayName(ChatColor.GRAY + "Portable Crafting Table").setCustomModelData(501).setGlow().build()),
     DYNAMITE(new ItemBuilder(Material.STICK).setDisplayName(ChatColor.RED + "Dynamite").setGlow().build()),
     FIREBALL_STAFF(new ItemBuilder(Material.STICK).setDisplayName(ChatColor.LIGHT_PURPLE + "Fireball Staff").setCustomModelData(1024).setGlow().build()),
+    WRENCH(new ItemBuilder(Material.STICK).setDisplayName(ChatColor.GRAY + "Wrench").setCustomModelData(256).setGlow().build()),
     //Ingots
     DRACONIUM_INGOT(new ItemBuilder(Material.BRICK).setDisplayName(ChatColor.LIGHT_PURPLE + "Draconium Ingot").setGlow().build()),
+    RUBY(new ItemBuilder(Material.EMERALD).setDisplayName(ChatColor.RED + "Ruby").setGlow().build()),
+    CHARGED_DRACONIUM_INGOT(new ItemBuilder(Material.BRICK).setDisplayName(ChatColor.LIGHT_PURPLE + "Charged Draconium Ingot").setGlow().build()),
     //Armors
     DRACONIC_HELMET(new ItemBuilder(Material.LEATHER_HELMET).setColor(Color.PURPLE).setLore(new ArrayList<>(Arrays.asList("Chargable", "Energy: 0 / 100")))
             .setDisplayName(ChatColor.LIGHT_PURPLE + "Draconic Helmet").setUnbreakable(true).addProtection(2)
@@ -42,7 +45,7 @@ public enum Items {
     public final ItemStack stack;
 
     Items(ItemStack stack) {
-        this.stack = stack;
+        this.stack = stack.clone();
     }
 
     public static ItemStack[] getAllItems() {

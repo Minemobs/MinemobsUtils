@@ -23,16 +23,16 @@ public enum Recipes {
     //Armors
     DRACONIUM_HELMET(new ShapedRecipe(new NamespacedKey(MinemobsUtils.getInstance(), "draconium_helmet"), Items.DRACONIC_HELMET.stack)
             .shape("EEE", "E E", "   ")
-            .setIngredient('E', new RecipeChoice.ExactChoice(Items.DRACONIUM_INGOT.stack))),
+            .setIngredient('E', new RecipeChoice.ExactChoice(Items.CHARGED_DRACONIUM_INGOT.stack))),
     DRACONIUM_CHESTPLATE(new ShapedRecipe(new NamespacedKey(MinemobsUtils.getInstance(), "draconium_chestplate"), Items.DRACONIC_CHESTPLATE.stack)
             .shape("E E", "EEE", "EEE")
-            .setIngredient('E', new RecipeChoice.ExactChoice(Items.DRACONIUM_INGOT.stack))),
+            .setIngredient('E', new RecipeChoice.ExactChoice(Items.CHARGED_DRACONIUM_INGOT.stack))),
     DRACONIUM_LEGGINGS(new ShapedRecipe(new NamespacedKey(MinemobsUtils.getInstance(), "draconium_leggings"), Items.DRACONIC_LEGGINGS.stack)
             .shape("EEE", "E E", "E E")
-            .setIngredient('E', new RecipeChoice.ExactChoice(Items.DRACONIUM_INGOT.stack))),
+            .setIngredient('E', new RecipeChoice.ExactChoice(Items.CHARGED_DRACONIUM_INGOT.stack))),
     DRACONIUM_BOOTS(new ShapedRecipe(new NamespacedKey(MinemobsUtils.getInstance(), "draconium_boots"), Items.DRACONIC_BOOTS.stack)
             .shape("   ", "E E", "E E")
-            .setIngredient('E', new RecipeChoice.ExactChoice(Items.DRACONIUM_INGOT.stack))),
+            .setIngredient('E', new RecipeChoice.ExactChoice(Items.CHARGED_DRACONIUM_INGOT.stack))),
     //Other
     BATTERY(new ShapedRecipe(new NamespacedKey(MinemobsUtils.getInstance(), "battery"), Items.BATTERY.stack)
     .shape(" E ", "IGI", "IRI")
@@ -46,28 +46,36 @@ public enum Recipes {
             .setIngredient('D', Material.DISPENSER)
             .setIngredient('F', Material.FIRE_CHARGE)),
 
-    IRON_PLATE(new ShapelessRecipe(new NamespacedKey(MinemobsUtils.getInstance(), "iron_plate"), Items.IRON_PLATE.stack)
-            .addIngredient(Material.IRON_BLOCK)
-            .addIngredient(new RecipeChoice.ExactChoice(Items.HAMMER.stack))),
     PORTABLE_CRAFTING_TABLE(new ShapelessRecipe(new NamespacedKey(MinemobsUtils.getInstance(), "portable_crafting_table"), Items.CRAFTING_TABLE_PORTABLE.stack)
             .addIngredient(Material.STICK)
             .addIngredient(Material.CRAFTING_TABLE)),
     DYNAMITE(new ShapelessRecipe(new NamespacedKey(MinemobsUtils.getInstance(), "dynamite"), Items.DYNAMITE.stack)
             .addIngredient(2, Material.STRING)
             .addIngredient(4, Material.TNT)),
+
+    CHARGED_DRACONIUM_INGOT(new AnvilRecipe(Items.DRACONIUM_INGOT.stack, Material.DRAGON_BREATH, Items.CHARGED_DRACONIUM_INGOT.stack)),
     ;
 
     private final ShapedRecipe recipe;
     private final ShapelessRecipe shapelessRecipe;
+    private final AnvilRecipe anvilRecipe;
 
     Recipes(ShapedRecipe recipe) {
         this.recipe = recipe;
         this.shapelessRecipe = null;
+        this.anvilRecipe = null;
     }
 
     Recipes(ShapelessRecipe shapelessRecipe) {
         this.shapelessRecipe = shapelessRecipe;
         this.recipe = null;
+        this.anvilRecipe = null;
+    }
+
+    Recipes(AnvilRecipe anvilRecipe) {
+        this.shapelessRecipe = null;
+        this.recipe = null;
+        this.anvilRecipe = anvilRecipe;
     }
 
     public ShapedRecipe getRecipe() {
@@ -76,5 +84,9 @@ public enum Recipes {
 
     public ShapelessRecipe getShapelessRecipe() {
         return shapelessRecipe;
+    }
+
+    public AnvilRecipe getAnvilRecipe() {
+        return anvilRecipe;
     }
 }

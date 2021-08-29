@@ -1,14 +1,21 @@
 package fr.minemobs.minemobsutils.utils;
 
 import fr.minemobs.minemobsutils.MinemobsUtils;
-import org.bukkit.*;
+import fr.minemobs.minemobsutils.objects.Items;
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.*;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.util.Consumer;
 
 import java.util.ArrayList;
@@ -18,16 +25,20 @@ public class ItemBuilder implements Listener {
     private ItemStack stack;
     private Consumer<PlayerInteractEvent> interactConsumer;
 
-    public ItemBuilder(Material mat) {
-        stack = new ItemStack(mat);
+    public ItemBuilder(ItemStack stack) {
+        this.stack = stack;
     }
 
     public ItemBuilder(Material mat, int amount) {
-        stack = new ItemStack(mat, amount);
+        this(new ItemStack(mat, amount));
     }
 
-    public ItemBuilder(ItemStack stack) {
-        this.stack = stack;
+    public ItemBuilder(Material mat) {
+        this(mat, 1);
+    }
+
+    public ItemBuilder(Items item) {
+        this(item.stack);
     }
 
     public ItemMeta getItemMeta() {
