@@ -36,7 +36,8 @@ public enum Inventories {
         meta.setLore(lore);
         is.setItemMeta(meta);
     }).build()),
-    CUSTOM_ITEMS_GIVER(new InventoryBuilder(ChatColor.RED + "Custom Items Giver", 3).addItems(Items.getAllItems()).setCancelled().onClick(event -> {
+    CUSTOM_ITEMS_GIVER(new InventoryBuilder(ChatColor.RED + "Custom Items Giver", 3).addItems(Items.getAllItems())
+            .addItems(Blocks.getAllBlockItems()).setCancelled().onClick(event -> {
         if(ItemStackUtils.isAirOrNull(event.getCurrentItem())) return;
         event.getWhoClicked().getInventory().addItem(event.getCurrentItem());
     }).build()),

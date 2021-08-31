@@ -23,6 +23,11 @@ repositories {
         url = "https://minevolt.net/repo/"
     }
     maven {url = "https://repo.inventivetalent.org/content/groups/public/"}
+    maven {
+        allowInsecureProtocol = true
+        name = "Minemobs Snapshot"
+        url = "http://minemobs.galaxyfight.fr:8081/snapshots/"
+    }
 }
 
 dependencies {
@@ -33,6 +38,7 @@ dependencies {
     }
     compileOnly group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.7.0"
     compileOnly 'org.bukkit:craftbukkit:1.16.5-R0.1-SNAPSHOT'
+    compileOnly 'org.spigotmc:spigot:1.17.1-R0.1-SNAPSHOT'
     implementation 'org.reflections:reflections:0.9.12'
     implementation 'org.bstats:bstats-bukkit:2.2.1'
     implementation group: 'de.tr7zw', name: 'item-nbt-api', version: '2.8.0'

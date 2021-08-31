@@ -1,32 +1,33 @@
-package fr.minemobs.minemobsutils.objects;
+package fr.minemobs.minemobsutils.nms.versions.customblock;
 
 import fr.minemobs.minemobsutils.MinemobsUtils;
+import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class CustomBlock implements Cloneable {
+public abstract class ICustomBlock implements Cloneable {
 
     private final int customModelData;
     private final List<ItemStack> drop;
     private final int xp;
 
-    public CustomBlock(int customModelData, List<ItemStack> drop, int xp) {
+    public ICustomBlock(int customModelData, List<ItemStack> drop, int xp) {
         this.customModelData = customModelData;
         this.drop = drop;
         this.xp = xp;
     }
 
-    public CustomBlock(int customModelData, int xp, ItemStack... drop) {
+    public ICustomBlock(int customModelData, int xp, ItemStack... drop) {
         this(customModelData, Arrays.asList(drop), xp);
     }
 
-    public CustomBlock(int customModelData, List<ItemStack> drop) {
+    public ICustomBlock(int customModelData, List<ItemStack> drop) {
         this(customModelData, drop, 0);
     }
 
-    public CustomBlock(int customModelData, ItemStack... drop) {
+    protected ICustomBlock(int customModelData, ItemStack... drop) {
         this(customModelData, 0, drop);
     }
 
@@ -42,10 +43,12 @@ public class CustomBlock implements Cloneable {
         return xp;
     }
 
+    public abstract void setBlock(Location loc);
+
     @Override
-    public CustomBlock clone() {
+    public ICustomBlock clone() {
         try {
-            return (CustomBlock) super.clone();
+            return (ICustomBlock) super.clone();
         } catch (CloneNotSupportedException e) {
             MinemobsUtils.getInstance().getLogger().severe(e.getMessage());
         }

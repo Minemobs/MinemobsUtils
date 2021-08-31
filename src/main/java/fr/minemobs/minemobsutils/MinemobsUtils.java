@@ -26,6 +26,7 @@ public class MinemobsUtils extends JavaPlugin {
     private final FileConfiguration config = getConfig();
     public static final String ebheader = String.format("%s[%sMinemobs Utils%s]%s ", ChatColor.DARK_GRAY, ChatColor.DARK_RED, ChatColor.DARK_GRAY, ChatColor.RESET);
     public static final String pluginID = "minemobsutils";
+    private final String[] supportedNMSVersions = new String[]{"1_16_R3", "1_17_R1"};
 
     @Override
     public void onLoad() {
@@ -35,6 +36,11 @@ public class MinemobsUtils extends JavaPlugin {
     @Override
     public void onEnable() {
         Bukkit.getConsoleSender().sendMessage(ebheader + ChatColor.GREEN + "Enabled.");
+        if(Arrays.stream(supportedNMSVersions).noneMatch(s -> s.equalsIgnoreCase(ReflectionUtils.getServerVersion().substring(1)))) {
+            getLogger().severe("This version is not supported !");
+            this.getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
         registerListeners();
         registerCommands();
         registerCrafts();

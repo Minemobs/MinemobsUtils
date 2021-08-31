@@ -4,20 +4,16 @@ import fr.minemobs.minemobsutils.MinemobsUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Consumer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.bukkit.util.Consumer;
 
 public class InventoryBuilder implements Listener {
 
@@ -114,6 +110,10 @@ public class InventoryBuilder implements Listener {
     public InventoryBuilder addItems(ItemStack... itemStacks) {
         this.itemStacks.addAll(Arrays.asList(itemStacks));
         return this;
+    }
+
+    public InventoryBuilder addItems(List<ItemStack> itemStacks) {
+        return addItems(itemStacks.toArray(itemStacks.toArray(new ItemStack[0])));
     }
 
     public InventoryBuilder setName(String name) {

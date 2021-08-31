@@ -6,8 +6,9 @@ import de.tr7zw.changeme.nbtapi.NBTTileEntity;
 import fr.minemobs.minemobsutils.MinemobsUtils;
 import fr.minemobs.minemobsutils.commands.StaffChatCommand;
 import fr.minemobs.minemobsutils.event.ArmorEvent;
+import fr.minemobs.minemobsutils.event.CustomBlockPlaceEvent;
+import fr.minemobs.minemobsutils.nms.versions.customblock.ICustomBlock;
 import fr.minemobs.minemobsutils.objects.Blocks;
-import fr.minemobs.minemobsutils.objects.CustomBlock;
 import fr.minemobs.minemobsutils.objects.Items;
 import fr.minemobs.minemobsutils.objects.Recipes;
 import fr.minemobs.minemobsutils.utils.Cooldown;
@@ -20,6 +21,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -209,12 +211,39 @@ public class PlayerListener implements Listener {
         NBTCompound spawnData = te.getCompound("SpawnData");
         NBTCompoundList armorItems = spawnData.getCompoundList("ArmorItems");
         int cmd = armorItems.get(3).getCompound("tag").getInteger("CustomModelData");
-        Optional<CustomBlock> cb = Arrays.stream(Blocks.values()).map(blocks -> blocks.block).filter(customBlock -> customBlock.getCustomModelData() == cmd).findFirst();
+        Optional<ICustomBlock> cb = Arrays.stream(Blocks.values()).map(blocks -> blocks.block).filter(customBlock -> customBlock.getCustomModelData() == cmd).findFirst();
         if (!cb.isPresent()) return;
         for(ItemStack stack : cb.get().getDrop()){
             event.getPlayer().getWorld().dropItemNaturally(event.getBlock().getLocation(), stack);
         }
         event.setExpToDrop(cb.get().getXp());
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onCustomBlockPlaced(BlockPlaceEvent event) {
+        if(event.getBlock().getType() != Material.COMMAND_BLOCK) return;
+        String itemName = event.getItemInHand().getItemMeta().getDisplayName();
+        if(Blocks.getAllBlockItems().stream().noneMatch(itemStack -> itemStack.getItemMeta().getDisplayName().equals(itemName))) return;
+        if(Blocks.getAllBlockItems().stream()
+                .noneMatch(itemStack -> itemStack.getItemMeta().getCustomModelData() == event.getItemInHand().getItemMeta().getCustomModelData())) return;
+        event.setCancelled(true);
+        Optional<Blocks> block = Arrays.stream(Blocks.values())
+                .filter(blocks -> blocks.block.getCustomModelData() == event.getItemInHand().getItemMeta().getCustomModelData()).findFirst();
+        if(!block.isPresent()) return;
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                CustomBlockPlaceEvent e = new CustomBlockPlaceEvent(event.getBlockPlaced(), event.getBlockReplacedState(),
+                        event.getBlockAgainst(), event.getItemInHand(), event.getPlayer(), event.canBuild(),
+                        event.getHand(), block.get());
+                Bukkit.getPluginManager().callEvent(e);
+            }
+        }.runTaskLater(MinemobsUtils.getInstance(), 2);
+    }
+
+    @EventHandler
+    public void onCustomBlockPlaced(CustomBlockPlaceEvent event) {
+        event.getCustomBlock().block.setBlock(event.getBlock().getLocation());
     }
 
     public static boolean isDraconicArmor(ItemStack[] armor) {
