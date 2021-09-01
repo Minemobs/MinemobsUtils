@@ -45,7 +45,7 @@ public class CustomBlock_1_16_R3 extends ICustomBlock {
         helmet.setString("id", "minecraft:command_block");
         helmet.setByte("Count", (byte) 1);
         NBTTagCompound customModelData = new NBTTagCompound();
-        customModelData.setInt("CustomModelData", 1);
+        customModelData.setInt("CustomModelData", this.getCustomModelData());
         helmet.set("tag", customModelData);
         armorList.addAll(Arrays.asList(new NBTTagCompound(), new NBTTagCompound(), new NBTTagCompound(), helmet));
         spawnData.setString("id", "minecraft:armor_stand");

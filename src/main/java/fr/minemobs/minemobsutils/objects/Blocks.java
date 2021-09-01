@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public enum Blocks {
 
     RUBY_ORE(Objects.requireNonNull(customBlock(1, Items.RUBY.stack))),
-    //MILK_GENERATOR(Objects.requireNonNull(customBlock(2, Items.RUBY.stack))),
+    MILK_GENERATOR(Objects.requireNonNull(customBlock(2, Items.RUBY.stack))),
     ;
 
     public final ICustomBlock block;
@@ -54,15 +54,15 @@ public enum Blocks {
         }
     }
 
+    private static ICustomBlock customBlock(int customModelData, int xp, List<ItemStack> drop) {
+        return customBlock(customModelData, xp, drop.toArray(new ItemStack[0]));
+    }
+
     private static ICustomBlock customBlock(int customModelData, ItemStack... drop) {
         return customBlock(customModelData, 0, drop);
     }
 
     private static ICustomBlock customBlock(int customModelData, List<ItemStack> drop) {
         return customBlock(customModelData, 0, drop);
-    }
-
-    private static ICustomBlock customBlock(int customModelData, int xp, List<ItemStack> drop) {
-        return customBlock(customModelData, xp, drop.toArray(new ItemStack[0]));
     }
 }

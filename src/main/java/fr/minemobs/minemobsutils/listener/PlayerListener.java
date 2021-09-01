@@ -230,6 +230,7 @@ public class PlayerListener implements Listener {
         Optional<Blocks> block = Arrays.stream(Blocks.values())
                 .filter(blocks -> blocks.block.getCustomModelData() == event.getItemInHand().getItemMeta().getCustomModelData()).findFirst();
         if(!block.isPresent()) return;
+        event.getPlayer().sendMessage(String.valueOf(block.get().block.getCustomModelData()));
         new BukkitRunnable() {
             @Override
             public void run() {
