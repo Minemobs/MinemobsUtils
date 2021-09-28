@@ -1,6 +1,6 @@
 package fr.minemobs.minemobsutils.event;
 
-import fr.minemobs.minemobsutils.objects.Blocks;
+import fr.minemobs.minemobsutils.nms.versions.customblock.CustomBlock;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
@@ -12,15 +12,15 @@ import org.jetbrains.annotations.NotNull;
 
 public class CustomBlockPlaceEvent extends BlockPlaceEvent implements Cancellable {
 
-    private final Blocks customBlock;
+    private final CustomBlock customBlock;
 
     public CustomBlockPlaceEvent(@NotNull Block placedBlock, @NotNull BlockState replacedBlockState, @NotNull Block placedAgainst, @NotNull ItemStack itemInHand,
-                                 @NotNull Player thePlayer, boolean canBuild, @NotNull EquipmentSlot hand, @NotNull Blocks customBlock) {
+                                 @NotNull Player thePlayer, boolean canBuild, @NotNull EquipmentSlot hand, @NotNull CustomBlock customBlock) {
         super(placedBlock, replacedBlockState, placedAgainst, itemInHand, thePlayer, canBuild, hand);
         this.customBlock = customBlock;
     }
 
-    public Blocks getCustomBlock() {
+    public CustomBlock getCustomBlock() {
         return customBlock;
     }
 }

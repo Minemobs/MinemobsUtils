@@ -41,7 +41,7 @@ public class EnchantmentListener implements Listener {
                 drop.getItemStack().getType().name().endsWith("DIRT") || drop.getItemStack().getType() == Material.PODZOL ||
                 drop.getItemStack().getType() == Material.NETHERRACK || drop.getItemStack().getType() == Material.DIORITE ||
                 drop.getItemStack().getType() == Material.GRANITE ||
-                drop.getItemStack().getType() == Material.GRASS_PATH ||
+                drop.getItemStack().getType() == Material.DIRT_PATH ||
                 drop.getItemStack().getType().name().endsWith("_SEEDS") ||
                 drop.getItemStack().getType().name().startsWith("SAND"));
     }

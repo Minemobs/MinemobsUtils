@@ -2,11 +2,13 @@ package fr.minemobs.minemobsutils.objects;
 
 import fr.minemobs.minemobsutils.MinemobsUtils;
 import fr.minemobs.minemobsutils.utils.InventoryBuilder;
+import fr.minemobs.minemobsutils.utils.ItemBuilder;
 import fr.minemobs.minemobsutils.utils.ItemStackUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
@@ -38,9 +40,11 @@ public enum Inventories {
     }).build()),
     CUSTOM_ITEMS_GIVER(new InventoryBuilder(ChatColor.RED + "Custom Items Giver", 3).addItems(Items.getAllItems())
             .addItems(Blocks.getAllBlockItems()).setCancelled().onClick(event -> {
-        if(ItemStackUtils.isAirOrNull(event.getCurrentItem())) return;
-        event.getWhoClicked().getInventory().addItem(event.getCurrentItem());
-    }).build()),
+                if(ItemStackUtils.isAirOrNull(event.getCurrentItem())) return;
+                if(event.getClickedInventory() instanceof PlayerInventory) return;
+                event.getWhoClicked().getInventory().addItem((event.isShiftClick() ? new ItemBuilder(event.getCurrentItem().clone()).setAmount(64).build() :
+                        event.getCurrentItem().clone()));
+        }).build()),
     ;
 
     public final Inventory inv;

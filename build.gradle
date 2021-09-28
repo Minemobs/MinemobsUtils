@@ -1,13 +1,14 @@
 plugins {
     id 'java'
     id 'kr.entree.spigradle' version '2.2.4'
-    id "com.github.johnrengelman.shadow" version "5.1.0"
+    id "com.github.johnrengelman.shadow" version "7.0.0"
 }
 
 group = 'fr.minemobs'
 version = '1.2'
 
-sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_16
 compileJava.options.encoding = compileTestJava.options.encoding = javadoc.options.encoding = "UTF-8"
 
 String missingPermissionMessage = '§8[§4Minemobs Utils§8] §4You do not have the permission!'
@@ -28,20 +29,39 @@ repositories {
         name = "Minemobs Snapshot"
         url = "http://minemobs.galaxyfight.fr:8081/snapshots/"
     }
+    maven {
+        name = "Spigot-Repo"
+        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+    }
 }
 
 dependencies {
+    //Spigot
+    //compileOnly spigot('1.17.1')
+    /*
+    No longer needed since I'm dropping support for 1.16.x
     compileOnly spigot('1.16.5')
+    compileOnly('org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT') {
+        exclude group: "com.google.code.gson", module: "gson"
+    }
+    compileOnly('org.bukkit:craftbukkit:1.16.5-R0.1-SNAPSHOT') {
+        exclude group: "com.google.code.gson", module: "gson"
+    }
+    */
+    compileOnly('org.spigotmc:spigot:1.17.1-R0.1-SNAPSHOT')
+
     compileOnly 'org.jetbrains:annotations:21.0.1'
     compileOnly('net.skinsrestorer:skinsrestorer:14.1.1') {
         transitive(false)
     }
     compileOnly group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.7.0"
-    compileOnly 'org.bukkit:craftbukkit:1.16.5-R0.1-SNAPSHOT'
-    compileOnly 'org.spigotmc:spigot:1.17.1-R0.1-SNAPSHOT'
     implementation 'org.reflections:reflections:0.9.12'
     implementation 'org.bstats:bstats-bukkit:2.2.1'
     implementation group: 'de.tr7zw', name: 'item-nbt-api', version: '2.8.0'
+    implementation('com.thoughtworks.xstream:xstream:1.4.10') {
+        exclude group: "xpp3", module: "xpp3_min"
+        exclude group: "xmlpull", module: "xmlpull"
+    }
 }
 
 shadowJar {
@@ -50,11 +70,12 @@ shadowJar {
     relocate 'org.reflections', 'fr.minemobs.relocate.reflections'
     relocate 'javassist', 'fr.minemobs.relocate.javassist'
     relocate 'org.bstats', 'fr.minemobs.relocate.bstats'
+    relocate 'com.thoughtworks.xstream', 'fr.minemobs.relocate.xstream'
 }
 
 spigot {
     authors 'Minemobs'
-    apiVersion '1.16'
+    apiVersion '1.17'
     website = "https://github.com/Minemobs/MinemobsUtils"
     softDepends("SkinsRestorer")
     depends("ProtocolLib")
@@ -127,7 +148,7 @@ spigot {
     }
 
     debug {
-        args '--nojline', '--max-players', '100'
+        args '--nojline' , '--max-players', '100', '--nogui', '--server-name', 'Cacahuete Test Server'
 
         jvmArgs '-Xmx2G'
         serverPort 25565
@@ -140,7 +161,8 @@ task copyFile(type: Copy) {
      */
     if(InetAddress.localHost.hostName != "DESKTOP-USNU2V8") return
     from file("$buildDir/libs/$archivesBaseName-${version}.jar")
-    into file("E:\\Users\\minemobs\\IdeaProjects\\SpigotProject\\MinemobsUtils\\debug\\spigot\\plugins")
+    into file((System.properties['os.name'].toLowerCase().contains('windows') ? "E:" : "/mnt/e") + File.separatorChar + "Users" + File.separatorChar + "minemobs" + File.separatorChar + "IdeaProjects" + File.separatorChar + "SpigotProject" + File.separatorChar +
+            "MinemobsUtils" + File.separatorChar + "debug" + File.separatorChar + "spigot" + File.separatorChar + "plugins")
 }
 
 build.finalizedBy(copyFile)

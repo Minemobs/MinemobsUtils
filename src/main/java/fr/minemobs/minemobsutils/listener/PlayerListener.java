@@ -6,8 +6,10 @@ import de.tr7zw.changeme.nbtapi.NBTTileEntity;
 import fr.minemobs.minemobsutils.MinemobsUtils;
 import fr.minemobs.minemobsutils.commands.StaffChatCommand;
 import fr.minemobs.minemobsutils.event.ArmorEvent;
+import fr.minemobs.minemobsutils.event.CustomBlockBreakEvent;
+import fr.minemobs.minemobsutils.event.CustomBlockInteractEvent;
 import fr.minemobs.minemobsutils.event.CustomBlockPlaceEvent;
-import fr.minemobs.minemobsutils.nms.versions.customblock.ICustomBlock;
+import fr.minemobs.minemobsutils.nms.versions.customblock.CustomBlock;
 import fr.minemobs.minemobsutils.objects.Blocks;
 import fr.minemobs.minemobsutils.objects.Items;
 import fr.minemobs.minemobsutils.objects.Recipes;
@@ -114,6 +116,26 @@ public class PlayerListener implements Listener {
                 player.getInventory().getItem(slot).setAmount(player.getInventory().getItem(slot).getAmount() - 1);
                 event.setCancelled(true);
             }
+
+            if(event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                if(event.getClickedBlock().getType() != Material.SPAWNER) return;
+                CreatureSpawner spawner = (CreatureSpawner) event.getClickedBlock().getState();
+                NBTTileEntity te = new NBTTileEntity(spawner);
+                NBTCompound spawnData = te.getCompound("SpawnData");
+                NBTCompoundList armorItems = spawnData.getCompoundList("ArmorItems");
+                int cmd = armorItems.get(3).getCompound("tag").getInteger("CustomModelData");
+                Optional<CustomBlock> cb = CustomBlockListener.blocks.stream()
+                        .filter(customBlock -> customBlock.getCustomModelData() == cmd && customBlock.getLoc().getX() == event.getClickedBlock().getLocation().getX() &&
+                                customBlock.getLoc().getY() == event.getClickedBlock().getY() && event.getClickedBlock().getZ() == customBlock.getLoc().getZ()).findFirst();
+                if (!cb.isPresent()) return;
+                new BukkitRunnable() {
+
+                    @Override
+                    public void run() {
+                        Bukkit.getPluginManager().callEvent(new CustomBlockInteractEvent(player, event.getItem(), event.getClickedBlock(), event.getBlockFace(), cb.get()));
+                    }
+                }.runTaskLater(MinemobsUtils.getInstance(), 2);
+            }
         }
     }
 
@@ -203,7 +225,7 @@ public class PlayerListener implements Listener {
         player.setAllowFlight(false);
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onBlockBreak(BlockBreakEvent event) {
         if(event.getBlock().getType() != Material.SPAWNER || event.getPlayer().getGameMode() != GameMode.SURVIVAL) return;
         CreatureSpawner spawner = (CreatureSpawner) event.getBlock().getState();
@@ -211,40 +233,43 @@ public class PlayerListener implements Listener {
         NBTCompound spawnData = te.getCompound("SpawnData");
         NBTCompoundList armorItems = spawnData.getCompoundList("ArmorItems");
         int cmd = armorItems.get(3).getCompound("tag").getInteger("CustomModelData");
-        Optional<ICustomBlock> cb = Arrays.stream(Blocks.values()).map(blocks -> blocks.block).filter(customBlock -> customBlock.getCustomModelData() == cmd).findFirst();
+        Optional<CustomBlock> cb = CustomBlockListener.blocks.stream()
+                .filter(customBlock -> customBlock.getCustomModelData() == cmd && customBlock.getLoc().getX() == event.getBlock().getLocation().getX() &&
+                        customBlock.getLoc().getY() == event.getBlock().getY() && event.getBlock().getZ() == customBlock.getLoc().getZ()).findFirst();
         if (!cb.isPresent()) return;
-        for(ItemStack stack : cb.get().getDrop()){
-            event.getPlayer().getWorld().dropItemNaturally(event.getBlock().getLocation(), stack);
-        }
-        event.setExpToDrop(cb.get().getXp());
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                Bukkit.getPluginManager().callEvent(new CustomBlockBreakEvent(event.getBlock(), event.getPlayer(), cb.get()));
+            }
+        }.runTaskLater(MinemobsUtils.getInstance(), 2);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onCustomBlockPlaced(BlockPlaceEvent event) {
-        if(event.getBlock().getType() != Material.COMMAND_BLOCK) return;
+        if(event.getBlock().getType() != Material.LIME_GLAZED_TERRACOTTA || !event.getItemInHand().hasItemMeta() || !event.getItemInHand().getItemMeta().hasDisplayName() ||
+                !event.getItemInHand().getItemMeta().hasCustomModelData()) return;
         String itemName = event.getItemInHand().getItemMeta().getDisplayName();
         if(Blocks.getAllBlockItems().stream().noneMatch(itemStack -> itemStack.getItemMeta().getDisplayName().equals(itemName))) return;
         if(Blocks.getAllBlockItems().stream()
                 .noneMatch(itemStack -> itemStack.getItemMeta().getCustomModelData() == event.getItemInHand().getItemMeta().getCustomModelData())) return;
+        Optional<CustomBlock> opBlock = Arrays.stream(Blocks.values())
+                .filter(blocks -> blocks.block.getCustomModelData() == event.getItemInHand().getItemMeta().getCustomModelData()).map(Blocks::getBlock).findFirst();
+        if(!opBlock.isPresent()) return;
+        CustomBlock block = opBlock.get();
+        block.setLoc(event.getBlock().getLocation());
         event.setCancelled(true);
-        Optional<Blocks> block = Arrays.stream(Blocks.values())
-                .filter(blocks -> blocks.block.getCustomModelData() == event.getItemInHand().getItemMeta().getCustomModelData()).findFirst();
-        if(!block.isPresent()) return;
-        event.getPlayer().sendMessage(String.valueOf(block.get().block.getCustomModelData()));
         new BukkitRunnable() {
             @Override
             public void run() {
                 CustomBlockPlaceEvent e = new CustomBlockPlaceEvent(event.getBlockPlaced(), event.getBlockReplacedState(),
                         event.getBlockAgainst(), event.getItemInHand(), event.getPlayer(), event.canBuild(),
-                        event.getHand(), block.get());
+                        event.getHand(), block);
+                if(event.getPlayer().getGameMode() == GameMode.SURVIVAL) event.getItemInHand().setAmount(event.getItemInHand().getAmount() - 1);
                 Bukkit.getPluginManager().callEvent(e);
             }
         }.runTaskLater(MinemobsUtils.getInstance(), 2);
-    }
-
-    @EventHandler
-    public void onCustomBlockPlaced(CustomBlockPlaceEvent event) {
-        event.getCustomBlock().block.setBlock(event.getBlock().getLocation());
     }
 
     public static boolean isDraconicArmor(ItemStack[] armor) {

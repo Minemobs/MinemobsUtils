@@ -1,6 +1,6 @@
 package fr.minemobs.minemobsutils.commands;
 
-import fr.minemobs.minemobsutils.nms.versions.customblock.ICustomBlock;
+import fr.minemobs.minemobsutils.nms.versions.customblock.CustomBlock;
 import fr.minemobs.minemobsutils.objects.Blocks;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -17,7 +17,7 @@ public class SetCustomBlock implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if(!(sender instanceof Player)) return false;
         if(args.length == 0) return false;
-        Optional<ICustomBlock> block = Arrays.stream(Blocks.values()).filter(blocks -> blocks.name().equalsIgnoreCase(args[0])).map(Blocks::getBlock).findFirst();
+        Optional<CustomBlock> block = Arrays.stream(Blocks.values()).filter(blocks -> blocks.name().equalsIgnoreCase(args[0])).map(Blocks::getBlock).findFirst();
         if(!block.isPresent()) return false;
         Player player = (Player) sender;
         block.get().setBlock(player.getLocation());
