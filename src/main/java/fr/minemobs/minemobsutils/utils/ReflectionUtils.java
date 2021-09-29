@@ -8,15 +8,6 @@ import java.util.stream.Collectors;
 
 public class ReflectionUtils {
 
-    public static Class<?> getNMSClass(String name) {
-        try {
-            return Class.forName("net.minecraft.server." + getServerVersion() + "." + name);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     public static Class<?> getCraftBukkitClass(String name) {
         try {
             return Class.forName("org.bukkit.craftbukkit." + getServerVersion() + "." + name);

@@ -64,16 +64,12 @@ public class MinemobsUtils extends JavaPlugin {
         registerCommands();
         registerCrafts();
         CustomEnchants.register();
-        //checkUpdates();
         setupBStats();
     }
 
     private void loadCustomBlocks() {
         final File file = new File(getDataFolder(), "customblocks.yml");
         if(!file.exists()) return;
-        /*final String json = FileUtils.loadContent(file);
-        final CustomBlock[] blocks = (CustomBlock[]) xStream.fromXML(json);
-        CustomBlockListener.blocks.addAll(Arrays.asList(blocks));*/
         FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         cfg.getKeys(false).forEach(key -> CustomBlockListener.blocks.add((CustomBlock) cfg.get(key)));
     }
@@ -162,9 +158,6 @@ public class MinemobsUtils extends JavaPlugin {
     private void saveBlocks() throws Exception {
         final File file = new File(getDataFolder(), "customblocks.yml");
         FileUtils.recreateFile(file);
-        /*final CustomBlock[] customBlocks = CustomBlockListener.blocks.toArray(new CustomBlock[0]);
-        String json = xStream.toXML(customBlocks);
-        FileUtils.save(file, json);*/
         FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         for (int i = 0; i < CustomBlockListener.blocks.size(); i++) {
             cfg.set(String.valueOf(i), CustomBlockListener.blocks.get(i));

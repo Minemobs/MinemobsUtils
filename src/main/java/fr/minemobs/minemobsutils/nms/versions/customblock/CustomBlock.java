@@ -1,5 +1,6 @@
 package fr.minemobs.minemobsutils.nms.versions.customblock;
 
+import fr.minemobs.minemobsutils.utils.ReflectionUtils;
 import net.minecraft.core.BlockPosition;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -15,6 +16,7 @@ import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -73,15 +75,14 @@ public class CustomBlock implements Cloneable, ConfigurationSerializable {
         if(loc.getWorld() == null) return;
         loc.getBlock().setBlockData(Material.SPAWNER.createBlockData());
         if(!(loc.getBlock().getState() instanceof CreatureSpawner)) return;
-        WorldServer server = ((org.bukkit.craftbukkit.v1_17_R1.CraftWorld) loc.getWorld()).getHandle();
-        /*Object craftworld = ReflectionUtils.getCraftBukkitClass("CraftWorld").cast(loc.getWorld());
+        var craftWorld = ReflectionUtils.getCraftBukkitClass("CraftWorld").cast(loc.getWorld());
         WorldServer server;
         try {
-            server = (WorldServer) ReflectionUtils.getCraftBukkitClass("CraftWorld").getDeclaredMethod("getHandle").invoke(craftworld);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            server = (WorldServer) ReflectionUtils.getCraftBukkitClass("CraftWorld").getMethod("getHandle").invoke(craftWorld);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             e.printStackTrace();
             return;
-        }*/
+        }
         BlockPosition pos = new BlockPosition(loc.getX(), loc.getY(), loc.getZ());
         TileEntityMobSpawner spawnerTE = (TileEntityMobSpawner) server.getTileEntity(pos);
         MobSpawnerAbstract spawner = spawnerTE.getSpawner();
