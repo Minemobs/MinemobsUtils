@@ -1,21 +1,12 @@
 package fr.minemobs.minemobsutils.commands;
 
-import fr.minemobs.minemobsutils.utils.CommandUtils;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CraftCommand implements CommandExecutor {
+@CommandInfo(name = "craft", alias = {"crafting", "craftingtable", "workbench"}, permission = "minemobsutils.openWorkbench")
+public class CraftCommand extends PluginCommand {
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if(!(sender instanceof Player)) {
-            CommandUtils.senderError(sender);
-            return false;
-        }
-        Player player = (Player) sender;
+    public void execute(Player player, String[] args) {
         player.openWorkbench(null, true);
-        return true;
     }
 }

@@ -1,30 +1,21 @@
 package fr.minemobs.minemobsutils.commands;
 
-import fr.minemobs.minemobsutils.utils.CommandUtils;
 import fr.minemobs.minemobsutils.utils.ItemBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 import java.util.Arrays;
 
-public class ColorCommand implements CommandExecutor {
+@CommandInfo(name = "colorcode", alias = {"cc", "chatcolor"})
+public class ColorCommand extends PluginCommand {
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if(!(sender instanceof Player)) {
-            CommandUtils.senderError(sender);
-            return false;
-        }
-
-        Player player = (Player) sender;
-        Inventory colorCode = Bukkit.getServer().createInventory(player, 27, "Codes couleur");
+    public void execute(Player player, String[] args) {
+        Inventory colorCode = Bukkit.getServer().createInventory(player, 27, "Color Code");
         ChatColor[] othersColorCode = new ChatColor[]{ChatColor.RESET, ChatColor.ITALIC, ChatColor.UNDERLINE, ChatColor.STRIKETHROUGH, ChatColor.BOLD, ChatColor.MAGIC};
         for (ChatColor value : ChatColor.values()) {
             String name = value.name();
@@ -51,6 +42,5 @@ public class ColorCommand implements CommandExecutor {
             }
         }
         player.openInventory(colorCode);
-        return true;
     }
 }

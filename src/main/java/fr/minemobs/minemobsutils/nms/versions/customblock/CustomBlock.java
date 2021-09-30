@@ -31,6 +31,7 @@ public class CustomBlock implements Cloneable, ConfigurationSerializable {
     private final int xp;
     private Location loc;
 
+    @SuppressWarnings("unchecked")
     public CustomBlock(Map<String, Object> serializedCustomBlock) {
         this.customModelData = (int) serializedCustomBlock.get("cmd");
         this.mat = Material.valueOf((String) serializedCustomBlock.get("mat"));

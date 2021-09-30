@@ -2,7 +2,7 @@ package fr.minemobs.minemobsutils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import fr.minemobs.minemobsutils.commands.*;
+import fr.minemobs.minemobsutils.commands.ColorCommand;
 import fr.minemobs.minemobsutils.listener.CustomBlockListener;
 import fr.minemobs.minemobsutils.nms.versions.customblock.CustomBlock;
 import fr.minemobs.minemobsutils.objects.CustomEnchants;
@@ -126,18 +126,19 @@ public class MinemobsUtils extends JavaPlugin {
 
     private void registerCommands() {
         registerCommand("cc", new ColorCommand(), "chatcolor", "colorcode");
-        registerCommand("craft", new CraftCommand(), "crafting");
-        registerCommand("ec", new EnderChestCommand(), "enderchest");
-        registerCommand("ci", new CustomItemsCommand(), "customitems");
-        registerCommand("ping", new PingCommand());
-        registerCommand("customenchant", new CustomEnchantCommand(), "ce");
-        registerCommand("heal", new HealCommand());
-        registerCommand("feed", new FeedCommand());
-        registerCommand("fly", new FlyCommand());
-        registerCommand("staffchat", new StaffChatCommand(), "sc");
-        registerCommand("nick", new NickCommand());
-        registerCommand("broadcast", new BroadcastCommand(), "bc");
-        registerCommand("setcustomblock", new SetCustomBlock(), "scb");
+        ReflectionUtils.getClass("fr.minemobs.minemobsutils.commands", fr.minemobs.minemobsutils.commands.PluginCommand.class).forEach(clazz -> {
+            try {
+                registerCommand(clazz.getDeclaredConstructor().newInstance());
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+                getLogger().severe(e.getMessage());
+            }
+        });
+    }
+
+    private void registerCommand(fr.minemobs.minemobsutils.commands.PluginCommand cmd) {
+        PluginCommand command = getCommand(cmd.getCommandInfo().name());
+        if(cmd.getCommandInfo().alias().length != 0) command.setAliases(Arrays.asList(cmd.getCommandInfo().alias()));
+        command.setExecutor(cmd);
     }
 
     private void registerCommand(@NotNull String commandName, @NotNull CommandExecutor commandExecutor, @Nullable String... commandAliases) {

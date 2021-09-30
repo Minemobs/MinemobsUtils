@@ -1,24 +1,13 @@
 package fr.minemobs.minemobsutils.commands;
 
 import fr.minemobs.minemobsutils.objects.Inventories;
-import fr.minemobs.minemobsutils.utils.CommandUtils;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
-public class CustomEnchantCommand implements CommandExecutor {
+@CommandInfo(name = "customenchant", alias = "ce", permission = "minemobsutils.inventories.customenchant")
+public class CustomEnchantCommand extends PluginCommand {
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if(!(sender instanceof Player)) {
-            CommandUtils.senderError(sender);
-            return false;
-        }
-        Player player = (Player) sender;
-        //Inventories.CustomEnchantGiver.inv.open(player);
+    public void execute(Player player, String[] args) {
         player.openInventory(Inventories.CUSTOM_ENCHANT_GIVER.inv);
-        return true;
     }
 }

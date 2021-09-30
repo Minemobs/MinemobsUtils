@@ -62,15 +62,14 @@ spigot {
     apiVersion '1.17'
     website = "https://github.com/Minemobs/MinemobsUtils"
     softDepends("SkinsRestorer")
-    depends("ProtocolLib")
     commands {
-        cc {
-            aliases 'colorcode', 'chatcolor'
+        colorcode {
+            aliases 'cc', 'chatcolor'
             usage '/<command>'
         }
         craft {
-            aliases 'crafting'
-            permission 'minemobsutils.craftcommand'
+            aliases "crafting", "craftingtable", "workbench"
+            permission 'minemobsutils.openWorkbench'
             permissionMessage missingPermissionMessage
             usage '/<command>'
         }
@@ -80,9 +79,9 @@ spigot {
             permissionMessage missingPermissionMessage
             usage '/<command> [target] [source]'
         }
-        ci {
-            aliases 'customitems'
-            permission 'minemobsutils.customitems.give'
+        customitems {
+            aliases 'ci'
+            permission 'minemobsutils.inventories.customitems'
             permissionMessage missingPermissionMessage
             usage '/<command>'
         }
@@ -91,7 +90,7 @@ spigot {
         }
         customenchant {
             aliases 'ce'
-            permission 'minemobsutils.customenchant'
+            permission 'minemobsutils.inventories.customenchant'
             permissionMessage missingPermissionMessage
             usage '/<command>'
         }
@@ -123,11 +122,10 @@ spigot {
             permissionMessage missingPermissionMessage
             usage '/<command> <message>'
         }
-        setcustomblock {
-            aliases 'scb'
-            permission 'minemobsutils.setcustomblock'
+        top {
+            permission 'minemobsutils.top'
             permissionMessage missingPermissionMessage
-            usage '/<command> <block>'
+            usage '/<command>'
         }
     }
 

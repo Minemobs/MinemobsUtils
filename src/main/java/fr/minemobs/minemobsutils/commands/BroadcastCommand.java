@@ -1,28 +1,20 @@
 package fr.minemobs.minemobsutils.commands;
 
 import fr.minemobs.minemobsutils.utils.ArrayUtils;
-import fr.minemobs.minemobsutils.utils.CommandUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
-public class BroadcastCommand implements CommandExecutor {
+@CommandInfo(name = "broadcast", alias = {"bc"}, requiresPlayer = false)
+public class BroadcastCommand extends PluginCommand {
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if(!(sender instanceof Player)) {
-            CommandUtils.senderError(sender);
-            return false;
-        }
+    public void execute(CommandSender sender, String[] args) {
 
-        if(args.length == 0) return false;
+        if(args.length == 0) return;
 
-        String msg = ChatColor.GRAY + "[" + ChatColor.RED + " Broadcast " + ChatColor.GRAY + "] " + ChatColor.RESET + ChatColor.translateAlternateColorCodes('&', ArrayUtils.toString(args));
+        String msg = ChatColor.GRAY + "[" + ChatColor.RED + " Broadcast " + ChatColor.GRAY + "] " + ChatColor.RESET + 
+                ChatColor.translateAlternateColorCodes('&', ArrayUtils.toString(args));
         Bukkit.broadcastMessage(msg);
-        return true;
     }
 }

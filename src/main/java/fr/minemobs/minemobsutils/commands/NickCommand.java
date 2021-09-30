@@ -3,26 +3,17 @@ package fr.minemobs.minemobsutils.commands;
 import fr.minemobs.minemobsutils.MinemobsUtils;
 import fr.minemobs.minemobsutils.support.SkinRestorer;
 import fr.minemobs.minemobsutils.utils.ArrayUtils;
-import fr.minemobs.minemobsutils.utils.CommandUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
-public class NickCommand implements CommandExecutor {
+@CommandInfo(name = "nick")
+public class NickCommand extends PluginCommand {
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if(!(sender instanceof Player)) {
-            CommandUtils.senderError(sender);
-            return false;
-        }
-        Player player = (Player) sender;
+    public void execute(Player player, String[] args) {
         if(args.length < 1) {
-            return false;
+            return;
         }
 
         Player target = Bukkit.getPlayer(args[0]);
@@ -33,7 +24,7 @@ public class NickCommand implements CommandExecutor {
                 target.setPlayerListName(target.getName());
                 player.sendMessage(MinemobsUtils.ebheader + target.getName() + "'s nickname has been reset.");
                 setSkin(target);
-                return true;
+                return;
             }
             nick = ChatColor.translateAlternateColorCodes('&', ArrayUtils.toString(args).replace(target.getName() + " ", ""));
             target.setDisplayName(nick);
@@ -46,13 +37,12 @@ public class NickCommand implements CommandExecutor {
                 player.setPlayerListName(player.getName());
                 player.sendMessage(MinemobsUtils.ebheader + "Your nickname has been reset.");
                 setSkin(player);
-                return true;
+                return;
             }
             nick = ChatColor.translateAlternateColorCodes('&', ArrayUtils.toString(args));
             setName(player, nick);
             setSkin(player);
         }
-        return true;
     }
 
     private void setName(Player player, String nick) {
