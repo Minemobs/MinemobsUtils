@@ -1,6 +1,6 @@
 package fr.minemobs.minemobsutils.event;
 
-import fr.minemobs.minemobsutils.nms.versions.customblock.CustomBlock;
+import fr.minemobs.minemobsutils.customblock.CustomBlock;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;

@@ -1,7 +1,7 @@
 package fr.minemobs.minemobsutils.objects;
 
 import com.google.common.collect.ImmutableList;
-import fr.minemobs.minemobsutils.nms.versions.customblock.CustomBlock;
+import fr.minemobs.minemobsutils.customblock.CustomBlock;
 import fr.minemobs.minemobsutils.utils.CustomBlockBuilder;
 import fr.minemobs.minemobsutils.utils.ItemBuilder;
 import org.apache.commons.lang.WordUtils;

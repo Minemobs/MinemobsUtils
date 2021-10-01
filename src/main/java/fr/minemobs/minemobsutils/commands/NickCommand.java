@@ -20,35 +20,38 @@ public class NickCommand extends PluginCommand {
         String nick;
         if(target != null && target != player) {
             if(args[1].equalsIgnoreCase("reset")) {
-                target.setDisplayName(target.getName());
-                target.setPlayerListName(target.getName());
+                reset(target);
                 player.sendMessage(MinemobsUtils.ebheader + target.getName() + "'s nickname has been reset.");
-                setSkin(target);
                 return;
             }
             nick = ChatColor.translateAlternateColorCodes('&', ArrayUtils.toString(args).replace(target.getName() + " ", ""));
-            target.setDisplayName(nick);
-            target.setPlayerListName(nick);
+            setNameAndSkin(target, nick);
             player.sendMessage(MinemobsUtils.ebheader + target.getName() + "'s nickname has been set to " + nick);
-            setSkin(target);
         } else {
             if(args[0].equalsIgnoreCase("reset")) {
-                player.setDisplayName(player.getName());
-                player.setPlayerListName(player.getName());
+                reset(player);
                 player.sendMessage(MinemobsUtils.ebheader + "Your nickname has been reset.");
-                setSkin(player);
                 return;
             }
             nick = ChatColor.translateAlternateColorCodes('&', ArrayUtils.toString(args));
-            setName(player, nick);
-            setSkin(player);
+            setNameAndSkin(player, nick);
+            player.sendMessage(MinemobsUtils.ebheader + "Your nickname has been set to " + nick);
         }
+    }
+
+    private void setNameAndSkin(Player player, String nick) {
+        setName(player, nick);
+        setSkin(player);
+    }
+
+    private void reset(Player player) {
+        setName(player, player.getName());
+        setSkin(player);
     }
 
     private void setName(Player player, String nick) {
         player.setDisplayName(nick);
         player.setPlayerListName(nick);
-        player.sendMessage(MinemobsUtils.ebheader + "Your nickname has been set to " + nick);
     }
 
     private void setSkin(Player player) {

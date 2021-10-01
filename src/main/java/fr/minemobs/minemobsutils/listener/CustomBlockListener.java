@@ -1,10 +1,9 @@
 package fr.minemobs.minemobsutils.listener;
 
+import fr.minemobs.minemobsutils.customblock.CustomBlock;
 import fr.minemobs.minemobsutils.event.CustomBlockBreakEvent;
 import fr.minemobs.minemobsutils.event.CustomBlockInteractEvent;
 import fr.minemobs.minemobsutils.event.CustomBlockPlaceEvent;
-import fr.minemobs.minemobsutils.nms.versions.customblock.CustomBlock;
-import fr.minemobs.minemobsutils.nms.versions.customblock.CustomBlockJson;
 import fr.minemobs.minemobsutils.objects.Items;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -17,7 +16,6 @@ import java.util.List;
 public class CustomBlockListener implements Listener {
 
     public static final List<CustomBlock> blocks = new ArrayList<>();
-    public static final CustomBlockJson jsonBlock = new CustomBlockJson();
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onCustomBlockPlaced(CustomBlockPlaceEvent event) {

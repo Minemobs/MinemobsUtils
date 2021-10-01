@@ -1,4 +1,4 @@
-package fr.minemobs.minemobsutils.nms.versions.customblock;
+package fr.minemobs.minemobsutils.customblock;
 
 import fr.minemobs.minemobsutils.utils.ReflectionUtils;
 import net.minecraft.core.BlockPosition;

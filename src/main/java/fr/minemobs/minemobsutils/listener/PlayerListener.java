@@ -5,11 +5,11 @@ import de.tr7zw.changeme.nbtapi.NBTCompoundList;
 import de.tr7zw.changeme.nbtapi.NBTTileEntity;
 import fr.minemobs.minemobsutils.MinemobsUtils;
 import fr.minemobs.minemobsutils.commands.StaffChatCommand;
+import fr.minemobs.minemobsutils.customblock.CustomBlock;
 import fr.minemobs.minemobsutils.event.ArmorEvent;
 import fr.minemobs.minemobsutils.event.CustomBlockBreakEvent;
 import fr.minemobs.minemobsutils.event.CustomBlockInteractEvent;
 import fr.minemobs.minemobsutils.event.CustomBlockPlaceEvent;
-import fr.minemobs.minemobsutils.nms.versions.customblock.CustomBlock;
 import fr.minemobs.minemobsutils.objects.Blocks;
 import fr.minemobs.minemobsutils.objects.Items;
 import fr.minemobs.minemobsutils.objects.Recipes;
@@ -70,6 +70,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
+
     }
 
     @EventHandler

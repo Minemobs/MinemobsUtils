@@ -3,12 +3,12 @@ package fr.minemobs.minemobsutils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import fr.minemobs.minemobsutils.commands.ColorCommand;
+import fr.minemobs.minemobsutils.customblock.CustomBlock;
 import fr.minemobs.minemobsutils.listener.CustomBlockListener;
-import fr.minemobs.minemobsutils.nms.versions.customblock.CustomBlock;
 import fr.minemobs.minemobsutils.objects.CustomEnchants;
 import fr.minemobs.minemobsutils.objects.Recipes;
-import fr.minemobs.minemobsutils.utils.FileUtils;
 import fr.minemobs.minemobsutils.utils.ReflectionUtils;
+import fr.minemobs.minemobsutils.utils.UpdateChecker;
 import kr.entree.spigradle.annotations.SpigotPlugin;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -19,6 +19,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.craftbukkit.libs.org.apache.commons.io.FileUtils;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -26,7 +27,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -48,6 +51,7 @@ public class MinemobsUtils extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        checkUpdates();
         ConfigurationSerialization.registerClass(CustomBlock.class, "customblock");
         try {
             loadCustomBlocks();
@@ -67,6 +71,25 @@ public class MinemobsUtils extends JavaPlugin {
         setupBStats();
     }
 
+    private void checkUpdates() {
+        new UpdateChecker().getVersion(version -> {
+            if(this.getDescription().getVersion().equalsIgnoreCase(version)) {
+                getLogger().info("There is no new update available.");
+                return;
+            }
+            getLogger().info("There is a new update available.");
+            String downloadURL = "https://api.spiget.org/v2/resources/80802/download";
+            try {
+                File pluginFolder = new File(getServer().getWorldContainer().getAbsolutePath() + File.separatorChar + "plugins" + File.separatorChar);
+                FileUtils.copyURLToFile(new URL(downloadURL), new File(pluginFolder, this.getDescription().getName() + ".jar"),
+                        10000, 10000);
+                getLogger().info("The new version has been downloaded !");
+            } catch (IOException exception) {
+                getLogger().severe("Could not download the latest version.\n" + exception.getMessage());
+            }
+        });
+    }
+
     private void loadCustomBlocks() {
         final File file = new File(getDataFolder(), "customblocks.yml");
         if(!file.exists()) return;
@@ -79,32 +102,12 @@ public class MinemobsUtils extends JavaPlugin {
         Metrics metrics = new Metrics(this, 8000);
     }
 
-    private void checkUpdates() {
-        /*final SpigetUpdate updater = new SpigetUpdate(this, 80802);
-        updater.checkForUpdate(new UpdateCallback() {
-            @Override
-            public void updateAvailable(String newVersion, String downloadUrl, boolean hasDirectDownload) {
-                if (hasDirectDownload) {
-                    if (updater.downloadUpdate()) {
-                        // Update downloaded, will be loaded when the server restarts
-                        getLogger().info("The new update has been downloaded !");
-                    } else {
-                        // Update failed
-                        getLogger().warning("Update download failed, reason is " + updater.getFailReason());
-                    }
-                }
-            }
-
-            @Override
-            public void upToDate() {}
-        });*/
-    }
-
     private boolean isNullOrDefault(String configName) {
         return config.get(configName) == null || config.getDefaults().get(configName) == config.get(configName);
     }
 
-    private void registerCrafts() {
+    private void registerCrafts()
+    {
         for (Recipes recipe : Arrays.stream(Recipes.values()).filter(recipes -> recipes.getRecipe() != null).collect(Collectors.toList())) {
             getServer().addRecipe(recipe.getRecipe());
         }
@@ -112,7 +115,6 @@ public class MinemobsUtils extends JavaPlugin {
             getServer().addRecipe(recipe.getShapelessRecipe());
         }
     }
-
     private void registerListeners() {
         PluginManager pm = Bukkit.getPluginManager();
         ReflectionUtils.getClass("fr.minemobs.minemobsutils.listener", Listener.class).forEach(clazz -> {
@@ -158,7 +160,12 @@ public class MinemobsUtils extends JavaPlugin {
 
     private void saveBlocks() throws Exception {
         final File file = new File(getDataFolder(), "customblocks.yml");
-        FileUtils.recreateFile(file);
+        if(file.exists()) {
+            file.delete();
+        } else {
+            file.mkdirs();
+        }
+        file.createNewFile();
         FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         for (int i = 0; i < CustomBlockListener.blocks.size(); i++) {
             cfg.set(String.valueOf(i), CustomBlockListener.blocks.get(i));

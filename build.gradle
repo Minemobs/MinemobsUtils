@@ -1,5 +1,3 @@
-import org.gradle.api.JavaVersion
-
 plugins {
     id 'java'
     id 'kr.entree.spigradle' version '2.2.4'
@@ -24,7 +22,7 @@ repositories {
     maven {
         url = "https://minevolt.net/repo/"
     }
-    maven {url = "https://repo.inventivetalent.org/content/groups/public/"}
+    //maven {url = "https://repo.inventivetalent.org/content/groups/public/"}
     maven {
         allowInsecureProtocol = true
         name = "Minemobs Snapshot"
@@ -38,12 +36,12 @@ repositories {
 
 dependencies {
     compileOnly('org.spigotmc:spigot:1.17.1-R0.1-SNAPSHOT')
-
     compileOnly 'org.jetbrains:annotations:21.0.1'
     compileOnly('net.skinsrestorer:skinsrestorer:14.1.1') {
         transitive(false)
     }
     compileOnly group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.7.0"
+
     implementation 'org.reflections:reflections:0.9.12'
     implementation 'org.bstats:bstats-bukkit:2.2.1'
     implementation group: 'de.tr7zw', name: 'item-nbt-api', version: '2.8.0'
@@ -51,6 +49,7 @@ dependencies {
 
 shadowJar {
     archiveClassifier.set('')
+    archiveVersion.set('')
     relocate 'de.tr7zw.changeme', 'fr.minemobs.relocate'
     relocate 'org.reflections', 'fr.minemobs.relocate.reflections'
     relocate 'javassist', 'fr.minemobs.relocate.javassist'
@@ -61,7 +60,8 @@ spigot {
     authors 'Minemobs'
     apiVersion '1.17'
     website = "https://github.com/Minemobs/MinemobsUtils"
-    softDepends("SkinsRestorer")
+    //You will never need to install AutoReload on your server but it's just so AutoReload load before my plugin
+    softDepends("SkinsRestorer", "AutoReload")
     commands {
         colorcode {
             aliases 'cc', 'chatcolor'
@@ -137,15 +137,19 @@ spigot {
     }
 }
 
+
 task copyFile(type: Copy) {
+
     /**
      * Check if it's minemobs's computer
      */
+
     if(InetAddress.localHost.hostName != "DESKTOP-USNU2V8") return
-    from file("$buildDir/libs/$archivesBaseName-${version}.jar")
+    from file("$buildDir/libs/${archivesBaseName}.jar")
     into file((System.properties['os.name'].toLowerCase().contains('windows') ? "E:" : "/mnt/e") + File.separatorChar + "Users" + File.separatorChar + "minemobs" + File.separatorChar + "IdeaProjects" + File.separatorChar + "SpigotProject" + File.separatorChar +
             "MinemobsUtils" + File.separatorChar + "debug" + File.separatorChar + "spigot" + File.separatorChar + "plugins")
 }
 
 build.finalizedBy(copyFile)
 shadowJar.finalizedBy(copyFile)
+
