@@ -47,12 +47,14 @@ public class PlayerListener implements Listener {
      */
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
-        String perm = MinemobsUtils.pluginID + ".mod.chat";
         Player player = event.getPlayer();
-        if (event.getMessage().startsWith("*") && player.hasPermission(perm)) {
-            StaffChatCommand.sendMessageToModerators(player.getUniqueId(), event.getMessage());
+        String msg = ChatColor.translateAlternateColorCodes('&', event.getMessage());
+        if (event.getMessage().startsWith("*") && player.hasPermission(MinemobsUtils.pluginID + ".mod.chat")) {
+            StaffChatCommand.sendMessageToModerators(player.getUniqueId(), msg);
             event.setCancelled(true);
+            return;
         }
+        event.setMessage(msg);
     }
 
     /**
@@ -86,7 +88,7 @@ public class PlayerListener implements Listener {
             if(event.getItem().isSimilar(Items.BATTERY.stack)) {
                 event.setCancelled(true);
                 Optional<ItemStack> opIs = findFirstDraconicArmorPiece(player.getInventory().getArmorContents());
-                if(!opIs.isPresent()) {
+                if(opIs.isEmpty()) {
                     player.sendMessage(MinemobsUtils.ebheader + "All your armors are already charged or you don't have a Draconic armor on you!");
                     return;
                 }
@@ -128,7 +130,7 @@ public class PlayerListener implements Listener {
                 Optional<CustomBlock> cb = CustomBlockListener.blocks.stream()
                         .filter(customBlock -> customBlock.getCustomModelData() == cmd && customBlock.getLoc().getX() == event.getClickedBlock().getLocation().getX() &&
                                 customBlock.getLoc().getY() == event.getClickedBlock().getY() && event.getClickedBlock().getZ() == customBlock.getLoc().getZ()).findFirst();
-                if (!cb.isPresent()) return;
+                if (cb.isEmpty()) return;
                 new BukkitRunnable() {
 
                     @Override
@@ -145,8 +147,7 @@ public class PlayerListener implements Listener {
         if(event.getEntityType() != EntityType.FIREBALL || event.getEntity().getCustomName() == null || !event.getEntity().getCustomName().equals("Fireball")) return;
         event.getEntity().getWorld().createExplosion(event.getEntity().getLocation(), 5, true, true, event.getEntity());
         for (Entity e : event.getEntity().getNearbyEntities(5, 5, 5)) {
-            if(!(e instanceof LivingEntity)) return;
-            LivingEntity entity = (LivingEntity) e;
+            if(!(e instanceof LivingEntity entity)) return;
             double distance = event.getEntity().getLocation().distanceSquared(entity.getLocation());
             if(distance <= .5) {
                 entity.setVelocity(new Location(entity.getWorld(), 0, 1, 0).toVector());
@@ -181,14 +182,12 @@ public class PlayerListener implements Listener {
         if(!isDraconicArmor(player.getInventory().getArmorContents())) return;
         List<ItemStack> armorPieces = getAllDraconicArmorPieces(player.getInventory().getArmorContents());
         double armorDmg = event.getDamage() / (armorPieces.size() / 2.0D);
-        boolean cancelled = true;
         for (ItemStack armorPiece : armorPieces) {
             EquipmentSlot slot = getEquipmentSlot(armorPiece.getType());
             ItemMeta meta = armorPiece.getItemMeta();
             List<String> lore = meta.getLore();
             int armorEnergy = Integer.parseInt(lore.get(1).replace("Energy: ", "").replace(" / 100", ""));
             if(armorEnergy == 0) {
-                cancelled = false;
                 return;
             }
             int newArmorEnergy = armorEnergy - (int) armorDmg;
@@ -198,7 +197,7 @@ public class PlayerListener implements Listener {
             armorPiece.setItemMeta(meta);
             player.getInventory().setItem(slot, armorPiece);
         }
-        event.setCancelled(cancelled);
+        event.setCancelled(true);
         Bukkit.getPluginManager().callEvent(new ArmorEvent(player));
     }
 
@@ -237,7 +236,7 @@ public class PlayerListener implements Listener {
         Optional<CustomBlock> cb = CustomBlockListener.blocks.stream()
                 .filter(customBlock -> customBlock.getCustomModelData() == cmd && customBlock.getLoc().getX() == event.getBlock().getLocation().getX() &&
                         customBlock.getLoc().getY() == event.getBlock().getY() && event.getBlock().getZ() == customBlock.getLoc().getZ()).findFirst();
-        if (!cb.isPresent()) return;
+        if (cb.isEmpty()) return;
         new BukkitRunnable() {
 
             @Override
@@ -257,7 +256,7 @@ public class PlayerListener implements Listener {
                 .noneMatch(itemStack -> itemStack.getItemMeta().getCustomModelData() == event.getItemInHand().getItemMeta().getCustomModelData())) return;
         Optional<CustomBlock> opBlock = Arrays.stream(Blocks.values())
                 .filter(blocks -> blocks.block.getCustomModelData() == event.getItemInHand().getItemMeta().getCustomModelData()).map(Blocks::getBlock).findFirst();
-        if(!opBlock.isPresent()) return;
+        if(opBlock.isEmpty()) return;
         CustomBlock block = opBlock.get();
         block.setLoc(event.getBlock().getLocation());
         event.setCancelled(true);
@@ -319,12 +318,12 @@ public class PlayerListener implements Listener {
 
     public static EquipmentSlot getEquipmentSlot(Material mat) {
         String matName = mat.name().replace("LEATHER_", "");
-        switch (matName) {
-            case "HELMET": return EquipmentSlot.HEAD;
-            case "CHESTPLATE": return EquipmentSlot.CHEST;
-            case "LEGGINGS": return EquipmentSlot.LEGS;
-            case "BOOTS": return EquipmentSlot.FEET;
-            default: return EquipmentSlot.OFF_HAND;
-        }
+        return switch (matName) {
+            case "HELMET" -> EquipmentSlot.HEAD;
+            case "CHESTPLATE" -> EquipmentSlot.CHEST;
+            case "LEGGINGS" -> EquipmentSlot.LEGS;
+            case "BOOTS" -> EquipmentSlot.FEET;
+            default -> EquipmentSlot.OFF_HAND;
+        };
     }
 }

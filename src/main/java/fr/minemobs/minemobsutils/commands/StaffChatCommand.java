@@ -26,8 +26,8 @@ public class StaffChatCommand extends PluginCommand {
         if(message.startsWith("*")){
             message = message.replace("*", "");
         }
-        final String msg = ChatColor.GRAY + "[" + ChatColor.RED + " Staff Chat " + ChatColor.GRAY + "] " + ChatColor.RESET + String.format("<%s> ",
-                Bukkit.getPlayer(uuid).getDisplayName()) + ChatColor.translateAlternateColorCodes('&', message);
+        final String msg = ChatColor.GRAY + "[" + ChatColor.RED + "Staff Chat" + ChatColor.GRAY + "] " + ChatColor.RESET + String.format("<%s> ",
+                Bukkit.getPlayer(uuid).getDisplayName()) + message;
         Bukkit.getOnlinePlayers().stream().filter(players -> players.hasPermission(MinemobsUtils.pluginID + ".mod.chat")).forEach(players ->
                 players.sendMessage(uuid, msg));
     }

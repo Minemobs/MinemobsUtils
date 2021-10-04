@@ -2,10 +2,7 @@ package fr.minemobs.minemobsutils.utils;
 
 import fr.minemobs.minemobsutils.MinemobsUtils;
 import fr.minemobs.minemobsutils.objects.Items;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,6 +16,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.util.Consumer;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ItemBuilder implements Listener {
 
@@ -46,8 +44,7 @@ public class ItemBuilder implements Listener {
     }
 
     public ItemBuilder setColor(Color color) {
-        if(!(stack.getItemMeta() instanceof LeatherArmorMeta)) return this;
-        LeatherArmorMeta meta = (LeatherArmorMeta) stack.getItemMeta();
+        if(!(stack.getItemMeta() instanceof LeatherArmorMeta meta)) return this;
         meta.setColor(color);
         setItemMeta(meta);
         return this;
@@ -114,8 +111,7 @@ public class ItemBuilder implements Listener {
     }
 
     public ItemBuilder setHead(OfflinePlayer player) {
-        if(!(stack.getItemMeta() instanceof SkullMeta)) return this;
-        SkullMeta meta =(SkullMeta) stack.getItemMeta();
+        if(!(stack.getItemMeta() instanceof SkullMeta meta)) return this;
         if(!meta.hasOwner()) return this;
         meta.setOwningPlayer(player);
         setItemMeta(meta);
@@ -185,6 +181,13 @@ public class ItemBuilder implements Listener {
 
     public ItemStack build() {
         if(interactConsumer != null) Bukkit.getServer().getPluginManager().registerEvents(this, MinemobsUtils.getInstance());
+        ItemMeta meta = getItemMeta();
+        List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
+        String l = ChatColor.DARK_GRAY + "minemobsutils:" + ChatColor.stripColor(getItemMeta().getDisplayName().replaceAll("\\s+", "_").toLowerCase());
+        lore.removeIf(s -> s.equalsIgnoreCase(l));
+        lore.add(l);
+        meta.setLore(lore);
+        stack.setItemMeta(meta);
         return stack;
     }
 }

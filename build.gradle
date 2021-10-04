@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'fr.minemobs'
-version = '1.2'
+version = '1.3'
 
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_16
 compileJava.options.encoding = compileTestJava.options.encoding = javadoc.options.encoding = "UTF-8"
@@ -42,7 +42,7 @@ dependencies {
     }
     compileOnly group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.7.0"
 
-    implementation 'org.reflections:reflections:0.9.12'
+    implementation 'org.reflections:reflections:0.10'
     implementation 'org.bstats:bstats-bukkit:2.2.1'
     implementation group: 'de.tr7zw', name: 'item-nbt-api', version: '2.8.0'
 }
@@ -152,4 +152,3 @@ task copyFile(type: Copy) {
 
 build.finalizedBy(copyFile)
 shadowJar.finalizedBy(copyFile)
-

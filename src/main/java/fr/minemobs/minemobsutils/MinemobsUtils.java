@@ -3,6 +3,7 @@ package fr.minemobs.minemobsutils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import fr.minemobs.minemobsutils.commands.ColorCommand;
+import fr.minemobs.minemobsutils.commands.CommandInfo;
 import fr.minemobs.minemobsutils.customblock.CustomBlock;
 import fr.minemobs.minemobsutils.listener.CustomBlockListener;
 import fr.minemobs.minemobsutils.objects.CustomEnchants;
@@ -73,7 +74,8 @@ public class MinemobsUtils extends JavaPlugin {
 
     private void checkUpdates() {
         new UpdateChecker().getVersion(version -> {
-            if(this.getDescription().getVersion().equalsIgnoreCase(version)) {
+            if(this.getDescription().getVersion().equalsIgnoreCase(version) ||
+                    Integer.parseInt(this.getDescription().getVersion().split("\\.")[1]) > Integer.parseInt(version.split("\\.")[1])) {
                 getLogger().info("There is no new update available.");
                 return;
             }
@@ -128,9 +130,9 @@ public class MinemobsUtils extends JavaPlugin {
 
     private void registerCommands() {
         registerCommand("cc", new ColorCommand(), "chatcolor", "colorcode");
-        ReflectionUtils.getClass("fr.minemobs.minemobsutils.commands", fr.minemobs.minemobsutils.commands.PluginCommand.class).forEach(clazz -> {
+        ReflectionUtils.getClassWithAnnotation("fr.minemobs.minemobsutils.commands", CommandInfo.class).forEach(clazz -> {
             try {
-                registerCommand(clazz.getDeclaredConstructor().newInstance());
+                registerCommand((fr.minemobs.minemobsutils.commands.PluginCommand) clazz.getDeclaredConstructor().newInstance());
             } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                 getLogger().severe(e.getMessage());
             }

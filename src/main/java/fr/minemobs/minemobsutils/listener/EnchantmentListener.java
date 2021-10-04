@@ -3,6 +3,7 @@ package fr.minemobs.minemobsutils.listener;
 import com.google.common.collect.ImmutableList;
 import fr.minemobs.minemobsutils.objects.CustomEnchants;
 import fr.minemobs.minemobsutils.utils.ItemStackUtils;
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Container;
@@ -16,18 +17,21 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class EnchantmentListener implements Listener {
+
+    private Map<UUID, List<ItemStack>> soulBoundDrops = new HashMap<>();
 
     @EventHandler(priority = EventPriority.LOWEST)
     private void trasherBlockBreakListener(BlockDropItemEvent event) {
@@ -82,9 +86,8 @@ public class EnchantmentListener implements Listener {
 
     @EventHandler
     private void onHitLightBoltListener(EntityDamageByEntityEvent event) {
-        if(!(event.getDamager() instanceof Player)) return;
+        if(!(event.getDamager() instanceof Player player)) return;
         if(!(event.getEntity() instanceof LivingEntity)) return;
-        Player player = (Player) event.getDamager();
         PlayerInventory inv = player.getInventory();
         if(ItemStackUtils.isAirOrNull(inv.getItemInMainHand())) return;
         if(!inv.getItemInMainHand().hasItemMeta()) return;
@@ -94,14 +97,12 @@ public class EnchantmentListener implements Listener {
 
     @EventHandler
     private void onHitTeamTreeListener(EntityDamageByEntityEvent event) {
-        if(!(event.getDamager() instanceof Player)) return;
-        if(!(event.getEntity() instanceof LivingEntity)) return;
-        Player player = (Player) event.getDamager();
+        if(!(event.getDamager() instanceof Player player)) return;
+        if(!(event.getEntity() instanceof LivingEntity entity)) return;
         PlayerInventory inv = player.getInventory();
         if(ItemStackUtils.isAirOrNull(inv.getItemInMainHand())) return;
         if(!inv.getItemInMainHand().hasItemMeta()) return;
         if(!inv.getItemInMainHand().getItemMeta().hasEnchant(CustomEnchants.TEAM_TREE.enchantment)) return;
-        LivingEntity entity = (LivingEntity) event.getEntity();
         player.getWorld().generateTree(entity.getLocation(), TreeType.BIG_TREE);
         entity.addPotionEffect(PotionEffectType.JUMP.createEffect(10 * 20, 255));
         entity.addPotionEffect(PotionEffectType.BLINDNESS.createEffect(10 * 20, 255));
@@ -110,9 +111,8 @@ public class EnchantmentListener implements Listener {
 
     @EventHandler
     private void onHitExplosionListener(EntityDamageByEntityEvent event) {
-        if(!(event.getDamager() instanceof Player)) return;
+        if(!(event.getDamager() instanceof Player player)) return;
         if(!(event.getEntity() instanceof LivingEntity)) return;
-        Player player = (Player) event.getDamager();
         PlayerInventory inv = player.getInventory();
         if(ItemStackUtils.isAirOrNull(inv.getItemInMainHand())) return;
         if(!inv.getItemInMainHand().hasItemMeta()) return;
@@ -177,6 +177,30 @@ public class EnchantmentListener implements Listener {
             }
         }
     }
+
+    //SoulBound Enchant
+    @EventHandler
+    public void onDeath(PlayerDeathEvent event) {
+        soulBoundDrops.put(event.getEntity().getUniqueId(), Arrays.stream(event.getEntity().getInventory().getContents())
+                .filter(Objects::nonNull)
+                .filter(itemStack -> itemStack.containsEnchantment(CustomEnchants.SOUL_BOUND.enchantment)).collect(Collectors.toList()));
+        event.getDrops().removeIf(itemStack -> itemStack.containsEnchantment(CustomEnchants.SOUL_BOUND.enchantment));
+    }
+
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent event) {
+        soulBoundDrops.get(event.getPlayer().getUniqueId()).forEach(is -> {
+            ItemMeta meta = is.getItemMeta();
+            List<String> lore = meta.getLore();
+            String enchantmentLore = ChatColor.GRAY + WordUtils.capitalize(CustomEnchants.SOUL_BOUND.enchantment.getKey().getKey().replaceAll("_", " ")) + " I";
+            lore.remove(enchantmentLore);
+            meta.setLore(lore);
+            meta.removeEnchant(CustomEnchants.SOUL_BOUND.enchantment);
+            is.setItemMeta(meta);
+            event.getPlayer().getInventory().addItem(is);
+        });
+    }
+    //SoulBound Enchant
 
     private List<Material> getInvalidBlocks() {
         return Arrays.asList(Material.LAVA, Material.WATER, Material.BEDROCK, Material.NETHER_PORTAL, Material.END_PORTAL, Material.END_PORTAL_FRAME, Material.TALL_GRASS,

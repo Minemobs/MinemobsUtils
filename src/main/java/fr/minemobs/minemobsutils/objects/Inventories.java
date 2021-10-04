@@ -4,7 +4,7 @@ import fr.minemobs.minemobsutils.MinemobsUtils;
 import fr.minemobs.minemobsutils.utils.InventoryBuilder;
 import fr.minemobs.minemobsutils.utils.ItemBuilder;
 import fr.minemobs.minemobsutils.utils.ItemStackUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -20,10 +20,10 @@ public enum Inventories {
         if(ItemStackUtils.isAirOrNull(event.getCurrentItem())) return;
         ItemStack is = event.getWhoClicked().getInventory().getItemInMainHand();
         ItemMeta meta = is.getItemMeta();
-        CustomEnchants value = CustomEnchants.valueOf(event.getCurrentItem().getItemMeta().getDisplayName().toUpperCase());
+        CustomEnchants value = CustomEnchants.valueOf(event.getCurrentItem().getItemMeta().getDisplayName().toUpperCase().replaceAll("\\s+", "_"));
         List<String> lore = new ArrayList<>();
         if(meta.hasLore()) lore = meta.getLore();
-        String enchantmentLore = ChatColor.GRAY + StringUtils.capitalize(value.enchantment.getKey().getKey()) + " I";
+        String enchantmentLore = ChatColor.GRAY + WordUtils.capitalize(value.enchantment.getKey().getKey().replaceAll("_", " ")) + " I";
         if(meta.hasEnchants() && meta.hasEnchant(value.enchantment)) {
             meta.removeEnchant(value.enchantment);
             lore.remove(enchantmentLore);

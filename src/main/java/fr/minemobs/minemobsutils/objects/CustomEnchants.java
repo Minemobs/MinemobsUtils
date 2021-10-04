@@ -3,7 +3,7 @@ package fr.minemobs.minemobsutils.objects;
 import fr.minemobs.minemobsutils.MinemobsUtils;
 import fr.minemobs.minemobsutils.enchants.CustomEnchantmentWrapper;
 import fr.minemobs.minemobsutils.utils.ItemBuilder;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentTarget;
@@ -24,6 +24,7 @@ public enum CustomEnchants {
     HAMMER(new CustomEnchantmentWrapper("hammer", "Hammer", 1, EnchantmentTarget.TOOL)),
     FURNACE(new CustomEnchantmentWrapper("furnace", "Furnace", 1, EnchantmentTarget.TOOL)),
     TRASHER(new CustomEnchantmentWrapper("trasher", "Trasher", 1, EnchantmentTarget.TOOL)),
+    SOUL_BOUND(new CustomEnchantmentWrapper("soul_bound", "Soul Bound", 1, EnchantmentTarget.BREAKABLE)),
     ;
 
     public final Enchantment enchantment;
@@ -57,7 +58,8 @@ public enum CustomEnchants {
     public static ItemStack[] toEnchantedBook() {
         List<ItemStack> stacks = new ArrayList<>();
         for (CustomEnchants value : CustomEnchants.values()) {
-            stacks.add(new ItemBuilder(Material.ENCHANTED_BOOK).setGlow().setDisplayName(StringUtils.capitalize(value.enchantment.getKey().getKey())).build());
+            stacks.add(new ItemBuilder(Material.ENCHANTED_BOOK).setGlow().setDisplayName(WordUtils.capitalize(value.enchantment.getKey().getKey()
+                    .replaceAll("_", " "))).build());
         }
         return stacks.toArray(new ItemStack[0]);
     }

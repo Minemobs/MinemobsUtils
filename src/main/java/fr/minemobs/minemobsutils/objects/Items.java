@@ -40,6 +40,9 @@ public enum Items {
             .addItemFlag(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_DYE, ItemFlag.HIDE_UNBREAKABLE).build()),
     //Plates
     IRON_PLATE(new ItemBuilder(Material.IRON_INGOT).setDisplayName(ChatColor.GRAY + "Iron Plate").build()),
+    GOLD_PLATE(new ItemBuilder(Material.IRON_INGOT).setDisplayName(ChatColor.GOLD + "Gold Plate").build()),
+    DIAMOND_PLATE(new ItemBuilder(Material.IRON_INGOT).setDisplayName(ChatColor.AQUA + "Diamond Plate").build()),
+    NETHERITE_PLATE(new ItemBuilder(Material.IRON_INGOT).setDisplayName(ChatColor.DARK_GRAY + "Netherite Plate").build()),
     ;
 
     public final ItemStack stack;
