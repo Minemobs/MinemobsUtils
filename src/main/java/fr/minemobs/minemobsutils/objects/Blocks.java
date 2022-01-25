@@ -16,6 +16,8 @@ public enum Blocks {
     TEMPLATE(new CustomBlockBuilder(5555).build()),
     RUBY_ORE(new CustomBlockBuilder(1).addDrop(Items.RUBY.stack).build()),
     MILK_GENERATOR(new CustomBlockBuilder(2).addDrop(Items.RUBY.stack).build()),
+    //Todo: Fix structure rotation
+    //HOUSE_MINIATURE(new CustomBlockBuilder(8).build()),
     ;
 
     public final CustomBlock block;
@@ -28,7 +30,7 @@ public enum Blocks {
     }
 
     public static ImmutableList<ItemStack> getAllBlockItems() {
-        return ImmutableList.copyOf(Arrays.stream(values()).map(Blocks::getStack).collect(Collectors.toList()));
+        return ImmutableList.copyOf(Arrays.stream(values()).map(Blocks::getStack).toList());
     }
 
     public CustomBlock getBlock() {

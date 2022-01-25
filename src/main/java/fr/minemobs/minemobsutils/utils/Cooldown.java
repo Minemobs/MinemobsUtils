@@ -15,6 +15,7 @@ public class Cooldown {
     public enum CooldownType {
         HEAL_FEED_COMMAND("status", 15),
         GRAPPLING_HOOK("grappling_hook", 2),
+        WITHER_STAFF("wither_staff", 15),
         ;
 
         public final String name;
@@ -49,6 +50,10 @@ public class Cooldown {
 
     public Cooldown(UUID id, CooldownType cooldownType) {
         this(id, cooldownType.name, cooldownType.defaultTime);
+    }
+
+    public static boolean isInCooldown(UUID id, CooldownType cooldownType) {
+        return isInCooldown(id, cooldownType.name);
     }
 
     public static boolean isInCooldown(UUID id, String cooldownName) {

@@ -42,7 +42,15 @@ public class ItemStackUtils {
     public static boolean isAirOrNull(ItemStack item){
         return item == null || item.getType().isAir();
     }
-    
+
+    public static boolean isNotAirNorNull(ItemStack is) {
+        return !isAirOrNull(is);
+    }
+
+    public static boolean hasLore(ItemStack is) {
+        return is.getItemMeta() != null && is.getItemMeta().hasLore();
+    }
+
     public static Material randomBanner(){
         List<Material> banners = Arrays.stream(Material.values()).filter(banner -> banner.name().endsWith("_BANNER") && !banner.name().endsWith("_WALL_BANNER") && !banner.name().startsWith("LEGACY"))
                 .collect(Collectors.toList());

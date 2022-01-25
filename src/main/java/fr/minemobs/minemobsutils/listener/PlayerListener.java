@@ -131,13 +131,9 @@ public class PlayerListener implements Listener {
                         .filter(customBlock -> customBlock.getCustomModelData() == cmd && customBlock.getLoc().getX() == event.getClickedBlock().getLocation().getX() &&
                                 customBlock.getLoc().getY() == event.getClickedBlock().getY() && event.getClickedBlock().getZ() == customBlock.getLoc().getZ()).findFirst();
                 if (cb.isEmpty()) return;
-                new BukkitRunnable() {
-
-                    @Override
-                    public void run() {
-                        Bukkit.getPluginManager().callEvent(new CustomBlockInteractEvent(player, event.getItem(), event.getClickedBlock(), event.getBlockFace(), cb.get()));
-                    }
-                }.runTaskLater(MinemobsUtils.getInstance(), 2);
+                Bukkit.getScheduler().runTaskLater(MinemobsUtils.getInstance(),
+                        () -> Bukkit.getPluginManager().callEvent(new CustomBlockInteractEvent(player, event.getItem(), event.getClickedBlock(), event.getBlockFace(), cb.get())),
+                        2);
             }
         }
     }
@@ -284,7 +280,7 @@ public class PlayerListener implements Listener {
         return Arrays.stream(armor).filter(stack -> !ItemStackUtils.isAirOrNull(stack) && stack.getType() == Material.valueOf("LEATHER_" + stack.getType().name().split("_")[1]) &&
                 stack.hasItemMeta() && stack.getItemMeta().hasDisplayName() &&
                 stack.getItemMeta().getDisplayName().equals(Items.valueOf("DRACONIC_" + stack.getType().name().split("_")[1]).stack.getItemMeta().getDisplayName()) &&
-                stack.getItemMeta().hasLore() && stack.getItemMeta().getLore().get(1) != null).collect(Collectors.toList());
+                stack.getItemMeta().hasLore() && stack.getItemMeta().getLore().get(1) != null).toList();
     }
 
     private boolean isAllPiecesCharged(ItemStack[] armor) {

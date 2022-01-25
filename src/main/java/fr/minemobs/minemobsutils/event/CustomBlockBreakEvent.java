@@ -13,6 +13,7 @@ public class CustomBlockBreakEvent extends BlockBreakEvent {
     public CustomBlockBreakEvent(@NotNull Block theBlock, @NotNull Player player, CustomBlock customBlock) {
         super(theBlock, player);
         this.customBlock = customBlock;
+        this.customBlock.setLoc(theBlock.getLocation());
     }
 
     public CustomBlock getCustomBlock() {

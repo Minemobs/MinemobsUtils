@@ -18,7 +18,9 @@ public class WorldListener implements Listener {
         Block b = block.getWorld().getBlockAt(block.getLocation().clone().subtract(0, 1, 0));
         if(b.isEmpty() || b.isLiquid() || b.isPassable()) return;
         switch (b.getType()) {
+            case COPPER_BLOCK -> giveItem(Items.COPPER_PLATE, b, block);
             case IRON_BLOCK -> giveItem(Items.IRON_PLATE, b, block);
+            case AMETHYST_BLOCK -> giveItem(Items.AMETHYST_PLATE, b, block);
             case GOLD_BLOCK -> giveItem(Items.GOLD_PLATE, b, block);
             case DIAMOND_BLOCK -> giveItem(Items.DIAMOND_PLATE, b, block);
             case NETHERITE_BLOCK -> giveItem(Items.NETHERITE_PLATE, b, block);

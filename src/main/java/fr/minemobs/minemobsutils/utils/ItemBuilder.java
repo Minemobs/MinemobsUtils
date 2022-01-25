@@ -24,7 +24,7 @@ public class ItemBuilder implements Listener {
     private Consumer<PlayerInteractEvent> interactConsumer;
 
     public ItemBuilder(ItemStack stack) {
-        this.stack = stack;
+        this.stack = stack.clone();
     }
 
     public ItemBuilder(Material mat, int amount) {

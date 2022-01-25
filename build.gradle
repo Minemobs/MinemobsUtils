@@ -7,7 +7,7 @@ plugins {
 group = 'fr.minemobs'
 version = '1.3'
 
-sourceCompatibility = targetCompatibility = JavaVersion.VERSION_16
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
 compileJava.options.encoding = compileTestJava.options.encoding = javadoc.options.encoding = "UTF-8"
 
 String missingPermissionMessage = '§8[§4Minemobs Utils§8] §4You do not have the permission!'
@@ -32,19 +32,29 @@ repositories {
         name = "Spigot-Repo"
         url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
     }
+    maven { url 'https://jitpack.io' }
+    maven {
+        name = "enginehub-maven"
+        url = "https://maven.enginehub.org/repo/"
+    }
 }
 
 dependencies {
+    compileOnly("org.spigotmc:spigot-api:1.17.1-R0.1-SNAPSHOT")
     compileOnly('org.spigotmc:spigot:1.17.1-R0.1-SNAPSHOT')
     compileOnly 'org.jetbrains:annotations:21.0.1'
     compileOnly('net.skinsrestorer:skinsrestorer:14.1.1') {
         transitive(false)
     }
     compileOnly group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.7.0"
+    compileOnly('com.sk89q.worldedit:worldedit-bukkit:7.2.0-SNAPSHOT') {
+        exclude group: "org.bukkit", module: "bukkit"
+    }
 
-    implementation 'org.reflections:reflections:0.10'
+    implementation 'org.reflections:reflections:0.10.2'
     implementation 'org.bstats:bstats-bukkit:2.2.1'
     implementation group: 'de.tr7zw', name: 'item-nbt-api', version: '2.8.0'
+    implementation("com.flowpowered:flow-nbt:1.0.0")
 }
 
 shadowJar {
@@ -54,6 +64,7 @@ shadowJar {
     relocate 'org.reflections', 'fr.minemobs.relocate.reflections'
     relocate 'javassist', 'fr.minemobs.relocate.javassist'
     relocate 'org.bstats', 'fr.minemobs.relocate.bstats'
+    relocate 'com.flowpowered.nbt', 'fr.minemobs.relocate.flowpowered.nbt'
 }
 
 spigot {
@@ -132,6 +143,7 @@ spigot {
     debug {
         args '--nojline' , '--max-players', '100', '--nogui', '--server-name', 'Cacahuete Test Server'
 
+        buildVersion = "1.17.1"
         jvmArgs '-Xmx2G'
         serverPort 25565
     }

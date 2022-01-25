@@ -12,6 +12,8 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public enum Inventories {
@@ -38,7 +40,7 @@ public enum Inventories {
         meta.setLore(lore);
         is.setItemMeta(meta);
     }).build()),
-    CUSTOM_ITEMS_GIVER(new InventoryBuilder(ChatColor.RED + "Custom Items Giver", 3).addItems(Items.getAllItems())
+    CUSTOM_ITEMS_GIVER(new InventoryBuilder(ChatColor.RED + "Custom Items Giver", 6).addItems(Items.getAllItems())
             .addItems(Blocks.getAllBlockItems()).setCancelled().onClick(event -> {
                 if(ItemStackUtils.isAirOrNull(event.getCurrentItem())) return;
                 if(event.getClickedInventory() instanceof PlayerInventory) return;

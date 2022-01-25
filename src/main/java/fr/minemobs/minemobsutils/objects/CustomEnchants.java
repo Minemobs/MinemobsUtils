@@ -35,7 +35,7 @@ public enum CustomEnchants {
 
     public static void register() {
         for (CustomEnchants value : CustomEnchants.values()) {
-            if(!Arrays.stream(Enchantment.values()).collect(Collectors.toList()).contains(value.enchantment)) registerEnchantment(value.enchantment);
+            if(!Arrays.stream(Enchantment.values()).toList().contains(value.enchantment)) registerEnchantment(value.enchantment);
         }
     }
 
@@ -49,9 +49,6 @@ public enum CustomEnchants {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             registered = false;
             e.printStackTrace();
-        }
-        if(registered) {
-            MinemobsUtils.getInstance().getLogger().info(MinemobsUtils.ebheader + "Enchantments registered");
         }
     }
 

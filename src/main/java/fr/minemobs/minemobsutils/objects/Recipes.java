@@ -32,6 +32,11 @@ public enum Recipes {
     DRACONIUM_BOOTS(new ShapedRecipe(MinemobsUtils.getKey("draconium_boots"), Items.DRACONIC_BOOTS.stack)
             .shape("   ", "E E", "E E")
             .setIngredient('E', new RecipeChoice.ExactChoice(Items.CHARGED_DRACONIUM_INGOT.stack))),
+    //AMMO
+    GUN_AMMO(new ShapedRecipe(MinemobsUtils.getKey("gun_ammo"), Items.GUN_AMMO.stack)
+            .shape(" G ", "GPG", " G ")
+            .setIngredient('G', new RecipeChoice.MaterialChoice(Material.GUNPOWDER))
+            .setIngredient('P', new RecipeChoice.ExactChoice(Items.IRON_PLATE.stack))),
     //Other
     BATTERY(new ShapedRecipe(MinemobsUtils.getKey("battery"), Items.BATTERY.stack)
     .shape(" E ", "IGI", "IRI")
