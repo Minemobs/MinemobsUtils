@@ -1,6 +1,8 @@
 package fr.minemobs.minemobsutils.objects;
 
 import fr.minemobs.minemobsutils.MinemobsUtils;
+import fr.minemobs.minemobsutils.objects.item.ItemInfo;
+import fr.minemobs.minemobsutils.objects.item.ProjectileInfo;
 import fr.minemobs.minemobsutils.utils.Cooldown;
 import fr.minemobs.minemobsutils.utils.ItemBuilder;
 import org.bukkit.ChatColor;
@@ -11,11 +13,11 @@ import org.bukkit.entity.WitherSkull;
 import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public enum Items {
 
@@ -26,7 +28,6 @@ public enum Items {
     //STAFFS
     FIREBALL_STAFF(new ItemBuilder(Material.STICK).setDisplayName(ChatColor.LIGHT_PURPLE + "Fireball Staff").setCustomModelData(1024).setGlow().build()),
     WITHER_STAFF(new ItemBuilder(Material.STICK).setDisplayName(ChatColor.BLACK + "Wither Staff").setCustomModelData(1025).setGlow().onInteract(event -> {
-        // TODO: 10/10/2021 fix this
         if(event.getAction() != Action.RIGHT_CLICK_AIR) return;
         if(Cooldown.isInCooldown(event.getPlayer().getUniqueId(), Cooldown.CooldownType.WITHER_STAFF)) {
             event.getPlayer().sendMessage(Cooldown.cooldownMessage(event.getPlayer().getUniqueId(), Cooldown.CooldownType.WITHER_STAFF));
@@ -64,7 +65,34 @@ public enum Items {
             .addItemFlag(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_DYE, ItemFlag.HIDE_UNBREAKABLE).build()),
     GUN(new ItemBuilder(Material.IRON_HORSE_ARMOR).setLore("A gun that goes VROOOOOOOOM!").setDisplayName(ChatColor.GRAY + "Gun").setGlow().build()),
     //Ammo
-    GUN_AMMO(new ItemBuilder(Material.IRON_NUGGET).setDisplayName(ChatColor.GRAY + "Gun Ammo").setGlow().build()),
+    GUN_AMMO(new ItemBuilder(Material.IRON_NUGGET).setDisplayName(ChatColor.GRAY + "Gun Ammo").setGlow().build(), new ProjectileInfo() {
+        @Override
+        public float damage() {
+            return 5;
+        }
+
+        @Override
+        public Items[] validWeapons() {
+            return new Items[]{Items.GUN};
+        }
+    }),
+    FIRE_GUN_AMMO(new ItemBuilder(Material.IRON_NUGGET).setDisplayName(ChatColor.RED + "Fire Gun Ammo").setGlow().build(), new ProjectileInfo() {
+
+        @Override
+        public Items[] validWeapons() {
+            return new Items[]{Items.GUN};
+        }
+
+        @Override
+        public boolean isFlammable() {
+            return true;
+        }
+
+        @Override
+        public float damage() {
+            return 5;
+        }
+    }),
     //Plates
     COPPER_PLATE(new ItemBuilder(Material.IRON_INGOT).setDisplayName(ChatColor.GOLD + "Copper Plate").build()),
     IRON_PLATE(new ItemBuilder(Material.IRON_INGOT).setDisplayName(ChatColor.GRAY + "Iron Plate").build()),
@@ -75,16 +103,33 @@ public enum Items {
     ;
 
     public final ItemStack stack;
+    @Nullable
+    public final ItemInfo info;
 
     Items(ItemStack stack) {
         this.stack = stack.clone();
+        this.info = null;
+    }
+
+    Items(ItemStack stack, @NotNull ItemInfo info) {
+        this.stack = stack.clone();
+        this.info = info;
+    }
+
+    public static boolean hasItemInfo(Items item) {
+        return item.info != null;
+    }
+
+    public static Items[] getAllItemsWithItemInfo(Class<? extends ItemInfo> infos) {
+        return Arrays.stream(Items.values()).filter(Items::hasItemInfo).filter(item -> infos.isAssignableFrom(item.info.getClass())).toArray(Items[]::new);
+    }
+
+    public ItemStack getStack() {
+        return stack;
     }
 
     public static ItemStack[] getAllItems() {
-        List<ItemStack> stacks = new ArrayList<>();
-        for (Items value : Items.values()) {
-            stacks.add(value.stack);
-        }
-        return stacks.toArray(new ItemStack[0]);
+        return Arrays.stream(Items.values()).map(Items::getStack).toArray(ItemStack[]::new);
     }
+
 }

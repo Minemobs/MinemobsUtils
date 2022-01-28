@@ -26,8 +26,9 @@ public class GunListener implements Listener {
         if(ItemStackUtils.isAirOrNull(event.getItem()) || !event.getItem().isSimilar(Items.GUN.stack)) return;
         Player player = event.getPlayer();
         PlayerInventory inventory = player.getInventory();
+        //TODO: Add support for custom projectiles
         Optional<ItemStack> ammo = Arrays.stream(inventory.getStorageContents()).filter(ItemStackUtils::isNotAirNorNull).filter(ItemStackUtils::hasLore)
-                .filter(is -> ChatColor.stripColor(is.getItemMeta().getLore().get(is.getItemMeta().getLore().size() - 1)).equals("minemobsutils:gun_ammo")).findFirst();
+                .filter(is -> ItemStackUtils.isSameItem(is, Items.GUN_AMMO.stack) || ItemStackUtils.isSameItem(is, Items.FIRE_GUN_AMMO.stack)).findFirst();
         if(ammo.isEmpty()) {
             event.getPlayer().sendMessage(MinemobsUtils.ebheader + ChatColor.RED + "You don't have ammo!");
             return;
@@ -36,6 +37,7 @@ public class GunListener implements Listener {
         drawLine(event.getPlayer().getEyeLocation(), event.getPlayer().getEyeLocation().clone().add(event.getPlayer().getEyeLocation().getDirection().clone().multiply(100)), 0.1D);
         RayTraceResult result = world.rayTrace(event.getPlayer().getEyeLocation(), event.getPlayer().getEyeLocation().getDirection(), 100.0D, FluidCollisionMode.NEVER,
                 true, 0.2D, entity -> entity instanceof LivingEntity && !entity.equals(event.getPlayer()));
+        boolean useFireAmmo = ItemStackUtils.isSameItem(ammo.get(), Items.FIRE_GUN_AMMO.stack);
         ammo.get().setAmount(ammo.get().getAmount() - 1);
         if(result == null) return;
         if(result.getHitBlock() != null) {
@@ -45,6 +47,7 @@ public class GunListener implements Listener {
         if(result.getHitEntity() == null) return;
         LivingEntity entity = (LivingEntity) result.getHitEntity();
         entity.damage(5.0D, event.getPlayer());
+        if(useFireAmmo) entity.setFireTicks(100);
         event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0F, 1.0F);
     }
 
