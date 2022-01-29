@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 @SpigotPlugin
 public class MinemobsUtils extends JavaPlugin {
@@ -110,10 +109,10 @@ public class MinemobsUtils extends JavaPlugin {
 
     private void registerCrafts()
     {
-        for (Recipes recipe : Arrays.stream(Recipes.values()).filter(recipes -> recipes.getRecipe() != null).collect(Collectors.toList())) {
+        for (Recipes recipe : Arrays.stream(Recipes.values()).filter(recipes -> recipes.getRecipe() != null).toList()) {
             getServer().addRecipe(recipe.getRecipe());
         }
-        for (Recipes recipe : Arrays.stream(Recipes.values()).filter(recipes -> recipes.getShapelessRecipe() != null).collect(Collectors.toList())) {
+        for (Recipes recipe : Arrays.stream(Recipes.values()).filter(recipes -> recipes.getShapelessRecipe() != null).toList()) {
             getServer().addRecipe(recipe.getShapelessRecipe());
         }
     }
@@ -129,7 +128,7 @@ public class MinemobsUtils extends JavaPlugin {
     }
 
     private void registerCommands() {
-        registerCommand("cc", new ColorCommand(), "chatcolor", "colorcode");
+        //registerCommand("cc", new ColorCommand(), "chatcolor", "colorcode");
         ReflectionUtils.getClassWithAnnotation("fr.minemobs.minemobsutils.commands", CommandInfo.class).forEach(clazz -> {
             try {
                 registerCommand((fr.minemobs.minemobsutils.commands.PluginCommand) clazz.getDeclaredConstructor().newInstance());
@@ -160,7 +159,7 @@ public class MinemobsUtils extends JavaPlugin {
         }
     }
 
-    private void saveBlocks() throws Exception {
+    private void saveBlocks() throws IOException {
         final File file = new File(getDataFolder(), "customblocks.yml");
         if(file.exists()) {
             file.delete();

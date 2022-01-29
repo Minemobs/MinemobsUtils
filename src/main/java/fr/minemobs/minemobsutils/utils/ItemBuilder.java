@@ -74,7 +74,7 @@ public class ItemBuilder implements Listener {
 
     @EventHandler
     private void onInteract(PlayerInteractEvent event) {
-        if(!ItemStackUtils.isSimilar(event.getItem(), this.stack) || interactConsumer == null) return;
+        if(!ItemStackUtils.isSameItem(event.getItem(), this.stack) || interactConsumer == null) return;
         interactConsumer.accept(event);
     }
 
@@ -100,16 +100,6 @@ public class ItemBuilder implements Listener {
         return this;
     }
 
-    /**
-     * @deprecated Use {@link #setHead(OfflinePlayer)}
-     * @param owner The owner of the head
-     * @return the item stack
-     */
-    @Deprecated
-    public ItemBuilder setHead(String owner) {
-        return setHead(Bukkit.getOfflinePlayer(owner));
-    }
-
     public ItemBuilder setHead(OfflinePlayer player) {
         if(!(stack.getItemMeta() instanceof SkullMeta meta)) return this;
         if(!meta.hasOwner()) return this;
@@ -130,7 +120,7 @@ public class ItemBuilder implements Listener {
         return this;
     }
 
-    public ItemBuilder setLore(ArrayList<String> lore) {
+    public ItemBuilder setLore(List<String> lore) {
         ItemMeta meta = getItemMeta();
         meta.setLore(lore);
         setItemMeta(meta);

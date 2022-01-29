@@ -53,12 +53,11 @@ public class CraftListener implements Listener {
     //Debug Event
     @EventHandler
     public void onHit(EntityDamageByEntityEvent event) {
-        if(!(event.getDamager() instanceof Player)) return;
-        Player player = (Player) event.getDamager();
+        if(!(event.getDamager() instanceof Player player)) return;
         if(!isToolOrWeapon(player.getInventory().getItemInMainHand().getType())) return;
         ItemMeta meta = player.getInventory().getItemInMainHand().getItemMeta();
         if(!meta.hasLore()) return;
-        if(!meta.getLore().stream().anyMatch(s -> s.endsWith(ChatColor.YELLOW + " Stars"))) return;
+        if(meta.getLore().stream().noneMatch(s -> s.endsWith(ChatColor.YELLOW + " Stars"))) return;
         //Hacky way to do that cause i'm dumb
         ((LivingEntity) event.getEntity()).damage(getStars(meta.getLore().stream().filter(s -> s.endsWith(ChatColor.YELLOW + " Stars")).findFirst().get()));
     }
@@ -69,7 +68,7 @@ public class CraftListener implements Listener {
         if(ItemStackUtils.isAirOrNull(inv.getItem(0)) || ItemStackUtils.isAirOrNull(inv.getItem(1))) return;
         Optional<AnvilRecipe> recipe = Arrays.stream(Recipes.values()).filter(recipes -> recipes.getAnvilRecipe() != null && recipes.getAnvilRecipe().isEquals(inv))
                 .map(Recipes::getAnvilRecipe).findFirst();
-        if(!recipe.isPresent()) return;
+        if(recipe.isEmpty()) return;
         event.setResult(recipe.get().getResult());
     }
 
@@ -94,13 +93,9 @@ public class CraftListener implements Listener {
     
     private String stars(int nmbOfStars) {
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < nmbOfStars; i++) {
-            builder.append(ChatColor.GOLD + "⭐");
-        }
+        builder.append((ChatColor.GOLD + "⭐").repeat(Math.max(0, nmbOfStars)));
         int missingStars = 5 - nmbOfStars;
-        for (int i = 0; i < missingStars; i++) {
-            builder.append(ChatColor.GRAY + "⭐");
-        }
+        builder.append((ChatColor.GRAY + "⭐").repeat(Math.max(0, missingStars)));
         return builder.toString() + ChatColor.RESET;
     }
 

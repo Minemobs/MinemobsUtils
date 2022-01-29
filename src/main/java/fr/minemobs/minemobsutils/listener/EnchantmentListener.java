@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 
 public class EnchantmentListener implements Listener {
 
-    private Map<UUID, List<ItemStack>> soulBoundDrops = new HashMap<>();
+    private final Map<UUID, List<ItemStack>> soulBoundDrops = new HashMap<>();
 
     @EventHandler(priority = EventPriority.LOWEST)
     private void trasherBlockBreakListener(BlockDropItemEvent event) {
@@ -159,9 +159,9 @@ public class EnchantmentListener implements Listener {
         if(!inv.getItemInMainHand().hasItemMeta()) return;
         if(!inv.getItemInMainHand().getItemMeta().hasEnchant(CustomEnchants.FURNACE.enchantment)) return;
         List<Recipe> recipes = ImmutableList.copyOf(Bukkit.recipeIterator());
-        for (Recipe _recipe : recipes.stream().filter(recipe -> recipe instanceof FurnaceRecipe).collect(Collectors.toList())) {
+        for (Recipe _recipe : recipes.stream().filter(FurnaceRecipe.class::isInstance).toList()) {
             FurnaceRecipe recipe = (FurnaceRecipe) _recipe;
-            for (Item item : event.getItems().stream().filter(item -> recipe.getInputChoice().test(item.getItemStack())).collect(Collectors.toList())) {
+            for (Item item : event.getItems().stream().filter(item -> recipe.getInputChoice().test(item.getItemStack())).toList()) {
                 ItemStack drop = recipe.getResult();
                 drop.setAmount(item.getItemStack().getAmount());
                 event.getItems().remove(item);
@@ -183,7 +183,7 @@ public class EnchantmentListener implements Listener {
     public void onDeath(PlayerDeathEvent event) {
         soulBoundDrops.put(event.getEntity().getUniqueId(), Arrays.stream(event.getEntity().getInventory().getContents())
                 .filter(Objects::nonNull)
-                .filter(itemStack -> itemStack.containsEnchantment(CustomEnchants.SOUL_BOUND.enchantment)).collect(Collectors.toList()));
+                .filter(itemStack -> itemStack.containsEnchantment(CustomEnchants.SOUL_BOUND.enchantment)).toList());
         event.getDrops().removeIf(itemStack -> itemStack.containsEnchantment(CustomEnchants.SOUL_BOUND.enchantment));
     }
 

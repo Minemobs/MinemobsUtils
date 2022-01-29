@@ -35,7 +35,7 @@ public class ItemStackUtils {
      * @since 1.1
      */
     @Deprecated(since = "1.1", forRemoval = true)
-    public static boolean isSimilar(ItemStack first, ItemStack second){
+    public static boolean isSimilar(ItemStack first, ItemStack second) {
         if(isAirOrNull(first) || isAirOrNull(second)) return false;
         ItemMeta im1 = first.getItemMeta();
         ItemMeta im2 = second.getItemMeta();
@@ -59,14 +59,18 @@ public class ItemStackUtils {
         if(!hasLore(first) || !hasLore(second)) return false;
         ItemMeta im1 = first.clone().getItemMeta();
         ItemMeta im2 = second.clone().getItemMeta();
-        return im1.getLore().get(im1.getLore().size() - 1).equals(im2.getLore().get(im2.getLore().size() - 1));
+        String lore = im1.getLore().get(im1.getLore().size() - 1);
+        String lore2 = im2.getLore().get(im2.getLore().size() - 1);
+        if(!ChatColor.stripColor(lore).startsWith("minemobsutils:") || !ChatColor.stripColor(lore2).startsWith("minemobsutils:")) return false;
+        return lore.equals(lore2);
     }
 
     @Nullable
     public static Items getItemFromItemStack(ItemStack is) {
         if(!hasLore(is)) return null;
-        String name = ChatColor.stripColor(is.getItemMeta().getLore().get(is.getItemMeta().getLore().size() - 1)).toUpperCase().replace("MINEMOBSUTILS:","");
-        return Items.valueOf(name);
+        String lore = ChatColor.stripColor(is.getItemMeta().getLore().get(is.getItemMeta().getLore().size() - 1));
+        if(!lore.startsWith("minemobsutils:")) return null;
+        return Items.valueOf(lore.toUpperCase().replace("MINEMOBSUTILS:",""));
     }
 
     public static boolean isAirOrNull(ItemStack item){
@@ -81,13 +85,13 @@ public class ItemStackUtils {
         return !isAirOrNull(is) && is.hasItemMeta() && is.getItemMeta().hasLore();
     }
 
-    public static Material randomBanner(){
+    public static Material randomBanner() {
         List<Material> banners = Arrays.stream(Material.values()).filter(banner -> banner.name().endsWith("_BANNER") && !banner.name().endsWith("_WALL_BANNER") &&
                         !banner.name().startsWith("LEGACY")).toList();
         return banners.get(new Random().nextInt(banners.size()));
     }
 
-    public static Material randomSkull(){
+    public static Material randomSkull() {
         List<Material> skulls = Arrays.stream(Material.values()).filter(material -> (!material.name().startsWith("PISTON") && material.name().endsWith("_HEAD") && !material.name().endsWith("_WALL_HEAD")) ||
                 (material.name().endsWith("_SKULL") && !material.name().startsWith("LEGACY") && !material.name().endsWith("_WALL_SKULL"))).toList();
         return skulls.get(new Random().nextInt(skulls.size()));

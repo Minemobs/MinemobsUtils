@@ -9,10 +9,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.WitherSkull;
 import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -91,6 +95,39 @@ public enum Items {
         @Override
         public float damage() {
             return 5;
+        }
+    }),
+    EXPLOSIVE_GUN_AMMO(new ItemBuilder(Material.IRON_NUGGET).setDisplayName(ChatColor.RED + "Explosive Gun Ammo").setGlow().build(), new ProjectileInfo() {
+
+        @Override
+        public float damage() {
+            return 10.0F;
+        }
+
+        @Override
+        public Items[] validWeapons() {
+            return new Items[]{Items.GUN};
+        }
+
+        @Override
+        public void onHit(Player player, @Nullable ItemStack ammo, LivingEntity target) {
+            target.getWorld().createExplosion(target.getLocation(), 3.0F, false, true, player);
+        }
+    }),
+    ICE_GUN_AMMO(new ItemBuilder(Material.IRON_NUGGET).setDisplayName(ChatColor.AQUA + "Ice Gun Ammo").setGlow().build(), new ProjectileInfo() {
+        @Override
+        public float damage() {
+            return 5.0F;
+        }
+
+        @Override
+        public Items[] validWeapons() {
+            return new Items[]{Items.GUN};
+        }
+
+        @Override
+        public void onHit(Player player, @Nullable ItemStack ammo, LivingEntity target) {
+            target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * 5, 2));
         }
     }),
     //Plates

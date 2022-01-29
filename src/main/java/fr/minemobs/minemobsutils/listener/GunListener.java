@@ -2,6 +2,7 @@ package fr.minemobs.minemobsutils.listener;
 
 import fr.minemobs.minemobsutils.MinemobsUtils;
 import fr.minemobs.minemobsutils.objects.Items;
+import fr.minemobs.minemobsutils.objects.item.ProjectileInfo;
 import fr.minemobs.minemobsutils.utils.ItemStackUtils;
 import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
@@ -26,18 +27,20 @@ public class GunListener implements Listener {
         if(ItemStackUtils.isAirOrNull(event.getItem()) || !event.getItem().isSimilar(Items.GUN.stack)) return;
         Player player = event.getPlayer();
         PlayerInventory inventory = player.getInventory();
-        //TODO: Add support for custom projectiles
         Optional<ItemStack> ammo = Arrays.stream(inventory.getStorageContents()).filter(ItemStackUtils::isNotAirNorNull).filter(ItemStackUtils::hasLore)
-                .filter(is -> ItemStackUtils.isSameItem(is, Items.GUN_AMMO.stack) || ItemStackUtils.isSameItem(is, Items.FIRE_GUN_AMMO.stack)).findFirst();
+                .filter(is -> ItemStackUtils.getItemFromItemStack(is) != null &&
+                        Arrays.stream(Items.getAllItemsWithItemInfo(ProjectileInfo.class)).anyMatch(item -> item == ItemStackUtils.getItemFromItemStack(is) &&
+                                Arrays.stream(((ProjectileInfo) item.info).validWeapons()).anyMatch(items -> items == Items.GUN)))
+                .findFirst();
         if(ammo.isEmpty()) {
             event.getPlayer().sendMessage(MinemobsUtils.ebheader + ChatColor.RED + "You don't have ammo!");
             return;
         }
+        ProjectileInfo info = ProjectileInfo.getInfo(ItemStackUtils.getItemFromItemStack(ammo.get()));
         World world = event.getPlayer().getWorld();
         drawLine(event.getPlayer().getEyeLocation(), event.getPlayer().getEyeLocation().clone().add(event.getPlayer().getEyeLocation().getDirection().clone().multiply(100)), 0.1D);
         RayTraceResult result = world.rayTrace(event.getPlayer().getEyeLocation(), event.getPlayer().getEyeLocation().getDirection(), 100.0D, FluidCollisionMode.NEVER,
                 true, 0.2D, entity -> entity instanceof LivingEntity && !entity.equals(event.getPlayer()));
-        boolean useFireAmmo = ItemStackUtils.isSameItem(ammo.get(), Items.FIRE_GUN_AMMO.stack);
         ammo.get().setAmount(ammo.get().getAmount() - 1);
         if(result == null) return;
         if(result.getHitBlock() != null) {
@@ -46,8 +49,9 @@ public class GunListener implements Listener {
         }
         if(result.getHitEntity() == null) return;
         LivingEntity entity = (LivingEntity) result.getHitEntity();
-        entity.damage(5.0D, event.getPlayer());
-        if(useFireAmmo) entity.setFireTicks(100);
+        entity.damage(info.damage(), event.getPlayer());
+        info.onHit(event.getPlayer(), ammo.get(), entity);
+        if(info.isFlammable()) entity.setFireTicks(100);
         event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0F, 1.0F);
     }
 

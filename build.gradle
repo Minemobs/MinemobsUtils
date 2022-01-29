@@ -27,11 +27,6 @@ repositories {
     }
     //maven {url = "https://repo.inventivetalent.org/content/groups/public/"}
     maven {
-        allowInsecureProtocol = true
-        name = "Minemobs Snapshot"
-        url = "http://minemobs.galaxyfight.fr:8081/snapshots/"
-    }
-    maven {
         name = "Spigot-Repo"
         url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
     }

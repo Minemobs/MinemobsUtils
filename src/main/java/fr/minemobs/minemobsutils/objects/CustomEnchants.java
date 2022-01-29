@@ -1,6 +1,5 @@
 package fr.minemobs.minemobsutils.objects;
 
-import fr.minemobs.minemobsutils.MinemobsUtils;
 import fr.minemobs.minemobsutils.enchants.CustomEnchantmentWrapper;
 import fr.minemobs.minemobsutils.utils.ItemBuilder;
 import org.apache.commons.lang.WordUtils;
@@ -13,7 +12,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public enum CustomEnchants {
 
@@ -40,14 +38,12 @@ public enum CustomEnchants {
     }
 
     public static void registerEnchantment(Enchantment enchantment) {
-        boolean registered = true;
         try {
             Field f = Enchantment.class.getDeclaredField("acceptingNew");
             f.setAccessible(true);
             f.set(null, true);
             Enchantment.registerEnchantment(enchantment);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            registered = false;
             e.printStackTrace();
         }
     }

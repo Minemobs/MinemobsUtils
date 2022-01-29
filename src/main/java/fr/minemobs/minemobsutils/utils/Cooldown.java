@@ -78,10 +78,8 @@ public class Cooldown {
         int f = -1;
         if(cooldown != null) {
             long now = System.currentTimeMillis();
-            long cooldownTime = cooldown.start;
-            int totalTime = cooldown.timeInSeconds;
-            int r = (int) (now - cooldownTime) / 1000;
-            f = (r - totalTime) * (-1);
+            int r = (int) (now - cooldown.start) / 1000;
+            f = (r - cooldown.timeInSeconds) * (-1);
         }
         return f;
     }

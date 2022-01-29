@@ -4,7 +4,6 @@ import com.flowpowered.nbt.*;
 import com.flowpowered.nbt.stream.NBTInputStream;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 
@@ -55,10 +54,10 @@ public class Structure {
             CompoundMap blockTag = ((CompoundTag) oTag).getValue();
             StringBuilder blockStateString = new StringBuilder();
 
-            if (!blockTag.keySet().contains("Name")) throw new IOException("palette state does not have a name.");
+            if (!blockTag.containsKey("Name")) throw new IOException("palette state does not have a name.");
             blockStateString.append(blockTag.get("Name").getValue()); //String now looks like "minecraft:log"
 
-            if (blockTag.keySet().contains("Properties")) {
+            if (blockTag.containsKey("Properties")) {
                 blockStateString.append("[");
                 if (!blockTag.get("Properties").getType().equals(TagType.TAG_COMPOUND)) throw new IOException("palette block properties is not a Compound Tag");
                 CompoundMap properties = ((CompoundTag) blockTag.get("Properties")).getValue();

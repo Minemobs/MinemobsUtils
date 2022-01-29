@@ -38,7 +38,6 @@ import org.bukkit.util.Vector;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class PlayerListener implements Listener {
 
@@ -62,17 +61,12 @@ public class PlayerListener implements Listener {
      */
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        for (Recipes recipe : Arrays.stream(Recipes.values()).filter(recipes -> recipes.getRecipe() != null).collect(Collectors.toList())) {
+        for (Recipes recipe : Arrays.stream(Recipes.values()).filter(recipes -> recipes.getRecipe() != null).toList()) {
             event.getPlayer().discoverRecipe(recipe.getRecipe().getKey());
         }
-        for (Recipes recipe : Arrays.stream(Recipes.values()).filter(recipes -> recipes.getShapelessRecipe() != null).collect(Collectors.toList())) {
+        for (Recipes recipe : Arrays.stream(Recipes.values()).filter(recipes -> recipes.getShapelessRecipe() != null).toList()) {
             event.getPlayer().discoverRecipe(recipe.getShapelessRecipe().getKey());
         }
-    }
-
-    @EventHandler
-    public void onQuit(PlayerQuitEvent event) {
-
     }
 
     @EventHandler
@@ -156,7 +150,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onFish(PlayerFishEvent event) {
         if(event.getState() != PlayerFishEvent.State.REEL_IN ||
-                !ItemStackUtils.isSimilar(event.getPlayer().getInventory().getItemInMainHand(), Items.GRAPPLING_HOOK.stack)) return;
+                !ItemStackUtils.isSameItem(event.getPlayer().getInventory().getItemInMainHand(), Items.GRAPPLING_HOOK.stack)) return;
         Player player = event.getPlayer();
         if(Cooldown.isInCooldown(player.getUniqueId(), Cooldown.CooldownType.GRAPPLING_HOOK.name) && !player.hasPermission(MinemobsUtils.pluginID + ".ignorecooldown")) {
             player.sendMessage(Cooldown.cooldownMessage(player.getUniqueId(), Cooldown.CooldownType.GRAPPLING_HOOK));
