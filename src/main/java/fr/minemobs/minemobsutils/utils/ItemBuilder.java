@@ -52,8 +52,7 @@ public class ItemBuilder implements Listener {
 
     public ItemBuilder setGlow(boolean glow) {
         if(glow) {
-            if(ItemStackUtils.isAnArmor(stack)) addEnchant(Enchantment.KNOCKBACK, 1);
-            else addEnchant(Enchantment.PROTECTION_EXPLOSIONS, 1);
+            addEnchant(ItemStackUtils.isAnArmor(stack) ? Enchantment.KNOCKBACK : Enchantment.PROTECTION_EXPLOSIONS, 1);
             addItemFlag(ItemFlag.HIDE_ENCHANTS);
         } else {
             ItemMeta meta = getItemMeta();
