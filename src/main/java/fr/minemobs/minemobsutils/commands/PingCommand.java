@@ -11,15 +11,15 @@ public class PingCommand extends PluginCommand {
     @Override
     public void execute(Player player, String[] args) {
         if(args.length == 0) {
-            player.sendMessage(MinemobsUtils.ebheader + ChatColor.GREEN + "Pong. " + ChatColor.YELLOW + "You have: " +
+            player.sendMessage(MinemobsUtils.header + ChatColor.GREEN + "Pong. " + ChatColor.YELLOW + "You have: " +
                     ChatColor.WHITE + getPing(player) + ChatColor.YELLOW + " ms");
         } else {
             Player target = Bukkit.getPlayer(args[0]);
             if(target == null) {
-                player.sendMessage(MinemobsUtils.ebheader + ChatColor.DARK_RED + "This player is offline");
+                player.sendMessage(MinemobsUtils.header + ChatColor.DARK_RED + "This player is offline");
                 return;
             }
-            player.sendMessage(MinemobsUtils.ebheader + ChatColor.GREEN + target.getName() + ChatColor.YELLOW + " has: " +
+            player.sendMessage(MinemobsUtils.header + ChatColor.GREEN + target.getName() + ChatColor.YELLOW + " has: " +
                     ChatColor.WHITE + getPing(target) + ChatColor.YELLOW + " ms");
         }
     }

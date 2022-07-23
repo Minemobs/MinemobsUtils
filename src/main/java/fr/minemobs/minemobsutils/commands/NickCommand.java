@@ -21,21 +21,21 @@ public class NickCommand extends PluginCommand {
         if(target != null && target != player) {
             if(args[1].equalsIgnoreCase("reset")) {
                 reset(target);
-                player.sendMessage(MinemobsUtils.ebheader + target.getName() + "'s nickname has been reset.");
+                player.sendMessage(MinemobsUtils.header + target.getName() + "'s nickname has been reset.");
                 return;
             }
             nick = ChatColor.translateAlternateColorCodes('&', ArrayUtils.toString(args).replace(target.getName() + " ", ""));
             setNameAndSkin(target, nick);
-            player.sendMessage(MinemobsUtils.ebheader + target.getName() + "'s nickname has been set to " + nick);
+            player.sendMessage(MinemobsUtils.header + target.getName() + "'s nickname has been set to " + nick);
         } else {
             if(args[0].equalsIgnoreCase("reset")) {
                 reset(player);
-                player.sendMessage(MinemobsUtils.ebheader + "Your nickname has been reset.");
+                player.sendMessage(MinemobsUtils.header + "Your nickname has been reset.");
                 return;
             }
             nick = ChatColor.translateAlternateColorCodes('&', ArrayUtils.toString(args));
             setNameAndSkin(player, nick);
-            player.sendMessage(MinemobsUtils.ebheader + "Your nickname has been set to " + nick);
+            player.sendMessage(MinemobsUtils.header + "Your nickname has been set to " + nick);
         }
     }
 

@@ -1,11 +1,13 @@
 plugins {
     id 'java'
-    id 'kr.entree.spigradle' version '2.2.4'
+    id 'kr.entree.spigradle' version '2.4.2'
     id "com.github.johnrengelman.shadow" version "7.0.0"
 }
 
 group = 'fr.minemobs'
 version = '1.4'
+
+apply from: rootProject.file('specialSource.gradle')
 
 compileJava.options.encoding = compileTestJava.options.encoding = javadoc.options.encoding = "UTF-8"
 
@@ -19,55 +21,42 @@ repositories {
     mavenCentral()
     maven {
         name = 'CodeMC'
-        url = 'https://repo.codemc.org/repository/maven-public/'
+        url = 'https://repo.codemc.org/repository/maven-releases/'
     }
-    maven { url = "https://repo.dmulloy2.net/repository/public/" }
-    maven {
-        url = "https://minevolt.net/repo/"
-    }
-    //maven {url = "https://repo.inventivetalent.org/content/groups/public/"}
     maven {
         name = "Spigot-Repo"
         url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
     }
-    maven { url 'https://jitpack.io' }
-    maven {
-        name = "enginehub-maven"
-        url = "https://maven.enginehub.org/repo/"
-    }
+    mavenLocal()
 }
 
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:1.17.1-R0.1-SNAPSHOT")
-    compileOnly('org.spigotmc:spigot:1.17.1-R0.1-SNAPSHOT')
-    compileOnly 'org.jetbrains:annotations:22.0.0'
-    compileOnly('net.skinsrestorer:skinsrestorer:14.1.1') {
+    compileOnly("org.spigotmc:spigot-api:1.19-R0.1-SNAPSHOT")
+    compileOnly 'org.spigotmc:spigot:1.19-R0.1-SNAPSHOT:remapped-mojang'
+    compileOnly 'org.jetbrains:annotations:23.0.0'
+    compileOnly('net.skinsrestorer:skinsrestorer-api:14.2.1') {
         transitive(false)
-    }
-    compileOnly group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.7.0"
-    compileOnly('com.sk89q.worldedit:worldedit-bukkit:7.2.0-SNAPSHOT') {
-        exclude group: "org.bukkit", module: "bukkit"
     }
 
     implementation 'org.reflections:reflections:0.10.2'
-    implementation 'org.bstats:bstats-bukkit:2.2.1'
-    implementation group: 'de.tr7zw', name: 'item-nbt-api', version: '2.8.0'
-    implementation("com.flowpowered:flow-nbt:1.0.0")
+    implementation 'org.bstats:bstats-bukkit:3.0.0'
 }
 
 shadowJar {
     archiveClassifier.set('')
     archiveVersion.set('')
-    relocate 'de.tr7zw.changeme', 'fr.minemobs.relocate'
     relocate 'org.reflections', 'fr.minemobs.relocate.reflections'
     relocate 'javassist', 'fr.minemobs.relocate.javassist'
     relocate 'org.bstats', 'fr.minemobs.relocate.bstats'
-    relocate 'com.flowpowered.nbt', 'fr.minemobs.relocate.flowpowered.nbt'
+}
+
+buildSpigot {
+    args(args, '--remapped')
 }
 
 spigot {
     authors 'Minemobs'
-    apiVersion '1.17'
+    apiVersion '1.19'
     website = "https://github.com/Minemobs/MinemobsUtils"
     //You will never need to install AutoReload on your server but it's just so AutoReload load before my plugin
     softDepends("SkinsRestorer", "AutoReload")
@@ -141,24 +130,25 @@ spigot {
     debug {
         args '--nojline' , '--max-players', '100', '--nogui', '--server-name', 'Cacahuete Test Server'
 
-        buildVersion = "1.17.1"
+        buildVersion = "1.19"
         jvmArgs '-Xmx2G'
         serverPort 25565
     }
 }
 
-
-task copyFile(type: Copy) {
-
-    /**
-     * Check if it's minemobs's computer
-     */
-
-    if(InetAddress.localHost.hostName != "DESKTOP-USNU2V8") return
-    from file("$buildDir/libs/${archivesBaseName}.jar")
-    into file((System.properties['os.name'].toLowerCase().contains('windows') ? "E:" : "/mnt/e") + File.separatorChar + "Users" + File.separatorChar + "minemobs" + File.separatorChar + "IdeaProjects" + File.separatorChar + "SpigotProject" + File.separatorChar +
-            "MinemobsUtils" + File.separatorChar + "debug" + File.separatorChar + "spigot" + File.separatorChar + "plugins")
+afterEvaluate {
+    shadowJar {
+        doLast {
+            def outputFiles = outputs.files.files
+            for (inputFile in outputFiles) {
+                File intermediateFile = new File(temporaryDir, inputFile.name.replace('.jar', '-obf.jar'))
+                File outputFile = inputFile
+                remapMojangToSpigot(inputFile, intermediateFile, outputFile, "1.19-R0.1-SNAPSHOT")
+            }
+        }
+    }
 }
 
-build.finalizedBy(copyFile)
-shadowJar.finalizedBy(copyFile)
+
+tasks.prepareSpigotPlugins.dependsOn(shadowJar)
+tasks.runSpigot.dependsOn(prepareSpigotPlugins)

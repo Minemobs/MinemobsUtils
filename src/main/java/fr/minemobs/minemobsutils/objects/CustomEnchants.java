@@ -2,7 +2,7 @@ package fr.minemobs.minemobsutils.objects;
 
 import fr.minemobs.minemobsutils.enchants.CustomEnchantmentWrapper;
 import fr.minemobs.minemobsutils.utils.ItemBuilder;
-import org.apache.commons.lang.WordUtils;
+import fr.minemobs.minemobsutils.utils.WordUtils;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentTarget;
@@ -52,7 +52,7 @@ public enum CustomEnchants {
         List<ItemStack> stacks = new ArrayList<>();
         for (CustomEnchants value : CustomEnchants.values()) {
             stacks.add(new ItemBuilder(Material.ENCHANTED_BOOK).setGlow().setDisplayName(WordUtils.capitalize(value.enchantment.getKey().getKey()
-                    .replaceAll("_", " "))).build());
+                    .replace("_", " "))).build());
         }
         return stacks.toArray(new ItemStack[0]);
     }

@@ -1,7 +1,7 @@
 package fr.minemobs.minemobsutils.commands;
 
 import fr.minemobs.minemobsutils.utils.CommandUtils;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -25,8 +25,8 @@ public abstract class PluginCommand implements CommandExecutor {
             return true;
         }
 
-        if (commandSender instanceof Player) {
-            execute((Player) commandSender, strings);
+        if (commandSender instanceof Player player) {
+            execute(player, strings);
         } else {
             execute(commandSender, strings);
         }

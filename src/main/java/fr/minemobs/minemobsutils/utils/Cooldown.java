@@ -18,17 +18,17 @@ public class Cooldown {
         WITHER_STAFF("wither_staff", 15),
         ;
 
-        public final String name;
+        public final String id;
         public final int defaultTime;
         
-        CooldownType(String name, int i) {
-            this.name = name;
+        CooldownType(String id, int i) {
+            this.id = id;
             this.defaultTime = i;
         }
 
         @Override
         public String toString() {
-            return name;
+            return id;
         }
     }
 
@@ -45,15 +45,15 @@ public class Cooldown {
     }
 
     public Cooldown(UUID id, CooldownType cooldownType, int timeInSeconds) {
-        this(id, cooldownType.name, timeInSeconds);
+        this(id, cooldownType.id, timeInSeconds);
     }
 
     public Cooldown(UUID id, CooldownType cooldownType) {
-        this(id, cooldownType.name, cooldownType.defaultTime);
+        this(id, cooldownType.id, cooldownType.defaultTime);
     }
 
     public static boolean isInCooldown(UUID id, CooldownType cooldownType) {
-        return isInCooldown(id, cooldownType.name);
+        return isInCooldown(id, cooldownType.id);
     }
 
     public static boolean isInCooldown(UUID id, String cooldownName) {
@@ -90,6 +90,6 @@ public class Cooldown {
     }
 
     public static String cooldownMessage(UUID uuid, CooldownType type) {
-        return MinemobsUtils.ebheader + ChatColor.RED + "Please wait " + ChatColor.GOLD + getTimeLeft(uuid, type.name) + ChatColor.RED + " before doing that !";
+        return MinemobsUtils.header + ChatColor.RED + "Please wait " + ChatColor.GOLD + getTimeLeft(uuid, type.id) + ChatColor.RED + " before doing that !";
     }
 }

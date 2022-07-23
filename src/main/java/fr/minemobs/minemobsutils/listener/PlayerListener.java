@@ -1,14 +1,9 @@
 package fr.minemobs.minemobsutils.listener;
 
-import de.tr7zw.changeme.nbtapi.NBTCompound;
-import de.tr7zw.changeme.nbtapi.NBTCompoundList;
-import de.tr7zw.changeme.nbtapi.NBTTileEntity;
 import fr.minemobs.minemobsutils.MinemobsUtils;
 import fr.minemobs.minemobsutils.commands.StaffChatCommand;
 import fr.minemobs.minemobsutils.customblock.CustomBlock;
 import fr.minemobs.minemobsutils.event.ArmorEvent;
-import fr.minemobs.minemobsutils.event.CustomBlockBreakEvent;
-import fr.minemobs.minemobsutils.event.CustomBlockInteractEvent;
 import fr.minemobs.minemobsutils.event.CustomBlockPlaceEvent;
 import fr.minemobs.minemobsutils.objects.Blocks;
 import fr.minemobs.minemobsutils.objects.Items;
@@ -16,18 +11,19 @@ import fr.minemobs.minemobsutils.objects.Recipes;
 import fr.minemobs.minemobsutils.utils.Cooldown;
 import fr.minemobs.minemobsutils.utils.ItemStackUtils;
 import org.bukkit.*;
-import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -83,7 +79,7 @@ public class PlayerListener implements Listener {
                 event.setCancelled(true);
                 Optional<ItemStack> opIs = findFirstDraconicArmorPiece(player.getInventory().getArmorContents());
                 if(opIs.isEmpty()) {
-                    player.sendMessage(MinemobsUtils.ebheader + "All your armors are already charged or you don't have a Draconic armor on you!");
+                    player.sendMessage(MinemobsUtils.header + "All your armors are already charged or you don't have a Draconic armor on you!");
                     return;
                 }
                 chargeArmor(player, opIs.get());
@@ -91,7 +87,7 @@ public class PlayerListener implements Listener {
                 player.openWorkbench(null, true);
             } else if(event.getItem().isSimilar(Items.FIREBALL_STAFF.stack)) {
                 if(!player.getInventory().contains(Material.FIRE_CHARGE)) {
-                    player.sendMessage(MinemobsUtils.ebheader + ChatColor.RED + "You need at least 1 fireball to use this item !");
+                    player.sendMessage(MinemobsUtils.header + ChatColor.RED + "You need at least 1 fireball to use this item !");
                     return;
                 }
                 Fireball fireball = player.getWorld().spawn(player.getEyeLocation(), Fireball.class);
@@ -112,22 +108,6 @@ public class PlayerListener implements Listener {
                 int slot = player.getInventory().first(Material.FIRE_CHARGE);
                 player.getInventory().getItem(slot).setAmount(player.getInventory().getItem(slot).getAmount() - 1);
                 event.setCancelled(true);
-            }
-
-            if(event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                if(event.getClickedBlock().getType() != Material.SPAWNER) return;
-                CreatureSpawner spawner = (CreatureSpawner) event.getClickedBlock().getState();
-                NBTTileEntity te = new NBTTileEntity(spawner);
-                NBTCompound spawnData = te.getCompound("SpawnData");
-                NBTCompoundList armorItems = spawnData.getCompoundList("ArmorItems");
-                int cmd = armorItems.get(3).getCompound("tag").getInteger("CustomModelData");
-                Optional<CustomBlock> cb = CustomBlockListener.blocks.stream()
-                        .filter(customBlock -> customBlock.getCustomModelData() == cmd && customBlock.getLoc().getX() == event.getClickedBlock().getLocation().getX() &&
-                                customBlock.getLoc().getY() == event.getClickedBlock().getY() && event.getClickedBlock().getZ() == customBlock.getLoc().getZ()).findFirst();
-                if (cb.isEmpty()) return;
-                Bukkit.getScheduler().runTaskLater(MinemobsUtils.getInstance(),
-                        () -> Bukkit.getPluginManager().callEvent(new CustomBlockInteractEvent(player, event.getItem(), event.getClickedBlock(), event.getBlockFace(), cb.get())),
-                        2);
             }
         }
     }
@@ -152,7 +132,7 @@ public class PlayerListener implements Listener {
         if(event.getState() != PlayerFishEvent.State.REEL_IN ||
                 !ItemStackUtils.isSameItem(event.getPlayer().getInventory().getItemInMainHand(), Items.GRAPPLING_HOOK.stack)) return;
         Player player = event.getPlayer();
-        if(Cooldown.isInCooldown(player.getUniqueId(), Cooldown.CooldownType.GRAPPLING_HOOK.name) && !player.hasPermission(MinemobsUtils.pluginID + ".ignorecooldown")) {
+        if(Cooldown.isInCooldown(player.getUniqueId(), Cooldown.CooldownType.GRAPPLING_HOOK.id) && !player.hasPermission(MinemobsUtils.pluginID + ".ignorecooldown")) {
             player.sendMessage(Cooldown.cooldownMessage(player.getUniqueId(), Cooldown.CooldownType.GRAPPLING_HOOK));
             return;
         }
@@ -176,13 +156,13 @@ public class PlayerListener implements Listener {
             EquipmentSlot slot = getEquipmentSlot(armorPiece.getType());
             ItemMeta meta = armorPiece.getItemMeta();
             List<String> lore = meta.getLore();
-            int armorEnergy = Integer.parseInt(lore.get(1).replace("Energy: ", "").replace(" / 100", ""));
+            int armorEnergy = Integer.parseInt(lore.get(1).replace("Energy: ", "").replace("%", ""));
             if(armorEnergy == 0) {
                 return;
             }
             int newArmorEnergy = armorEnergy - (int) armorDmg;
             if(newArmorEnergy <= 0) newArmorEnergy = 0;
-            lore.set(1, "Energy: " + newArmorEnergy + " / 100");
+            lore.set(1, "Energy: " + newArmorEnergy + "%");
             meta.setLore(lore);
             armorPiece.setItemMeta(meta);
             player.getInventory().setItem(slot, armorPiece);
@@ -213,27 +193,6 @@ public class PlayerListener implements Listener {
         if(player.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE) && player.getPotionEffect(PotionEffectType.FIRE_RESISTANCE).getAmplifier() == 1) player.removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
         if(player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) return;
         player.setAllowFlight(false);
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onBlockBreak(BlockBreakEvent event) {
-        if(event.getBlock().getType() != Material.SPAWNER || event.getPlayer().getGameMode() != GameMode.SURVIVAL) return;
-        CreatureSpawner spawner = (CreatureSpawner) event.getBlock().getState();
-        NBTTileEntity te = new NBTTileEntity(spawner);
-        NBTCompound spawnData = te.getCompound("SpawnData");
-        NBTCompoundList armorItems = spawnData.getCompoundList("ArmorItems");
-        int cmd = armorItems.get(3).getCompound("tag").getInteger("CustomModelData");
-        Optional<CustomBlock> cb = CustomBlockListener.blocks.stream()
-                .filter(customBlock -> customBlock.getCustomModelData() == cmd && customBlock.getLoc().getX() == event.getBlock().getLocation().getX() &&
-                        customBlock.getLoc().getY() == event.getBlock().getY() && event.getBlock().getZ() == customBlock.getLoc().getZ()).findFirst();
-        if (cb.isEmpty()) return;
-        new BukkitRunnable() {
-
-            @Override
-            public void run() {
-                Bukkit.getPluginManager().callEvent(new CustomBlockBreakEvent(event.getBlock(), event.getPlayer(), cb.get()));
-            }
-        }.runTaskLater(MinemobsUtils.getInstance(), 2);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -279,7 +238,7 @@ public class PlayerListener implements Listener {
 
     private boolean isAllPiecesCharged(ItemStack[] armor) {
         return Arrays.stream(armor).allMatch(stack ->
-                Integer.parseInt(stack.getItemMeta().getLore().get(1).replace("Energy: ", "").replace(" / 100", "")) != 0);
+                Integer.parseInt(stack.getItemMeta().getLore().get(1).replace("Energy: ", "").replace("%", "")) != 0);
     }
 
     public static void chargeArmor(Player player, ItemStack is) {
@@ -289,12 +248,12 @@ public class PlayerListener implements Listener {
     public static void chargeArmor(Player player, ItemStack is, int amount) {
         ItemMeta im = is.getItemMeta();
         List<String> lore = im.getLore();
-        lore.set(1, "Energy: " + amount + " / 100");
+        lore.set(1, "Energy: " + amount + "%");
         im.setLore(lore);
         is.setItemMeta(im);
         player.getInventory().setItem(getEquipmentSlot(is.getType()), is);
         player.getInventory().removeItem(Items.BATTERY.stack);
-        player.sendMessage(MinemobsUtils.ebheader + "Your " + im.getDisplayName() + ChatColor.RESET + " is charged!");
+        player.sendMessage(MinemobsUtils.header + "Your " + im.getDisplayName() + ChatColor.RESET + " is charged!");
         Bukkit.getPluginManager().callEvent(new ArmorEvent(player));
     }
 
@@ -303,7 +262,7 @@ public class PlayerListener implements Listener {
                 stack.hasItemMeta() && stack.getItemMeta().hasDisplayName() &&
                 stack.getItemMeta().getDisplayName().equals(Items.valueOf("DRACONIC_" + stack.getType().name().split("_")[1]).stack.getItemMeta().getDisplayName()) &&
                 stack.getItemMeta().hasLore() && stack.getItemMeta().getLore().get(1) != null &&
-                Integer.parseInt(stack.getItemMeta().getLore().get(1).replace("Energy: ", "").replace(" / 100", "")) != 100).findFirst();
+                Integer.parseInt(stack.getItemMeta().getLore().get(1).replace("Energy: ", "").replace("%", "")) != 100).findFirst();
     }
 
     public static EquipmentSlot getEquipmentSlot(Material mat) {

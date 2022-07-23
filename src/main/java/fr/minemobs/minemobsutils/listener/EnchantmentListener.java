@@ -3,7 +3,7 @@ package fr.minemobs.minemobsutils.listener;
 import com.google.common.collect.ImmutableList;
 import fr.minemobs.minemobsutils.objects.CustomEnchants;
 import fr.minemobs.minemobsutils.utils.ItemStackUtils;
-import org.apache.commons.lang.WordUtils;
+import fr.minemobs.minemobsutils.utils.WordUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Container;
@@ -27,7 +27,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class EnchantmentListener implements Listener {
 
@@ -192,7 +191,7 @@ public class EnchantmentListener implements Listener {
         soulBoundDrops.get(event.getPlayer().getUniqueId()).forEach(is -> {
             ItemMeta meta = is.getItemMeta();
             List<String> lore = meta.getLore();
-            String enchantmentLore = ChatColor.GRAY + WordUtils.capitalize(CustomEnchants.SOUL_BOUND.enchantment.getKey().getKey().replaceAll("_", " ")) + " I";
+            String enchantmentLore = ChatColor.GRAY + WordUtils.capitalize(CustomEnchants.SOUL_BOUND.enchantment.getKey().getKey().replace("_", " ")) + " I";
             lore.remove(enchantmentLore);
             meta.setLore(lore);
             meta.removeEnchant(CustomEnchants.SOUL_BOUND.enchantment);

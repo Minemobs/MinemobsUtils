@@ -33,7 +33,7 @@ public class GunListener implements Listener {
                                 Arrays.stream(((ProjectileInfo) item.info).validWeapons()).anyMatch(items -> items == Items.GUN)))
                 .findFirst();
         if(ammo.isEmpty()) {
-            event.getPlayer().sendMessage(MinemobsUtils.ebheader + ChatColor.RED + "You don't have ammo!");
+            event.getPlayer().sendMessage(MinemobsUtils.header + ChatColor.RED + "You don't have ammo!");
             return;
         }
         ProjectileInfo info = ProjectileInfo.getInfo(ItemStackUtils.getItemFromItemStack(ammo.get()));

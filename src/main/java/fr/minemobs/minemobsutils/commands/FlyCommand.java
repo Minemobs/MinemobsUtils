@@ -12,10 +12,10 @@ public class FlyCommand extends PluginCommand {
         if(player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) return;
         if(player.getAllowFlight()) {
             player.setAllowFlight(false);
-            player.sendMessage(MinemobsUtils.ebheader + "Your flight ability has been disabled");
+            player.sendMessage(MinemobsUtils.header + "Your flight ability has been disabled");
             return;
         }
         player.setAllowFlight(true);
-        player.sendMessage(MinemobsUtils.ebheader + "Your flight ability has been enabled");
+        player.sendMessage(MinemobsUtils.header + "Your flight ability has been enabled");
     }
 }

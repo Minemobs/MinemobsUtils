@@ -14,7 +14,7 @@ public class FeedCommand extends PluginCommand {
         if(args.length == 0) {
             player.setSaturation(20);
             player.setFoodLevel(20);
-            player.sendMessage(MinemobsUtils.ebheader + ChatColor.GREEN + "You have been fed");
+            player.sendMessage(MinemobsUtils.header + ChatColor.GREEN + "You have been fed");
         } else {
             if(!player.hasPermission("minemobsutils.feed.other")) {
                 CommandUtils.permissionError(player);
@@ -22,13 +22,13 @@ public class FeedCommand extends PluginCommand {
             }
             Player target = Bukkit.getPlayer(args[0]);
             if(target == null) {
-                player.sendMessage(MinemobsUtils.ebheader + ChatColor.GREEN + args[0] + ChatColor.RED + " do not exist!");
+                player.sendMessage(MinemobsUtils.header + ChatColor.GREEN + args[0] + ChatColor.RED + " do not exist!");
                 return;
             }
             target.setSaturation(20);
             target.setFoodLevel(20);
-            player.sendMessage(MinemobsUtils.ebheader + ChatColor.GREEN + target.getName() + "has been fed");
-            target.sendMessage(MinemobsUtils.ebheader + ChatColor.GREEN + "You have been fed");
+            player.sendMessage(MinemobsUtils.header + ChatColor.GREEN + target.getName() + "has been fed");
+            target.sendMessage(MinemobsUtils.header + ChatColor.GREEN + "You have been fed");
         }
     }
 }

@@ -4,7 +4,7 @@ import fr.minemobs.minemobsutils.MinemobsUtils;
 import fr.minemobs.minemobsutils.utils.InventoryBuilder;
 import fr.minemobs.minemobsutils.utils.ItemBuilder;
 import fr.minemobs.minemobsutils.utils.ItemStackUtils;
-import org.apache.commons.lang.WordUtils;
+import fr.minemobs.minemobsutils.utils.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -23,13 +23,13 @@ public enum Inventories {
         CustomEnchants value = CustomEnchants.valueOf(event.getCurrentItem().getItemMeta().getDisplayName().toUpperCase().replaceAll("\\s+", "_"));
         List<String> lore = new ArrayList<>();
         if(meta.hasLore()) lore = meta.getLore();
-        String enchantmentLore = ChatColor.GRAY + WordUtils.capitalize(value.enchantment.getKey().getKey().replaceAll("_", " ")) + " I";
+        String enchantmentLore = ChatColor.GRAY + WordUtils.capitalize(value.enchantment.getKey().getKey().replace("_", " ")) + " I";
         if(meta.hasEnchants() && meta.hasEnchant(value.enchantment)) {
             meta.removeEnchant(value.enchantment);
             lore.remove(enchantmentLore);
         } else {
             if(!value.enchantment.canEnchantItem(is)) {
-                event.getWhoClicked().sendMessage(MinemobsUtils.ebheader + "You cannot enchant this item with " + value.enchantment.getKey().getKey());
+                event.getWhoClicked().sendMessage(MinemobsUtils.header + "You cannot enchant this item with " + value.enchantment.getKey().getKey());
                 return;
             }
             meta.addEnchant(value.enchantment, 1, true);

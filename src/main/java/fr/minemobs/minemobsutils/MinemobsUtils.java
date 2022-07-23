@@ -1,8 +1,5 @@
 package fr.minemobs.minemobsutils;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import fr.minemobs.minemobsutils.commands.ColorCommand;
 import fr.minemobs.minemobsutils.commands.CommandInfo;
 import fr.minemobs.minemobsutils.customblock.CustomBlock;
 import fr.minemobs.minemobsutils.listener.CustomBlockListener;
@@ -10,39 +7,32 @@ import fr.minemobs.minemobsutils.objects.CustomEnchants;
 import fr.minemobs.minemobsutils.objects.Recipes;
 import fr.minemobs.minemobsutils.utils.ReflectionUtils;
 import fr.minemobs.minemobsutils.utils.UpdateChecker;
-import kr.entree.spigradle.annotations.SpigotPlugin;
+import org.apache.commons.io.FileUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.bukkit.craftbukkit.libs.org.apache.commons.io.FileUtils;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 
-@SpigotPlugin
 public class MinemobsUtils extends JavaPlugin {
 
     private static MinemobsUtils instance;
-    public static final Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().disableHtmlEscaping().create();
-    public static final String ebheader = String.format("%s[%sMinemobs Utils%s]%s ", ChatColor.DARK_GRAY, ChatColor.DARK_RED, ChatColor.DARK_GRAY, ChatColor.RESET);
+    public static final String header = String.format("%s[%sMinemobs Utils%s]%s ", ChatColor.DARK_GRAY, ChatColor.DARK_RED, ChatColor.DARK_GRAY, ChatColor.RESET);
     public static final String pluginID = "minemobsutils";
-    private final String[] supportedNMSVersions = new String[]{"1_17_R1"};
-    //configs
-    private final FileConfiguration config = getConfig();
 
     @Override
     public void onLoad() {
@@ -58,12 +48,7 @@ public class MinemobsUtils extends JavaPlugin {
         } catch (Exception exception) {
             exception.printStackTrace();
         }
-        Bukkit.getConsoleSender().sendMessage(ebheader + ChatColor.GREEN + "Enabled.");
-        if(Arrays.stream(supportedNMSVersions).noneMatch(s -> s.equalsIgnoreCase(ReflectionUtils.getServerVersion().substring(1)))) {
-            getLogger().severe("This version is not supported !");
-            this.getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
+        Bukkit.getConsoleSender().sendMessage(header + ChatColor.GREEN + "Enabled.");
         registerListeners();
         registerCommands();
         registerCrafts();
@@ -95,16 +80,15 @@ public class MinemobsUtils extends JavaPlugin {
         final File file = new File(getDataFolder(), "customblocks.yml");
         if(!file.exists()) return;
         FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-        cfg.getKeys(false).forEach(key -> CustomBlockListener.blocks.add((CustomBlock) cfg.get(key)));
+        cfg.getKeys(false).forEach(key -> {
+            CustomBlock block = (CustomBlock) cfg.get(key);
+            CustomBlockListener.blocks.put(block.getKey(), block);
+        });
     }
 
 
     private void setupBStats() {
-        Metrics metrics = new Metrics(this, 8000);
-    }
-
-    private boolean isNullOrDefault(String configName) {
-        return config.get(configName) == null || config.getDefaults().get(configName) == config.get(configName);
+        new Metrics(this, 8000);
     }
 
     private void registerCrafts()
@@ -128,7 +112,6 @@ public class MinemobsUtils extends JavaPlugin {
     }
 
     private void registerCommands() {
-        //registerCommand("cc", new ColorCommand(), "chatcolor", "colorcode");
         ReflectionUtils.getClassWithAnnotation("fr.minemobs.minemobsutils.commands", CommandInfo.class).forEach(clazz -> {
             try {
                 registerCommand((fr.minemobs.minemobsutils.commands.PluginCommand) clazz.getDeclaredConstructor().newInstance());
@@ -144,12 +127,6 @@ public class MinemobsUtils extends JavaPlugin {
         command.setExecutor(cmd);
     }
 
-    private void registerCommand(@NotNull String commandName, @NotNull CommandExecutor commandExecutor, @Nullable String... commandAliases) {
-        PluginCommand command = getCommand(commandName);
-        if (commandAliases != null && commandAliases.length != 0) command.setAliases(Arrays.asList(commandAliases));
-        command.setExecutor(commandExecutor);
-    }
-
     @Override
     public void onDisable() {
         try {
@@ -160,18 +137,15 @@ public class MinemobsUtils extends JavaPlugin {
     }
 
     private void saveBlocks() throws IOException {
-        final File file = new File(getDataFolder(), "customblocks.yml");
-        if(file.exists()) {
-            file.delete();
-        } else {
-            file.mkdirs();
+        Path path = getDataFolder().toPath().resolve("customblocks.yml");
+        if(!Files.exists(path)) Files.createFile(path);
+        FileConfiguration cfg = YamlConfiguration.loadConfiguration(path.toFile());
+        int i = 0;
+        for (CustomBlock block : CustomBlockListener.blocks.values()) {
+            cfg.set(String.valueOf(i), block);
+            i++;
         }
-        file.createNewFile();
-        FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-        for (int i = 0; i < CustomBlockListener.blocks.size(); i++) {
-            cfg.set(String.valueOf(i), CustomBlockListener.blocks.get(i));
-        }
-        cfg.save(file);
+        cfg.save(path.toFile());
     }
 
     public static NamespacedKey getKey(String key) {
