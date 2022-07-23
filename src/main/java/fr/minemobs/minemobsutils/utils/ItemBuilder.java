@@ -17,6 +17,7 @@ import org.bukkit.util.Consumer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
 public class ItemBuilder implements Listener {
 
@@ -52,17 +53,11 @@ public class ItemBuilder implements Listener {
 
     public ItemBuilder setGlow(boolean glow) {
         if(glow) {
-            if(ItemStackUtils.isAnArmor(stack)) {
-                addEnchant(Enchantment.KNOCKBACK, 1);
-            } else {
-                addEnchant(Enchantment.PROTECTION_EXPLOSIONS, 1);
-            }
+            addEnchant(ItemStackUtils.isAnArmor(stack) ? Enchantment.KNOCKBACK : Enchantment.PROTECTION_EXPLOSIONS, 1);
             addItemFlag(ItemFlag.HIDE_ENCHANTS);
         } else {
             ItemMeta meta = getItemMeta();
-            for(Enchantment enchantment : meta.getEnchants().keySet()) {
-                meta.removeEnchant(enchantment);
-            }
+            meta.getEnchants().keySet().forEach(meta::removeEnchant);
         }
         return this;
     }
@@ -101,8 +96,7 @@ public class ItemBuilder implements Listener {
     }
 
     public ItemBuilder setHead(OfflinePlayer player) {
-        if(!(stack.getItemMeta() instanceof SkullMeta meta)) return this;
-        if(!meta.hasOwner()) return this;
+        if(!(stack.getItemMeta() instanceof SkullMeta meta) || !meta.hasOwner()) return this;
         meta.setOwningPlayer(player);
         setItemMeta(meta);
         return this;
@@ -144,8 +138,7 @@ public class ItemBuilder implements Listener {
     }
 
     public ItemBuilder addProtection(int level) {
-        return addEnchant(Enchantment.PROTECTION_EXPLOSIONS, level).addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, level).addEnchant(Enchantment.PROTECTION_FIRE, level)
-                .addEnchant(Enchantment.PROTECTION_PROJECTILE, level);
+        return addEnchant(Enchantment.PROTECTION_EXPLOSIONS, level).addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, level).addEnchant(Enchantment.PROTECTION_FIRE, level).addEnchant(Enchantment.PROTECTION_PROJECTILE, level);
     }
 
     public ItemBuilder addItemFlag(ItemFlag flag) {
@@ -156,9 +149,7 @@ public class ItemBuilder implements Listener {
     }
 
     public ItemBuilder addItemFlag(ItemFlag... flags) {
-        for (ItemFlag flag : flags) {
-            addItemFlag(flag);
-        }
+        Arrays.stream(flags).forEach(this::addItemFlag);
         return this;
     }
 
