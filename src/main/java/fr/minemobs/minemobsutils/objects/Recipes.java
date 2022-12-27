@@ -1,6 +1,8 @@
 package fr.minemobs.minemobsutils.objects;
 
 import fr.minemobs.minemobsutils.MinemobsUtils;
+import fr.sunderia.sunderiautils.recipes.AnvilCrushRecipe;
+import fr.sunderia.sunderiautils.recipes.AnvilRecipe;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.RecipeChoice;

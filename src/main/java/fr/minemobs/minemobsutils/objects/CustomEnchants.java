@@ -1,59 +1,47 @@
 package fr.minemobs.minemobsutils.objects;
 
-import fr.minemobs.minemobsutils.enchants.CustomEnchantmentWrapper;
-import fr.minemobs.minemobsutils.utils.ItemBuilder;
-import fr.minemobs.minemobsutils.utils.WordUtils;
+import fr.sunderia.sunderiautils.enchantments.CustomEnchantment;
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.inventory.ItemStack;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public enum CustomEnchants {
 
-    TELEPATHY(new CustomEnchantmentWrapper("telepathy", "Telepathy", 1, EnchantmentTarget.BREAKABLE)),
-    ZEUS(new CustomEnchantmentWrapper("zeus", "Zeus", 1, EnchantmentTarget.WEAPON)),
-    TEAM_TREE(new CustomEnchantmentWrapper("team_tree", "Team Tree", 1, EnchantmentTarget.WEAPON)),
-    EXPLOSION(new CustomEnchantmentWrapper("explosion", "Explosion", 1, EnchantmentTarget.WEAPON)),
-    HAMMER(new CustomEnchantmentWrapper("hammer", "Hammer", 1, EnchantmentTarget.TOOL)),
-    FURNACE(new CustomEnchantmentWrapper("furnace", "Furnace", 1, EnchantmentTarget.TOOL)),
-    TRASHER(new CustomEnchantmentWrapper("trasher", "Trasher", 1, EnchantmentTarget.TOOL)),
-    SOUL_BOUND(new CustomEnchantmentWrapper("soul_bound", "Soul Bound", 1, EnchantmentTarget.BREAKABLE)),
+    TELEPATHY("telepathy", new CustomEnchantment.CustomEnchantmentBuilder("telepathy").level(1)),
+    ZEUS("telepathy", new CustomEnchantment.CustomEnchantmentBuilder("zeus").level(1)),
+    TEAM_TREE("telepathy", new CustomEnchantment.CustomEnchantmentBuilder("team_tree").level(1)),
+    EXPLOSION("telepathy", new CustomEnchantment.CustomEnchantmentBuilder("explosion").level(1)),
+    HAMMER("telepathy", new CustomEnchantment.CustomEnchantmentBuilder("hammer").level(1)),
+    FURNACE("telepathy", new CustomEnchantment.CustomEnchantmentBuilder("furnace").level(1)),
+    TRASHER("telepathy", new CustomEnchantment.CustomEnchantmentBuilder("trasher").level(1)),
+    SOUL_BOUND("telepathy", new CustomEnchantment.CustomEnchantmentBuilder("soul_bound").level(1)),
     ;
 
-    public final Enchantment enchantment;
+    private final CustomEnchantment.CustomEnchantmentBuilder enchantment;
+    private final String name;
 
-    CustomEnchants(Enchantment enchantment) {
+    CustomEnchants(String name, CustomEnchantment.CustomEnchantmentBuilder enchantment) {
+        this.name = name;
         this.enchantment = enchantment;
     }
 
-    public static void register() {
-        for (CustomEnchants value : CustomEnchants.values()) {
-            if(!Arrays.stream(Enchantment.values()).toList().contains(value.enchantment)) registerEnchantment(value.enchantment);
-        }
+    public String getName() {
+        return name;
     }
 
-    public static void registerEnchantment(Enchantment enchantment) {
-        try {
-            Field f = Enchantment.class.getDeclaredField("acceptingNew");
-            f.setAccessible(true);
-            f.set(null, true);
-            Enchantment.registerEnchantment(enchantment);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
+    public CustomEnchantment getEnchantment(ItemStack stack) {
+        return enchantment.addOnItem(stack);
     }
 
     public static ItemStack[] toEnchantedBook() {
         List<ItemStack> stacks = new ArrayList<>();
         for (CustomEnchants value : CustomEnchants.values()) {
-            stacks.add(new ItemBuilder(Material.ENCHANTED_BOOK).setGlow().setDisplayName(WordUtils.capitalize(value.enchantment.getKey().getKey()
-                    .replace("_", " "))).build());
+            ItemStack is = new ItemStack(Material.ENCHANTED_BOOK);
+            value.getEnchantment(is);
+            stacks.add(is);
         }
-        return stacks.toArray(new ItemStack[0]);
+        return stacks.toArray(ItemStack[]::new);
     }
 }

@@ -2,15 +2,22 @@ package fr.minemobs.minemobsutils.commands;
 
 import fr.minemobs.minemobsutils.MinemobsUtils;
 import fr.minemobs.minemobsutils.utils.CommandUtils;
+import fr.sunderia.sunderiautils.commands.CommandInfo;
+import fr.sunderia.sunderiautils.commands.PluginCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 @CommandInfo(name = "feed", permission = "minemobsutils.feed")
 public class FeedCommand extends PluginCommand {
 
+    public FeedCommand(JavaPlugin plugin) {
+        super(plugin);
+    }
+
     @Override
-    public void execute(Player player, String[] args) {
+    public void onCommand(Player player, String[] args) {
         if(args.length == 0) {
             player.setSaturation(20);
             player.setFoodLevel(20);

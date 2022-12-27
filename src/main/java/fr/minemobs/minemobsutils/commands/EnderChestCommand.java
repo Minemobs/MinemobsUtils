@@ -2,19 +2,26 @@ package fr.minemobs.minemobsutils.commands;
 
 import fr.minemobs.minemobsutils.MinemobsUtils;
 import fr.minemobs.minemobsutils.utils.CommandUtils;
+import fr.sunderia.sunderiautils.commands.CommandInfo;
+import fr.sunderia.sunderiautils.commands.PluginCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
-@CommandInfo(name = "enderchest", alias = "ec", permission = "minemobsutils.enderchest")
+@CommandInfo(name = "enderchest", aliases = "ec", permission = "minemobsutils.enderchest")
 public class EnderChestCommand extends PluginCommand {
 
+    public EnderChestCommand(JavaPlugin plugin) {
+        super(plugin);
+    }
+
     @Override
-    public void execute(Player player, String[] args) {
+    public void onCommand(Player player, String[] args) {
         switch (args.length) {
             case 0 -> player.openInventory(player.getEnderChest());
             case 1 -> {
-                if (!player.hasPermission(getCommandInfo().permission() + ".other")) {
+                if (!player.hasPermission(getInfo().permission() + ".other")) {
                     CommandUtils.permissionError(player);
                     return;
                 }
@@ -26,7 +33,7 @@ public class EnderChestCommand extends PluginCommand {
                 player.openInventory(target.getEnderChest());
             }
             case 2 -> {
-                if (!player.hasPermission(getCommandInfo().permission() + ".other")) {
+                if (!player.hasPermission(getInfo().permission() + ".other")) {
                     CommandUtils.permissionError(player);
                     return;
                 }

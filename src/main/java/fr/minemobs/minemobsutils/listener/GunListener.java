@@ -3,7 +3,7 @@ package fr.minemobs.minemobsutils.listener;
 import fr.minemobs.minemobsutils.MinemobsUtils;
 import fr.minemobs.minemobsutils.objects.Items;
 import fr.minemobs.minemobsutils.objects.item.ProjectileInfo;
-import fr.minemobs.minemobsutils.utils.ItemStackUtils;
+import fr.sunderia.sunderiautils.utils.ItemStackUtils;
 import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -24,19 +24,24 @@ public class GunListener implements Listener {
     @EventHandler
     public void onGunUsed(PlayerInteractEvent event) {
         if(event.getAction() != Action.RIGHT_CLICK_AIR) return;
-        if(ItemStackUtils.isAirOrNull(event.getItem()) || !event.getItem().isSimilar(Items.GUN.stack)) return;
+        if(ItemStackUtils.isAirOrNull(event.getItem()) || !ItemStackUtils.isSameItem(event.getItem(), Items.GUN.stack)) return;
         Player player = event.getPlayer();
         PlayerInventory inventory = player.getInventory();
         Optional<ItemStack> ammo = Arrays.stream(inventory.getStorageContents()).filter(ItemStackUtils::isNotAirNorNull).filter(ItemStackUtils::hasLore)
-                .filter(is -> ItemStackUtils.getItemFromItemStack(is) != null &&
-                        Arrays.stream(Items.getAllItemsWithItemInfo(ProjectileInfo.class)).anyMatch(item -> item == ItemStackUtils.getItemFromItemStack(is) &&
-                                Arrays.stream(((ProjectileInfo) item.info).validWeapons()).anyMatch(items -> items == Items.GUN)))
+                .filter(is -> {
+                    Optional<Items> itemFromStack = Items.getItemFromStack(is);
+                    return itemFromStack.isPresent() &&
+                            Arrays.stream(Items.getAllItemsWithItemInfo(ProjectileInfo.class)).anyMatch(item -> item == itemFromStack.get() &&
+                                    Arrays.stream(((ProjectileInfo) item.info).validWeapons()).anyMatch(items -> items == Items.GUN));
+                })
                 .findFirst();
         if(ammo.isEmpty()) {
             event.getPlayer().sendMessage(MinemobsUtils.header + ChatColor.RED + "You don't have ammo!");
             return;
         }
-        ProjectileInfo info = ProjectileInfo.getInfo(ItemStackUtils.getItemFromItemStack(ammo.get()));
+        Optional<Items> itemFromStack = Items.getItemFromStack(ammo.get());
+        if(itemFromStack.isEmpty()) return;
+        ProjectileInfo info = ProjectileInfo.getInfo(itemFromStack.get());
         World world = event.getPlayer().getWorld();
         drawLine(event.getPlayer().getEyeLocation(), event.getPlayer().getEyeLocation().clone().add(event.getPlayer().getEyeLocation().getDirection().clone().multiply(100)), 0.1D);
         RayTraceResult result = world.rayTrace(event.getPlayer().getEyeLocation(), event.getPlayer().getEyeLocation().getDirection(), 100.0D, FluidCollisionMode.NEVER,
@@ -57,7 +62,7 @@ public class GunListener implements Listener {
 
     public void drawLine(Location start, Location end, double space) {
         World world = start.getWorld();
-        if(!world.equals(end.getWorld())) return;
+        if(world == null || end.getWorld() == null || !world.getUID().equals(end.getWorld().getUID())) return;
         double distance = start.distance(end);
         Vector startVec = start.toVector();
         Vector endVec = end.toVector();

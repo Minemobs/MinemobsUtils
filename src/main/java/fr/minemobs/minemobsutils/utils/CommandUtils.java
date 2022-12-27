@@ -16,5 +16,4 @@ public class CommandUtils {
     public static void permissionError(@NotNull CommandSender sender) {
         sender.sendMessage(MinemobsUtils.header + ChatColor.RED + "You do not have the permission to execute this command !");
     }
-
 }

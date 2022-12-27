@@ -1,58 +1,55 @@
 package fr.minemobs.minemobsutils;
 
-import fr.minemobs.minemobsutils.commands.CommandInfo;
-import fr.minemobs.minemobsutils.customblock.CustomBlock;
-import fr.minemobs.minemobsutils.listener.CustomBlockListener;
+import fr.minemobs.minemobsutils.commands.BroadcastCommand;
+import fr.minemobs.minemobsutils.listener.CraftListener;
 import fr.minemobs.minemobsutils.objects.CustomEnchants;
 import fr.minemobs.minemobsutils.objects.Recipes;
-import fr.minemobs.minemobsutils.utils.ReflectionUtils;
 import fr.minemobs.minemobsutils.utils.UpdateChecker;
+import fr.sunderia.sunderiautils.SunderiaUtils;
+import fr.sunderia.sunderiautils.customblock.CustomBlock;
+import fr.sunderia.sunderiautils.listeners.CustomBlockListener;
+import io.netty.util.internal.ThrowableUtil;
 import org.apache.commons.io.FileUtils;
 import org.bstats.bukkit.Metrics;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
 
 public class MinemobsUtils extends JavaPlugin {
 
-    private static MinemobsUtils instance;
     public static final String header = String.format("%s[%sMinemobs Utils%s]%s ", ChatColor.DARK_GRAY, ChatColor.DARK_RED, ChatColor.DARK_GRAY, ChatColor.RESET);
     public static final String pluginID = "minemobsutils";
-
-    @Override
-    public void onLoad() {
-        instance = this;
-    }
 
     @Override
     public void onEnable() {
         checkUpdates();
         ConfigurationSerialization.registerClass(CustomBlock.class, "customblock");
+        SunderiaUtils.of(this);
         try {
             loadCustomBlocks();
         } catch (Exception exception) {
             exception.printStackTrace();
         }
-        Bukkit.getConsoleSender().sendMessage(header + ChatColor.GREEN + "Enabled.");
-        registerListeners();
-        registerCommands();
+        try {
+            registerListeners();
+            registerCommands();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         registerCrafts();
-        CustomEnchants.register();
         setupBStats();
     }
 
@@ -82,7 +79,7 @@ public class MinemobsUtils extends JavaPlugin {
         FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         cfg.getKeys(false).forEach(key -> {
             CustomBlock block = (CustomBlock) cfg.get(key);
-            CustomBlockListener.blocks.put(block.getKey(), block);
+            if(block != null) CustomBlockListener.putCustomBlock(block);
         });
     }
 
@@ -91,8 +88,7 @@ public class MinemobsUtils extends JavaPlugin {
         new Metrics(this, 8000);
     }
 
-    private void registerCrafts()
-    {
+    private void registerCrafts() {
         for (Recipes recipe : Arrays.stream(Recipes.values()).filter(recipes -> recipes.getRecipe() != null).toList()) {
             getServer().addRecipe(recipe.getRecipe());
         }
@@ -100,31 +96,13 @@ public class MinemobsUtils extends JavaPlugin {
             getServer().addRecipe(recipe.getShapelessRecipe());
         }
     }
-    private void registerListeners() {
-        PluginManager pm = Bukkit.getPluginManager();
-        ReflectionUtils.getClass("fr.minemobs.minemobsutils.listener", Listener.class).forEach(clazz -> {
-            try {
-                pm.registerEvents(clazz.getDeclaredConstructor().newInstance(), this);
-            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                getLogger().severe(e.getMessage());
-            }
-        });
+
+    private void registerListeners() throws IOException {
+        SunderiaUtils.registerListeners(CraftListener.class.getPackageName());
     }
 
-    private void registerCommands() {
-        ReflectionUtils.getClassWithAnnotation("fr.minemobs.minemobsutils.commands", CommandInfo.class).forEach(clazz -> {
-            try {
-                registerCommand((fr.minemobs.minemobsutils.commands.PluginCommand) clazz.getDeclaredConstructor().newInstance());
-            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                getLogger().severe(e.getMessage());
-            }
-        });
-    }
-
-    private void registerCommand(fr.minemobs.minemobsutils.commands.PluginCommand cmd) {
-        PluginCommand command = getCommand(cmd.getCommandInfo().name());
-        if(cmd.getCommandInfo().alias().length != 0) command.setAliases(Arrays.asList(cmd.getCommandInfo().alias()));
-        command.setExecutor(cmd);
+    private void registerCommands() throws IOException {
+        SunderiaUtils.registerCommands(BroadcastCommand.class.getPackageName());
     }
 
     @Override
@@ -141,18 +119,29 @@ public class MinemobsUtils extends JavaPlugin {
         if(!Files.exists(path)) Files.createFile(path);
         FileConfiguration cfg = YamlConfiguration.loadConfiguration(path.toFile());
         int i = 0;
-        for (CustomBlock block : CustomBlockListener.blocks.values()) {
+        //for (CustomBlock block : CustomBlockListener.blocks.values()) {
+        for (CustomBlock block : getCustomBlocksVariable().values()) {
             cfg.set(String.valueOf(i), block);
             i++;
         }
         cfg.save(path.toFile());
     }
 
-    public static NamespacedKey getKey(String key) {
-        return new NamespacedKey(getInstance(), key);
+    private Map<NamespacedKey, CustomBlock> getCustomBlocksVariable() {
+        Class<CustomBlockListener> clazz = CustomBlockListener.class;
+        try {
+            Field blocks = clazz.getDeclaredField("blocks");
+            blocks.setAccessible(true);
+            Map<NamespacedKey, CustomBlock> map = (Map<NamespacedKey, CustomBlock>) blocks.get(null);
+            blocks.setAccessible(false);
+            return map;
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            getLogger().severe(() -> "An error occurred while trying to get the custom blocks variable.\n" + ThrowableUtil.stackTraceToString(e));
+            return Collections.emptyMap();
+        }
     }
 
-    public static MinemobsUtils getInstance() {
-        return instance;
+    public static NamespacedKey getKey(String key) {
+        return SunderiaUtils.key(key);
     }
 }

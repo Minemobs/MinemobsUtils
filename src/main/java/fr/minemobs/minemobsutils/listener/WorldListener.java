@@ -1,7 +1,7 @@
 package fr.minemobs.minemobsutils.listener;
 
 import fr.minemobs.minemobsutils.objects.Items;
-import fr.minemobs.minemobsutils.utils.ItemBuilder;
+import fr.sunderia.sunderiautils.utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.FallingBlock;

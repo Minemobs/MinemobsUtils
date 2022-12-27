@@ -2,8 +2,10 @@ package fr.minemobs.minemobsutils.listener;
 
 import com.google.common.collect.ImmutableList;
 import fr.minemobs.minemobsutils.objects.CustomEnchants;
-import fr.minemobs.minemobsutils.utils.ItemStackUtils;
 import fr.minemobs.minemobsutils.utils.WordUtils;
+import fr.sunderia.sunderiautils.SunderiaUtils;
+import fr.sunderia.sunderiautils.utils.ItemStackUtils;
+import fr.sunderia.sunderiautils.utils.StringUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Container;
@@ -24,6 +26,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
@@ -32,12 +36,27 @@ public class EnchantmentListener implements Listener {
 
     private final Map<UUID, List<ItemStack>> soulBoundDrops = new HashMap<>();
 
+    public static boolean hasEnchant(ItemStack stack, CustomEnchants enchants) {
+        return ItemStackUtils.hasPersistentDataContainer(stack, SunderiaUtils.key("enchantment-" + enchants.getName()), PersistentDataType.INTEGER);
+    }
+
+    public static void removeEnchant(ItemStack stack, CustomEnchants enchants) {
+        ItemMeta meta = stack.getItemMeta();
+        PersistentDataContainer pdc = meta.getPersistentDataContainer();
+        pdc.remove(SunderiaUtils.key("enchantment-" + enchants.getName()));
+        List<String> lore = meta.getLore();
+        String enchantmentLore = ChatColor.GRAY + StringUtils.capitalizeWord(CustomEnchants.SOUL_BOUND.name()) + " I";
+        lore.remove(enchantmentLore);
+        meta.setLore(lore);
+        stack.setItemMeta(meta);
+    }
+
     @EventHandler(priority = EventPriority.LOWEST)
     private void trasherBlockBreakListener(BlockDropItemEvent event) {
         PlayerInventory inv = event.getPlayer().getInventory();
         if(ItemStackUtils.isAirOrNull(inv.getItemInMainHand())) return;
         if(!inv.getItemInMainHand().hasItemMeta()) return;
-        if(!inv.getItemInMainHand().getItemMeta().hasEnchant(CustomEnchants.TRASHER.enchantment)) return;
+        if(hasEnchant(inv.getItemInMainHand(), CustomEnchants.TRASHER)) return;
         if(event.getBlock().getState() instanceof Container) return;
         List<Item> drops = event.getItems();
         drops.removeIf(drop -> drop.getItemStack().getType() == Material.STONE ||
@@ -53,15 +72,16 @@ public class EnchantmentListener implements Listener {
     private void telepathyBlockBreakListener(BlockBreakEvent event) {
         Player player = event.getPlayer();
         PlayerInventory inv = player.getInventory();
-        if(ItemStackUtils.isAirOrNull(inv.getItemInMainHand())) return;
-        if(!inv.getItemInMainHand().hasItemMeta()) return;
-        if(!inv.getItemInMainHand().getItemMeta().hasEnchant(CustomEnchants.TELEPATHY.enchantment)) return;
-        if(inv.getItemInMainHand().getItemMeta().hasEnchant(CustomEnchants.FURNACE.enchantment)) return;
+        ItemStack itemInMainHand = inv.getItemInMainHand();
+        if(ItemStackUtils.isAirOrNull(itemInMainHand)) return;
+        if(!itemInMainHand.hasItemMeta()) return;
+        if(!hasEnchant(itemInMainHand, CustomEnchants.TELEPATHY)) return;
+        if(hasEnchant(itemInMainHand, CustomEnchants.FURNACE)) return;
         if(player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) return;
         if(inv.firstEmpty() == -1) return;
         if(event.getBlock().getState() instanceof Container) return;
         event.setDropItems(false);
-        Collection<ItemStack> drops = event.getBlock().getDrops(inv.getItemInMainHand());
+        Collection<ItemStack> drops = event.getBlock().getDrops(itemInMainHand);
         if(drops.isEmpty()) return;
         inv.addItem(drops.iterator().next());
     }
@@ -72,9 +92,10 @@ public class EnchantmentListener implements Listener {
         Player player = entity.getKiller();
         if(player == null) return;
         PlayerInventory inv = player.getInventory();
-        if(ItemStackUtils.isAirOrNull(inv.getItemInMainHand())) return;
-        if(!inv.getItemInMainHand().hasItemMeta()) return;
-        if(!inv.getItemInMainHand().getItemMeta().hasEnchant(CustomEnchants.TELEPATHY.enchantment)) return;
+        ItemStack itemInMainHand = inv.getItemInMainHand();
+        if(ItemStackUtils.isAirOrNull(itemInMainHand)) return;
+        if(!itemInMainHand.hasItemMeta()) return;
+        if(!hasEnchant(itemInMainHand, CustomEnchants.TELEPATHY)) return;
         if(player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) return;
         if(inv.firstEmpty() == -1) return;
         player.giveExp(event.getDroppedExp());
@@ -86,12 +107,13 @@ public class EnchantmentListener implements Listener {
     @EventHandler
     private void onHitLightBoltListener(EntityDamageByEntityEvent event) {
         if(!(event.getDamager() instanceof Player player)) return;
-        if(!(event.getEntity() instanceof LivingEntity)) return;
+        if(!(event.getEntity() instanceof LivingEntity e)) return;
         PlayerInventory inv = player.getInventory();
-        if(ItemStackUtils.isAirOrNull(inv.getItemInMainHand())) return;
-        if(!inv.getItemInMainHand().hasItemMeta()) return;
-        if(!inv.getItemInMainHand().getItemMeta().hasEnchant(CustomEnchants.ZEUS.enchantment)) return;
-        player.getWorld().strikeLightning(event.getEntity().getLocation());
+        ItemStack itemInMainHand = inv.getItemInMainHand();
+        if(ItemStackUtils.isAirOrNull(itemInMainHand)) return;
+        if(!itemInMainHand.hasItemMeta()) return;
+        if(!hasEnchant(itemInMainHand, CustomEnchants.ZEUS)) return;
+        player.getWorld().strikeLightning(e.getLocation());
     }
 
     @EventHandler
@@ -99,9 +121,10 @@ public class EnchantmentListener implements Listener {
         if(!(event.getDamager() instanceof Player player)) return;
         if(!(event.getEntity() instanceof LivingEntity entity)) return;
         PlayerInventory inv = player.getInventory();
-        if(ItemStackUtils.isAirOrNull(inv.getItemInMainHand())) return;
-        if(!inv.getItemInMainHand().hasItemMeta()) return;
-        if(!inv.getItemInMainHand().getItemMeta().hasEnchant(CustomEnchants.TEAM_TREE.enchantment)) return;
+        ItemStack itemInMainHand = inv.getItemInMainHand();
+        if(ItemStackUtils.isAirOrNull(itemInMainHand)) return;
+        if(!itemInMainHand.hasItemMeta()) return;
+        if(!hasEnchant(itemInMainHand, CustomEnchants.TEAM_TREE)) return;
         player.getWorld().generateTree(entity.getLocation(), TreeType.BIG_TREE);
         entity.addPotionEffect(PotionEffectType.JUMP.createEffect(10 * 20, 255));
         entity.addPotionEffect(PotionEffectType.BLINDNESS.createEffect(10 * 20, 255));
@@ -113,9 +136,10 @@ public class EnchantmentListener implements Listener {
         if(!(event.getDamager() instanceof Player player)) return;
         if(!(event.getEntity() instanceof LivingEntity)) return;
         PlayerInventory inv = player.getInventory();
-        if(ItemStackUtils.isAirOrNull(inv.getItemInMainHand())) return;
-        if(!inv.getItemInMainHand().hasItemMeta()) return;
-        if(!inv.getItemInMainHand().getItemMeta().hasEnchant(CustomEnchants.EXPLOSION.enchantment)) return;
+        ItemStack itemInMainHand = inv.getItemInMainHand();
+        if(ItemStackUtils.isAirOrNull(itemInMainHand)) return;
+        if(!itemInMainHand.hasItemMeta()) return;
+        if(!hasEnchant(itemInMainHand, CustomEnchants.EXPLOSION)) return;
         player.getWorld().createExplosion(event.getEntity().getLocation(), 4f, true, false, event.getEntity());
     }
 
@@ -123,9 +147,10 @@ public class EnchantmentListener implements Listener {
     private void hammerBlockBreakListener(BlockBreakEvent event) {
         Player player = event.getPlayer();
         PlayerInventory inv = player.getInventory();
-        if(ItemStackUtils.isAirOrNull(inv.getItemInMainHand())) return;
-        if(!inv.getItemInMainHand().hasItemMeta()) return;
-        if(!inv.getItemInMainHand().getItemMeta().hasEnchant(CustomEnchants.HAMMER.enchantment)) return;
+        ItemStack itemInMainHand = inv.getItemInMainHand();
+        if(ItemStackUtils.isAirOrNull(itemInMainHand)) return;
+        if(!itemInMainHand.hasItemMeta()) return;
+        if(!hasEnchant(itemInMainHand, CustomEnchants.HAMMER)) return;
         if(player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) return;
         Location loc = event.getBlock().getLocation();
         for(int x = -1;x <= 1;x++) {
@@ -136,13 +161,13 @@ public class EnchantmentListener implements Listener {
                             loc.getBlockY() + y,
                             loc.getBlockZ() + z);
                     if (block.getType().isBlock() && block.getType().isSolid() && !getInvalidBlocks().contains(block.getType()) &&
-                            !block.getDrops(inv.getItemInMainHand()).isEmpty()) {
-                        if(inv.getItemInMainHand().getItemMeta().hasEnchant(CustomEnchants.TELEPATHY.enchantment)) {
+                            !block.getDrops(itemInMainHand).isEmpty()) {
+                        if(hasEnchant(itemInMainHand, CustomEnchants.TELEPATHY)) {
                             if(inv.firstEmpty() == -1) return;
-                            inv.addItem(block.getDrops(inv.getItemInMainHand()).stream().findFirst().orElse(new ItemStack(Material.AIR)));
+                            inv.addItem(block.getDrops(itemInMainHand).stream().findFirst().orElse(new ItemStack(Material.AIR)));
                             block.setType(Material.AIR);
                         } else {
-                            block.breakNaturally(inv.getItemInMainHand());
+                            block.breakNaturally(itemInMainHand);
                         }
                     }
                 }
@@ -154,17 +179,18 @@ public class EnchantmentListener implements Listener {
     public void furnaceEvent(BlockDropItemEvent event) {
         Player player = event.getPlayer();
         PlayerInventory inv = player.getInventory();
-        if(ItemStackUtils.isAirOrNull(inv.getItemInMainHand())) return;
-        if(!inv.getItemInMainHand().hasItemMeta()) return;
-        if(!inv.getItemInMainHand().getItemMeta().hasEnchant(CustomEnchants.FURNACE.enchantment)) return;
+        ItemStack itemInMainHand = inv.getItemInMainHand();
+        if(ItemStackUtils.isAirOrNull(itemInMainHand)) return;
+        if(!itemInMainHand.hasItemMeta()) return;
+        if(!hasEnchant(itemInMainHand, CustomEnchants.FURNACE)) return;
         List<Recipe> recipes = ImmutableList.copyOf(Bukkit.recipeIterator());
-        for (Recipe _recipe : recipes.stream().filter(FurnaceRecipe.class::isInstance).toList()) {
-            FurnaceRecipe recipe = (FurnaceRecipe) _recipe;
+        for (Recipe iRecipe : recipes.stream().filter(FurnaceRecipe.class::isInstance).toList()) {
+            FurnaceRecipe recipe = (FurnaceRecipe) iRecipe;
             for (Item item : event.getItems().stream().filter(item -> recipe.getInputChoice().test(item.getItemStack())).toList()) {
                 ItemStack drop = recipe.getResult();
                 drop.setAmount(item.getItemStack().getAmount());
                 event.getItems().remove(item);
-                if(inv.getItemInMainHand().getItemMeta().hasEnchant(CustomEnchants.TELEPATHY.enchantment)) {
+                if(hasEnchant(itemInMainHand, CustomEnchants.TELEPATHY)) {
                     if(inv.firstEmpty() == -1) {
                         event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation().add(.5, .5, .5), drop);
                         return;
@@ -182,20 +208,14 @@ public class EnchantmentListener implements Listener {
     public void onDeath(PlayerDeathEvent event) {
         soulBoundDrops.put(event.getEntity().getUniqueId(), Arrays.stream(event.getEntity().getInventory().getContents())
                 .filter(Objects::nonNull)
-                .filter(itemStack -> itemStack.containsEnchantment(CustomEnchants.SOUL_BOUND.enchantment)).toList());
-        event.getDrops().removeIf(itemStack -> itemStack.containsEnchantment(CustomEnchants.SOUL_BOUND.enchantment));
+                .filter(itemStack -> hasEnchant(itemStack, CustomEnchants.SOUL_BOUND)).toList());
+        event.getDrops().removeAll(soulBoundDrops.get(event.getEntity().getUniqueId()));
     }
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
         soulBoundDrops.get(event.getPlayer().getUniqueId()).forEach(is -> {
-            ItemMeta meta = is.getItemMeta();
-            List<String> lore = meta.getLore();
-            String enchantmentLore = ChatColor.GRAY + WordUtils.capitalize(CustomEnchants.SOUL_BOUND.enchantment.getKey().getKey().replace("_", " ")) + " I";
-            lore.remove(enchantmentLore);
-            meta.setLore(lore);
-            meta.removeEnchant(CustomEnchants.SOUL_BOUND.enchantment);
-            is.setItemMeta(meta);
+            removeEnchant(is, CustomEnchants.SOUL_BOUND);
             event.getPlayer().getInventory().addItem(is);
         });
     }
@@ -205,5 +225,4 @@ public class EnchantmentListener implements Listener {
         return Arrays.asList(Material.LAVA, Material.WATER, Material.BEDROCK, Material.NETHER_PORTAL, Material.END_PORTAL, Material.END_PORTAL_FRAME, Material.TALL_GRASS,
                 Material.SEAGRASS, Material.GRASS);
     }
-
 }

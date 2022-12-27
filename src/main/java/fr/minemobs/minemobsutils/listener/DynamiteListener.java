@@ -1,7 +1,7 @@
 package fr.minemobs.minemobsutils.listener;
 
 import fr.minemobs.minemobsutils.objects.Items;
-import fr.minemobs.minemobsutils.utils.ItemStackUtils;
+import fr.sunderia.sunderiautils.utils.ItemStackUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -23,7 +23,7 @@ public class DynamiteListener implements Listener {
     public void onInteract(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) {
             if(ItemStackUtils.isAirOrNull(event.getItem())) return;
-            if(!event.getItem().isSimilar(Items.DYNAMITE.stack)) return;
+            if(!ItemStackUtils.isSameItem(event.getItem(), Items.DYNAMITE.stack)) return;
             FallingBlock tnt = event.getPlayer().getWorld().spawnFallingBlock(event.getPlayer().getEyeLocation(), Bukkit.createBlockData(Material.TNT));
             tnt.setDropItem(false);
             thrownedTnt.add(tnt);

@@ -3,8 +3,11 @@ package fr.minemobs.minemobsutils.objects;
 import fr.minemobs.minemobsutils.MinemobsUtils;
 import fr.minemobs.minemobsutils.objects.item.ItemInfo;
 import fr.minemobs.minemobsutils.objects.item.ProjectileInfo;
-import fr.minemobs.minemobsutils.utils.Cooldown;
-import fr.minemobs.minemobsutils.utils.ItemBuilder;
+import fr.minemobs.minemobsutils.utils.CooldownType;
+import fr.sunderia.sunderiautils.SunderiaUtils;
+import fr.sunderia.sunderiautils.utils.Cooldown;
+import fr.sunderia.sunderiautils.utils.ItemBuilder;
+import fr.sunderia.sunderiautils.utils.ItemStackUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -15,6 +18,9 @@ import org.bukkit.entity.WitherSkull;
 import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
@@ -22,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Optional;
 
 public enum Items {
 
@@ -33,8 +40,8 @@ public enum Items {
     FIREBALL_STAFF(new ItemBuilder(Material.STICK).setDisplayName(ChatColor.LIGHT_PURPLE + "Fireball Staff").setCustomModelData(1024).setGlow().build()),
     WITHER_STAFF(new ItemBuilder(Material.STICK).setDisplayName(ChatColor.BLACK + "Wither Staff").setCustomModelData(1025).setGlow().onInteract(event -> {
         if(event.getAction() != Action.RIGHT_CLICK_AIR) return;
-        if(Cooldown.isInCooldown(event.getPlayer().getUniqueId(), Cooldown.CooldownType.WITHER_STAFF)) {
-            event.getPlayer().sendMessage(Cooldown.cooldownMessage(event.getPlayer().getUniqueId(), Cooldown.CooldownType.WITHER_STAFF));
+        if(Cooldown.isInCooldown(event.getPlayer().getUniqueId(), CooldownType.WITHER_STAFF.getName())) {
+            event.getPlayer().sendMessage(Cooldown.cooldownMessage(event.getPlayer().getUniqueId(), CooldownType.WITHER_STAFF.getName()));
             return;
         }
         WitherSkull skull = event.getPlayer().launchProjectile(WitherSkull.class);
@@ -43,7 +50,7 @@ public enum Items {
         skull.setBounce(true);
 
         if(!event.getPlayer().hasPermission(MinemobsUtils.pluginID + ".ignorecooldown")) {
-            Cooldown cooldown = new Cooldown(event.getPlayer().getUniqueId(), Cooldown.CooldownType.WITHER_STAFF);
+            Cooldown cooldown = new Cooldown(event.getPlayer().getUniqueId(), CooldownType.WITHER_STAFF.getName(), CooldownType.WITHER_STAFF.getCooldownInSeconds());
             cooldown.start();
         }
     }).build()),
@@ -151,6 +158,14 @@ public enum Items {
     Items(ItemStack stack, @NotNull ItemInfo info) {
         this.stack = stack.clone();
         this.info = info;
+    }
+
+    public static Optional<Items> getItemFromStack(ItemStack is) {
+        if(!ItemStackUtils.isCustomItem(is)) return Optional.empty();
+        ItemMeta meta = is.getItemMeta();
+        PersistentDataContainer pdc = meta.getPersistentDataContainer();
+        String name = pdc.get(SunderiaUtils.key("identifier"), PersistentDataType.STRING);
+        return Arrays.stream(values()).filter(item -> ChatColor.stripColor(item.getStack().getItemMeta().getDisplayName().replaceAll("\\s+", "_").toLowerCase()).equals(name)).findFirst();
     }
 
     public static boolean hasItemInfo(Items item) {

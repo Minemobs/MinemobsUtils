@@ -1,15 +1,22 @@
 package fr.minemobs.minemobsutils.commands;
 
 import fr.minemobs.minemobsutils.MinemobsUtils;
+import fr.sunderia.sunderiautils.commands.CommandInfo;
+import fr.sunderia.sunderiautils.commands.PluginCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 @CommandInfo(name = "ping")
 public class PingCommand extends PluginCommand {
 
+    public PingCommand(JavaPlugin plugin) {
+        super(plugin);
+    }
+
     @Override
-    public void execute(Player player, String[] args) {
+    public void onCommand(Player player, String[] args) {
         if(args.length == 0) {
             player.sendMessage(MinemobsUtils.header + ChatColor.GREEN + "Pong. " + ChatColor.YELLOW + "You have: " +
                     ChatColor.WHITE + getPing(player) + ChatColor.YELLOW + " ms");

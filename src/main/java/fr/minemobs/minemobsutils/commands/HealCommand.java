@@ -2,18 +2,26 @@ package fr.minemobs.minemobsutils.commands;
 
 import fr.minemobs.minemobsutils.MinemobsUtils;
 import fr.minemobs.minemobsutils.utils.CommandUtils;
-import fr.minemobs.minemobsutils.utils.Cooldown;
+import fr.minemobs.minemobsutils.utils.CooldownType;
+import fr.sunderia.sunderiautils.commands.CommandInfo;
+import fr.sunderia.sunderiautils.commands.PluginCommand;
+import fr.sunderia.sunderiautils.utils.Cooldown;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 @CommandInfo(name = "heal", permission = "minemobsutils.heal")
 public class HealCommand extends PluginCommand {
 
+    public HealCommand(JavaPlugin plugin) {
+        super(plugin);
+    }
+
     @Override
-    public void execute(Player player, String[] args) {
-        if (Cooldown.isInCooldown(player.getUniqueId(), Cooldown.CooldownType.HEAL_FEED_COMMAND.id) && !player.hasPermission(MinemobsUtils.pluginID + ".ignorecooldown")) {
-            player.sendMessage(Cooldown.cooldownMessage(player.getUniqueId(), Cooldown.CooldownType.HEAL_FEED_COMMAND));
+    public void onCommand(Player player, String[] args) {
+        if (Cooldown.isInCooldown(player.getUniqueId(), CooldownType.HEAL_FEED_COMMAND.getName()) && !player.hasPermission(MinemobsUtils.pluginID + ".ignorecooldown")) {
+            player.sendMessage(Cooldown.cooldownMessage(player.getUniqueId(), CooldownType.HEAL_FEED_COMMAND.getName()));
             return;
         }
         if (args.length == 0) {
@@ -40,7 +48,7 @@ public class HealCommand extends PluginCommand {
             target.sendMessage(MinemobsUtils.header + ChatColor.GREEN + "You have been healed");
         }
         if(!player.hasPermission(MinemobsUtils.pluginID + ".ignorecooldown")) {
-            Cooldown cooldown = new Cooldown(player.getUniqueId(), Cooldown.CooldownType.HEAL_FEED_COMMAND);
+            Cooldown cooldown = new Cooldown(player.getUniqueId(), CooldownType.HEAL_FEED_COMMAND.getName(), CooldownType.HEAL_FEED_COMMAND.getCooldownInSeconds());
             cooldown.start();
         }
     }

@@ -2,21 +2,18 @@ package fr.minemobs.minemobsutils.listener;
 
 import fr.minemobs.minemobsutils.MinemobsUtils;
 import fr.minemobs.minemobsutils.commands.StaffChatCommand;
-import fr.minemobs.minemobsutils.customblock.CustomBlock;
 import fr.minemobs.minemobsutils.event.ArmorEvent;
-import fr.minemobs.minemobsutils.event.CustomBlockPlaceEvent;
-import fr.minemobs.minemobsutils.objects.Blocks;
 import fr.minemobs.minemobsutils.objects.Items;
 import fr.minemobs.minemobsutils.objects.Recipes;
-import fr.minemobs.minemobsutils.utils.Cooldown;
-import fr.minemobs.minemobsutils.utils.ItemStackUtils;
+import fr.minemobs.minemobsutils.utils.CooldownType;
+import fr.sunderia.sunderiautils.SunderiaUtils;
+import fr.sunderia.sunderiautils.utils.Cooldown;
+import fr.sunderia.sunderiautils.utils.ItemStackUtils;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -75,7 +72,7 @@ public class PlayerListener implements Listener {
             }
         } else if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if(ItemStackUtils.isAirOrNull(event.getItem())) return;
-            if(event.getItem().isSimilar(Items.BATTERY.stack)) {
+            if(ItemStackUtils.isSameItem(event.getItem(), Items.BATTERY.stack)) {
                 event.setCancelled(true);
                 Optional<ItemStack> opIs = findFirstDraconicArmorPiece(player.getInventory().getArmorContents());
                 if(opIs.isEmpty()) {
@@ -83,10 +80,11 @@ public class PlayerListener implements Listener {
                     return;
                 }
                 chargeArmor(player, opIs.get());
-            } else if(event.getItem().isSimilar(Items.CRAFTING_TABLE_PORTABLE.stack)) {
+            } else if(ItemStackUtils.isSameItem(event.getItem(), Items.CRAFTING_TABLE_PORTABLE.stack)) {
                 player.openWorkbench(null, true);
-            } else if(event.getItem().isSimilar(Items.FIREBALL_STAFF.stack)) {
-                if(!player.getInventory().contains(Material.FIRE_CHARGE)) {
+            } else if(ItemStackUtils.isSameItem(event.getItem(), Items.FIREBALL_STAFF.stack)) {
+                int slot = player.getInventory().first(Material.FIRE_CHARGE);
+                if(slot == -1) {
                     player.sendMessage(MinemobsUtils.header + ChatColor.RED + "You need at least 1 fireball to use this item !");
                     return;
                 }
@@ -104,8 +102,7 @@ public class PlayerListener implements Listener {
                         }
                         fireball.getWorld().spawnParticle(Particle.FLAME, fireball.getLocation(), 1);
                     }
-                }.runTaskTimer(MinemobsUtils.getInstance(), 0, 2);
-                int slot = player.getInventory().first(Material.FIRE_CHARGE);
+                }.runTaskTimer(SunderiaUtils.getPlugin(), 0, 2);
                 player.getInventory().getItem(slot).setAmount(player.getInventory().getItem(slot).getAmount() - 1);
                 event.setCancelled(true);
             }
@@ -132,8 +129,8 @@ public class PlayerListener implements Listener {
         if(event.getState() != PlayerFishEvent.State.REEL_IN ||
                 !ItemStackUtils.isSameItem(event.getPlayer().getInventory().getItemInMainHand(), Items.GRAPPLING_HOOK.stack)) return;
         Player player = event.getPlayer();
-        if(Cooldown.isInCooldown(player.getUniqueId(), Cooldown.CooldownType.GRAPPLING_HOOK.id) && !player.hasPermission(MinemobsUtils.pluginID + ".ignorecooldown")) {
-            player.sendMessage(Cooldown.cooldownMessage(player.getUniqueId(), Cooldown.CooldownType.GRAPPLING_HOOK));
+        if(Cooldown.isInCooldown(player.getUniqueId(), CooldownType.GRAPPLING_HOOK.getName()) && !player.hasPermission(MinemobsUtils.pluginID + ".ignorecooldown")) {
+            player.sendMessage(Cooldown.cooldownMessage(player.getUniqueId(), CooldownType.GRAPPLING_HOOK.getName()));
             return;
         }
         Location playerLoc = player.getLocation();
@@ -141,7 +138,7 @@ public class PlayerListener implements Listener {
         Location change = hookLoc.subtract(playerLoc);
         player.setVelocity(change.toVector().multiply(.3));
         if(player.hasPermission(MinemobsUtils.pluginID + ".ignorecooldown")) return;
-        Cooldown c = new Cooldown(player.getUniqueId(), Cooldown.CooldownType.GRAPPLING_HOOK);
+        Cooldown c = new Cooldown(player.getUniqueId(), CooldownType.GRAPPLING_HOOK.getName(), CooldownType.GRAPPLING_HOOK.getCooldownInSeconds());
         c.start();
     }
 
@@ -193,32 +190,6 @@ public class PlayerListener implements Listener {
         if(player.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE) && player.getPotionEffect(PotionEffectType.FIRE_RESISTANCE).getAmplifier() == 1) player.removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
         if(player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) return;
         player.setAllowFlight(false);
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onCustomBlockPlaced(BlockPlaceEvent event) {
-        if(event.getBlock().getType() != Material.LIME_GLAZED_TERRACOTTA || !event.getItemInHand().hasItemMeta() || !event.getItemInHand().getItemMeta().hasDisplayName() ||
-                !event.getItemInHand().getItemMeta().hasCustomModelData()) return;
-        String itemName = event.getItemInHand().getItemMeta().getDisplayName();
-        if(Blocks.getAllBlockItems().stream().noneMatch(itemStack -> itemStack.getItemMeta().getDisplayName().equals(itemName))) return;
-        if(Blocks.getAllBlockItems().stream()
-                .noneMatch(itemStack -> itemStack.getItemMeta().getCustomModelData() == event.getItemInHand().getItemMeta().getCustomModelData())) return;
-        Optional<CustomBlock> opBlock = Arrays.stream(Blocks.values())
-                .filter(blocks -> blocks.block.getCustomModelData() == event.getItemInHand().getItemMeta().getCustomModelData()).map(Blocks::getBlock).findFirst();
-        if(opBlock.isEmpty()) return;
-        CustomBlock block = opBlock.get();
-        block.setLoc(event.getBlock().getLocation());
-        event.setCancelled(true);
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                CustomBlockPlaceEvent e = new CustomBlockPlaceEvent(event.getBlockPlaced(), event.getBlockReplacedState(),
-                        event.getBlockAgainst(), event.getItemInHand(), event.getPlayer(), event.canBuild(),
-                        event.getHand(), block);
-                if(event.getPlayer().getGameMode() == GameMode.SURVIVAL) event.getItemInHand().setAmount(event.getItemInHand().getAmount() - 1);
-                Bukkit.getPluginManager().callEvent(e);
-            }
-        }.runTaskLater(MinemobsUtils.getInstance(), 2);
     }
 
     public static boolean isDraconicArmor(ItemStack[] armor) {

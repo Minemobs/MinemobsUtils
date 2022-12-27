@@ -1,20 +1,27 @@
 package fr.minemobs.minemobsutils.commands;
 
-import fr.minemobs.minemobsutils.utils.ItemBuilder;
+import fr.sunderia.sunderiautils.commands.CommandInfo;
+import fr.sunderia.sunderiautils.commands.PluginCommand;
+import fr.sunderia.sunderiautils.utils.ItemBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
 
-@CommandInfo(name = "colorcode", alias = {"cc", "chatcolor"})
+@CommandInfo(name = "colorcode", aliases = {"cc", "chatcolor"})
 public class ColorCommand extends PluginCommand {
 
+    public ColorCommand(JavaPlugin plugin) {
+        super(plugin);
+    }
+
     @Override
-    public void execute(Player player, String[] args) {
+    public void onCommand(Player player, String[] args) {
         Inventory colorCode = Bukkit.getServer().createInventory(player, 27, "Color Code");
         ChatColor[] othersColorCode = new ChatColor[]{ChatColor.RESET, ChatColor.ITALIC, ChatColor.UNDERLINE, ChatColor.STRIKETHROUGH, ChatColor.BOLD, ChatColor.MAGIC};
         for (ChatColor value : ChatColor.values()) {

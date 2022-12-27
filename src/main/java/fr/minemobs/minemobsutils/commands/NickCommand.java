@@ -3,18 +3,23 @@ package fr.minemobs.minemobsutils.commands;
 import fr.minemobs.minemobsutils.MinemobsUtils;
 import fr.minemobs.minemobsutils.support.SkinRestorer;
 import fr.minemobs.minemobsutils.utils.ArrayUtils;
+import fr.sunderia.sunderiautils.commands.CommandInfo;
+import fr.sunderia.sunderiautils.commands.PluginCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 @CommandInfo(name = "nick")
 public class NickCommand extends PluginCommand {
 
+    public NickCommand(JavaPlugin plugin) {
+        super(plugin);
+    }
+
     @Override
-    public void execute(Player player, String[] args) {
-        if(args.length < 1) {
-            return;
-        }
+    public void onCommand(Player player, String[] args) {
+        if(args.length < 1) return;
 
         Player target = Bukkit.getPlayer(args[0]);
         String nick;
